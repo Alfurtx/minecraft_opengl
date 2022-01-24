@@ -6,3 +6,4 @@ tmp/
 bin/*
 .vscode/
 app.dSYM
+*.o
