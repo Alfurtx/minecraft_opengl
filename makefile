@@ -4,41 +4,42 @@
 # @file
 # @version 0.1
 
-CC = cc
-DEBUG_FLAGS = -Wall -Wextra -O3 -g -Wno-unused-parameter -Wno-switch
-OPENGL_FLAGS = glfw GL X11 pthread Xrandr Xi dl m
-TARGET = app
+UNAME_S = $(shell uname -s)
 
-SRCDIR = src
-INCDIR = src/include
-OBJDIR = build
+CC = clang
+CFLAGS = -std=c11 -O3 -g -Wall -Wextra -Wpedantic -Wstrict-aliasing
+CFLAGS += -Wno-unused-parameter -Wno-switch -Wno-unused-function
+LDFLAGS = -lm -lglfw libs/glad/src/glad.o
 
-CFILES = $(wildcard $(SRCDIR)/*.c)
-CFILES_NODIR = $(notdir $(CFILES))
-OFILES = $(CFILES_NODIR:%.c=$(OBJDIR)/%.o)
+ifeq ($(UNAME_S), Darwin)
+	LDFLAGS += -framework OpenGL -framework IOKit -framework CoreVideo -framework Cocoa
+endif
 
-INCFLAGS = $(addprefix -I, $(INCDIR)) $(addprefix -l, $(OPENGL_FLAGS)) $(addprefix -I, $(LIBDIR)/$(INCDIR))
-CFLAGS = $(DEBUG_FLAGS) $(INCFLAGS)
+ifeq ($(UNAME_S), Linux)
+	LDFLAGS += -ldl -lpthread -lGL -lX11 -lXrandr -lXi
+endif
 
-VPATH = $(SRCDIR) $(LIBDIR)/$(SRCDIR)
+SRC = $(wildcard src/*.c) $(wildcard src/**/*.c) $(wildcard src/**/**/*.c) $(wildcard src/**/**/**/*.c)
+OBJ = $(SRC:.c=.o)
+BIN = bin
 
-.PHONY = build clean
+all: dirs libs app
+	$(BIN)/app
 
-all: $(TARGET)
-	@./$(TARGET)
+app: $(OBJ)
+	$(CC) -o $(BIN)/app $^ $(LDFLAGS)
 
-$(TARGET): $(OFILES)
-	$(CC) -o $@ $^ $(CFLAGS)
+%.o: %.c
+	$(CC) -o $@ -c $< $(CFLAGS)
 
-$(OBJDIR)/%.o: %.c
-	$(CC) -c -o $@ $< $(CFLAGS)
+dirs:
+	mkdir -p ./$(BIN)
 
-mac:
-	$(CC) -o $(TARGET) $(CFILES) -Isrc/include -Wall -Wextra -O3 -g -framework OpenGL -framework IOKit -framework CoreVideo -framework Cocoa -lglfw
-	@./$(TARGET)
+libs:
+	cd libs/glad && $(CC) -o src/glad.o -Iinclude -c src/glad.c
 
 clean:
-	@rm -rf $(OBJDIR)/*
-	@rm $(TARGET)
+	rm -rf $(OBJDIR)/* $(TARGET)
+
 
 # end
