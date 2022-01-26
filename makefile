@@ -39,7 +39,7 @@ libs:
 	cd libs/glad && $(CC) -o src/glad.o -Iinclude -c src/glad.c
 
 clean:
-	rm -rf $(OBJDIR)/* $(TARGET)
+	rm -rf $(OBJ) $(TARGET)
 
 
 # end
