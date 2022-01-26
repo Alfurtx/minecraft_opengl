@@ -32,7 +32,7 @@ camera_get_view(struct Camera* camera, mat4 dest)
 void
 camera_get_projection(struct Camera* camera, mat4 dest)
 {
-        glm_perspective(glm_rad(CAMERA_FOV), WINDOW_SCREEN_WIDTH / WINDOW_SCREEN_HEIGHT, 0.1f, 1000.0f, dest);
+        glm_perspective(glm_rad(CAMERA_FOV), WINDOW_SCREEN_WIDTH / WINDOW_SCREEN_HEIGHT, 0.1f, CAMERA_RENDER_DISTANCE, dest);
 }
 
 void

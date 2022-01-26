@@ -13,6 +13,8 @@ enum CameraMovement
         RIGHT,
 };
 
+/* Render Distance of CHUNK_SIZE_Z (16) * NUMBER_OF_CHUNKS_RENDERED (16)*/
+const float CAMERA_RENDER_DISTANCE = 512.0f;
 const float CAMERA_YAW         = -90.0f;
 const float CAMERA_PITCH       = 0.0f;
 const float CAMERA_SPEED       = 2.5f;
