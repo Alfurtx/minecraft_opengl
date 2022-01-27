@@ -23,23 +23,23 @@ SRC = $(wildcard src/*.c) $(wildcard src/**/*.c) $(wildcard src/**/**/*.c) $(wil
 OBJ = $(SRC:.c=.o)
 BIN = bin
 
+.PHONY: all clean
+
 all: dirs libs app
 	$(BIN)/app
 
 app: $(OBJ)
+	cd libs/glad && $(CC) -o src/glad.o -Iinclude -c src/glad.c # lib compile esta aqui porque por alguna razon el makefile no detecta libs como dependencia
 	$(CC) -o $(BIN)/app $^ $(LDFLAGS)
 
 %.o: %.c
 	$(CC) -o $@ -c $< $(CFLAGS)
 
-dirs:
-	mkdir -p ./$(BIN)
-
 libs:
 	cd libs/glad && $(CC) -o src/glad.o -Iinclude -c src/glad.c
 
+dirs:
+	mkdir -p ./$(BIN)
+
 clean:
 	rm -rf $(OBJ) $(TARGET)
-
-
-# end
