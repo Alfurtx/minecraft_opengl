@@ -4,6 +4,7 @@
 #include "../utils/types.h"
 #include "../utils/utils.h"
 #include "block.h"
+#include "../gfx/mesh.h"
 
 #define CHUNK_SIZE_X 16
 #define CHUNK_SIZE_Y 256
@@ -12,8 +13,7 @@
 
 struct Chunk
 {
-        // TODO(fonsi): mesh implementation
-        // struct Mesh mesh;
+        struct Mesh mesh;
 
         // TODO(fonsi): heightmap implementation
         // struct Heightmap heightmap;

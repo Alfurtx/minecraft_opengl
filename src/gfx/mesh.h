@@ -22,5 +22,7 @@ struct Mesh
 extern void mesh_init(struct Mesh* mesh, struct Renderer* renderer);
 extern void mesh_destroy(struct Mesh* mesh);
 extern void mesh_add_face(struct Mesh* mesh);
+extern void mesh_prepare_render(struct Mesh* mesh);
+extern void mesh_rendre(struct Mesh* mesh);
 
 #endif // MESH_H_

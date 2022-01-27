@@ -24,7 +24,7 @@ struct Block
         void (* get_texture_location)(enum Direction direction, vec2 dest);
 };
 
-struct Block BLOCKS[BLOCK_TYPE_COUNT];
+extern struct Block BLOCKS[BLOCK_TYPE_COUNT];
 
 extern void block_init();
 
