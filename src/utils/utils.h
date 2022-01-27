@@ -1,9 +1,7 @@
 #ifndef UTILS_H_
 #define UTILS_H_
 
-#define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
-
 #include <cglm/cglm.h>
 
 // NOTE(fonsi): recordar que {0, 0, -1} es Norte
