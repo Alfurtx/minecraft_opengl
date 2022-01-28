@@ -1,6 +1,7 @@
 #include "block.h"
 
 struct Block BLOCKS[BLOCK_TYPE_COUNT];
+struct Block BLOCK_DEFAULT;
 
 internal void grass_get_texture_location(enum Direction direction, vec2 dest)
 {

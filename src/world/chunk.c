@@ -1,4 +1,6 @@
+#include "../state.h"
 #include "chunk.h"
+#include "world.h"
 
 // TODO(fonsi): implementar generacion de mundo apropiada
 internal void chunk_setup_map(struct Chunk* chunk);
@@ -6,9 +8,11 @@ internal uint offset(uint x, uint y, uint z);
 internal void offset3d(uint offset, vec3 dest);
 
 void
-chunk_init(struct Chunk* chunk, vec3 world_offset)
+chunk_init(struct Chunk* chunk, struct Renderer* renderer, vec3 world_offset)
 {
+        chunk->renderer = renderer;
         glm_vec3_copy(world_offset, chunk->world_offset);
+        chunk_setup_map(chunk);
 }
 
 void
@@ -17,8 +21,45 @@ chunk_update(struct Chunk* chunk)
 }
 
 void
+chunk_prepare_render(struct Chunk* chunk)
+{
+        for (uint i = 0; i < CHUNK_SIZE_X; i++)
+                for (uint j = 0; j < CHUNK_SIZE_Y; j++)
+                        for (uint k = 0; k < CHUNK_SIZE_Z; k++)
+                        {
+                                struct Block current_block = chunk->blocks[offset(i, j, k)];
+                                if (current_block.active)
+                                {
+                                        vec3 block_position = (vec3){i, j, k};
+                                        vec2 block_texture;
+                                        for (uint d = 0; d < DIRECTION_COUNT; d++)
+                                        {
+                                                vec3 aux;
+                                                glm_vec3_add(block_position, aux, aux);
+                                                struct Block neighbor_block =
+                                                    world_get_block(&state.world, chunk->world_offset, aux, d);
+                                                current_block.get_texture_location(d, block_texture);
+                                                mesh_add_face(&chunk->mesh, block_position, block_texture, d);
+                                        }
+                                }
+                        }
+}
+
+void
 chunk_render(struct Chunk* chunk)
 {
+        renderer_set_type(chunk->renderer, RENDERER_CHUNK);
+        mat4 view       = GLM_MAT4_IDENTITY_INIT;
+        mat4 projection = GLM_MAT4_IDENTITY_INIT;
+        mat4 model      = GLM_MAT4_IDENTITY_INIT;
+        glm_translate_x(model, chunk->world_offset[0]);
+        glm_translate_y(model, chunk->world_offset[1]);
+        glm_translate_z(model, chunk->world_offset[2]);
+        camera_get_view(chunk->renderer->current_camera, view);
+        camera_get_projection(chunk->renderer->current_camera, projection);
+        shader_set_uniform_mat4(chunk->renderer->current_shader, "projection", 1, GL_FALSE, projection[0]);
+        shader_set_uniform_mat4(chunk->renderer->current_shader, "view", 1, GL_FALSE, view[0]);
+        shader_set_uniform_mat4(chunk->renderer->current_shader, "model", 1, GL_FALSE, model[0]);
 }
 
 internal uint
@@ -36,7 +77,8 @@ offset3d(uint offset, vec3 dest)
         dest[0] = offset % CHUNK_SIZE_X;
 }
 
-internal void chunk_setup_map(struct Chunk* chunk)
+internal void
+chunk_setup_map(struct Chunk* chunk)
 {
         chunk->blocks[offset(0, 0, 0)] = BLOCKS[BLOCK_GRASS];
 }

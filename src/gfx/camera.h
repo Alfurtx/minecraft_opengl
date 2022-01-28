@@ -14,12 +14,12 @@ enum CameraMovement
 };
 
 /* Render Distance of CHUNK_SIZE_Z (16) * NUMBER_OF_CHUNKS_RENDERED (16)*/
-const float CAMERA_RENDER_DISTANCE = 512.0f;
-const float CAMERA_YAW         = -90.0f;
-const float CAMERA_PITCH       = 0.0f;
-const float CAMERA_SPEED       = 2.5f;
-const float CAMERA_SENSITIVITY = 0.1f;
-const float CAMERA_FOV         = 45.0f;
+extern const float CAMERA_RENDER_DISTANCE;
+extern const float CAMERA_YAW;
+extern const float CAMERA_PITCH;
+extern const float CAMERA_SPEED;
+extern const float CAMERA_SENSITIVITY;
+extern const float CAMERA_FOV;
 
 struct Camera
 {
@@ -36,10 +36,10 @@ struct Camera
         float sensitivity;
 };
 
-extern struct Camera camera_create();
-extern void          camera_get_view(struct Camera* camera, mat4 dest);
-extern void          camera_get_projection(struct Camera* camera, mat4 dest);
-extern void          camera_process_keyboard(struct Camera* camera, enum CameraMovement direction, float deltatime);
-extern void          camera_process_mouse(struct Camera* camera, float x_off, float y_off);
+extern void camera_init(struct Camera* camera);
+extern void camera_get_view(struct Camera* camera, mat4 dest);
+extern void camera_get_projection(struct Camera* camera, mat4 dest);
+extern void camera_process_keyboard(struct Camera* camera, enum CameraMovement direction, float deltatime);
+extern void camera_process_mouse(struct Camera* camera, float x_off, float y_off);
 
 #endif // CAMERA_H_

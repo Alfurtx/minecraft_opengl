@@ -19,11 +19,12 @@ enum BlockType
 
 struct Block
 {
-        bool active;
+        bool active = false;
         enum BlockType type;
         void (* get_texture_location)(enum Direction direction, vec2 dest);
 };
 
+extern struct Block BLOCK_DEFAULT;
 extern struct Block BLOCKS[BLOCK_TYPE_COUNT];
 
 extern void block_init();

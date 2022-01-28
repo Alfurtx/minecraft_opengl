@@ -1,8 +1,8 @@
 #ifndef WORLD_H_
 #define WORLD_H_
 
-#include "../utils/utils.h"
 #include "../utils/types.h"
+#include "../utils/utils.h"
 #include "chunk.h"
 
 #define WORLD_CHUNK_COUNT 512
@@ -12,13 +12,16 @@ struct World
         // TODO(fonsi): implementar heightmap
         // struct Heightmap heigthmap;
 
-        struct Camera* camera;
-        struct Chunk chunks[512];
+        struct Renderer* renderer;
+        struct Chunk     chunks[512];
 };
 
-extern void world_init(struct World* world, struct Camera* camera);
+extern void world_init(struct World* world, struct Renderer* renderer);
 extern void world_destroy(struct World* world);
 extern void world_update(struct World* world);
 extern void world_render(struct World* world);
+
+extern struct Block world_get_block(struct World* world, vec3 chunk_world_offset, vec3 chunk_block_position, enum Direction direction);
+extern struct Chunk world_get_chunk(struct World* world, vec3 chunk_world_offset);
 
 #endif // WORLD_H_

@@ -2,23 +2,26 @@
 #include "camera.h"
 #include "gfx.h"
 
+const float CAMERA_RENDER_DISTANCE = 512.0f;
+const float CAMERA_YAW             = -90.0f;
+const float CAMERA_PITCH           = 0.0f;
+const float CAMERA_SPEED           = 2.5f;
+const float CAMERA_SENSITIVITY     = 0.1f;
+const float CAMERA_FOV             = 45.0f;
+
 internal void camera_update_vectors(struct Camera* camera);
 
-struct Camera
-camera_create()
+void
+camera_init(struct Camera* camera)
 {
-        struct Camera res;
-
-        glm_vec3_copy(GLM_VEC3_ZERO, res.front);
-        glm_vec3_copy((vec3){0.0f, 1.0f, 0.0f}, res.world_up);
-        glm_vec3_copy((vec3){0.0f, 0.0f, -1.0f}, res.front);
-        res.yaw         = CAMERA_YAW;
-        res.pitch       = CAMERA_PITCH;
-        res.speed       = CAMERA_SPEED;
-        res.sensitivity = CAMERA_SENSITIVITY;
-        camera_update_vectors(&res);
-
-        return (res);
+        glm_vec3_copy(GLM_VEC3_ZERO, camera->front);
+        glm_vec3_copy((vec3){0.0f, 1.0f, 0.0f}, camera->world_up);
+        glm_vec3_copy((vec3){0.0f, 0.0f, -1.0f}, camera->front);
+        camera->yaw         = CAMERA_YAW;
+        camera->pitch       = CAMERA_PITCH;
+        camera->speed       = CAMERA_SPEED;
+        camera->sensitivity = CAMERA_SENSITIVITY;
+        camera_update_vectors(camera);
 }
 
 void
@@ -32,7 +35,11 @@ camera_get_view(struct Camera* camera, mat4 dest)
 void
 camera_get_projection(struct Camera* camera, mat4 dest)
 {
-        glm_perspective(glm_rad(CAMERA_FOV), WINDOW_SCREEN_WIDTH / WINDOW_SCREEN_HEIGHT, 0.1f, CAMERA_RENDER_DISTANCE, dest);
+        glm_perspective(glm_rad(CAMERA_FOV),
+                        WINDOW_SCREEN_WIDTH / WINDOW_SCREEN_HEIGHT,
+                        0.1f,
+                        CAMERA_RENDER_DISTANCE,
+                        dest);
 }
 
 void
@@ -50,10 +57,7 @@ camera_process_mouse(struct Camera* camera, float x_off, float y_off)
         y_off *= camera->sensitivity;
         camera->yaw += x_off;
         camera->pitch += y_off;
-        if (camera->pitch > 89.0f)
-                camera->pitch = 89.0f;
-        if (camera->pitch < -89.0f)
-                camera->pitch = -89.0f;
+        camera->pitch = glm_clamp(camera->pitch, -89.0f, 89.0f);
         camera_update_vectors(camera);
 }
 

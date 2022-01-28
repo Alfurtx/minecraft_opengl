@@ -1,14 +1,21 @@
 #include "gfx/window.h"
 #include "utils/types.h"
+#include "state.h"
+
+struct State state;
 
 internal void
 init()
 {
+        renderer_init(&state.renderer);
+        world_init(&state.world, &state.renderer);
 }
 
 internal void
 destroy()
 {
+        renderer_destroy(&state.renderer);
+        world_destroy(&state.world);
 }
 
 internal void
