@@ -6,9 +6,7 @@ struct VAO
 vao_create()
 {
         struct VAO res;
-
         glGenVertexArrays(1, &res.handle);
-
         return (res);
 }
 

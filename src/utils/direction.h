@@ -15,8 +15,8 @@ enum Direction
         DIRECTION_COUNT
 };
 
-extern const vec3 DIRECTION_VEC[6];
+extern void direction_init();
 
-#define DIRECTIONVEC(direction) (DIRECTION_VEC[direction])
+extern vec3 DIRECTION_VEC[6];
 
 #endif // DIRECTION_H_

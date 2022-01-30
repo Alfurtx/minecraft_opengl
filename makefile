@@ -43,3 +43,9 @@ dirs:
 
 clean:
 	rm -rf $(OBJ) $(TARGET)
+
+debug:
+	gdb --tui -q $(BIN)/app
+
+leak:
+	valgrind --leak-check=full --show-leak-kinds=all ./$(BIN)/app
