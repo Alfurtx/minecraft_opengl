@@ -8,10 +8,7 @@
 #include "vao.h"
 #include "vbo.h"
 
-// NOTE(fonsi): el tamaño actual de un vertex es de 5 floats
-// 3 floats => posicion | 2 floats => coordenadas en textura
-#define MESH_VERTEX_BYTE_SIZE (5 * sizeof(float))
-#define MESH_BUFFER_SIZE_INIT 5120
+extern const uint MESH_BUFFER_SIZE_BASE;
 
 struct Mesh
 {
@@ -19,8 +16,8 @@ struct Mesh
         struct VBO vbo;
 
         float* vertex_buffer_data;
-        uint  vertex_buffer_size;
-        uint  vertex_buffer_count;
+        uint   vertex_buffer_size;
+        uint   vertex_buffer_count;
 };
 
 extern void mesh_init(struct Mesh* mesh);

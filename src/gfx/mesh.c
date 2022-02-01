@@ -1,6 +1,8 @@
 #include "mesh.h"
 #include <stdlib.h>
 
+const uint MESH_BUFFER_SIZE_BASE = 25600;
+
 const uint MESH_BLOCK_INDICES[][6] = {
     {1, 0, 3, 1, 3, 2}, // north (-z)
     {4, 5, 6, 4, 6, 7}, // south (+z)
@@ -30,8 +32,8 @@ mesh_init(struct Mesh* mesh)
         mesh->vao                 = vao_create();
         mesh->vbo                 = vbo_create(GL_ARRAY_BUFFER, true);
         mesh->vertex_buffer_count = 0;
-        mesh->vertex_buffer_data  = malloc(MESH_BUFFER_SIZE_INIT * MESH_VERTEX_BYTE_SIZE);
-        mesh->vertex_buffer_size  = MESH_BUFFER_SIZE_INIT * 5;
+        mesh->vertex_buffer_data  = malloc(MESH_BUFFER_SIZE_BASE * sizeof(float));
+        mesh->vertex_buffer_size  = MESH_BUFFER_SIZE_BASE;
 }
 
 void
@@ -45,7 +47,12 @@ mesh_destroy(struct Mesh* mesh)
 void
 mesh_add_face(struct Mesh* mesh, vec3 chunk_block_pos, vec2 face_texture_coords, enum Direction direction)
 {
-        mesh_check_buffer_size(mesh, 30);
+        if(mesh->vertex_buffer_count + (5 * 6) >= mesh->vertex_buffer_size)
+        {
+                mesh->vertex_buffer_data = realloc(mesh->vertex_buffer_data, mesh->vertex_buffer_size * 2 * sizeof(float));
+                mesh->vertex_buffer_size *= 2;
+        }
+
         for (uint i = 0; i < 6; i++)
         {
                 uint index = MESH_BLOCK_INDICES[direction][i];
@@ -70,22 +77,24 @@ mesh_prepare_render(struct Mesh* mesh)
         vao_bind(&mesh->vao);
         vbo_bind(&mesh->vbo);
         vbo_buffer(&mesh->vbo, mesh->vertex_buffer_data, mesh->vertex_buffer_count * sizeof(float));
-        vao_attr(&mesh->vao, 0, 3, GL_FLOAT, false, 5 * sizeof(float), 0);
-        vao_attr(&mesh->vao, 1, 2, GL_FLOAT, false, 5 * sizeof(float), (void*) (3 * sizeof(float)));
+        vao_attr(&mesh->vao, 0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), 0);
+        vao_attr(&mesh->vao, 1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*) (3 * sizeof(float)));
 }
 
 void
 mesh_render(struct Mesh* mesh)
 {
+        vao_bind(&mesh->vao);
         glDrawArrays(GL_TRIANGLES, 0, mesh->vertex_buffer_count);
+        glBindVertexArray(0);
 }
 
 internal void
 mesh_check_buffer_size(struct Mesh* mesh, uint amount)
 {
         if (mesh->vertex_buffer_count + amount >= mesh->vertex_buffer_size)
-                mesh->vertex_buffer_data =
-                    realloc(mesh->vertex_buffer_data, mesh->vertex_buffer_size * 2 * MESH_VERTEX_BYTE_SIZE);
+                mesh->vertex_buffer_data = realloc(mesh->vertex_buffer_data, mesh->vertex_buffer_size * 2 * sizeof(float));
+        mesh->vertex_buffer_size = mesh->vertex_buffer_size * 2;
 }
 
 // NOTE(fonsi): el cuadro de texturas es 32 x 15 bloques, tener esto en cuenta para cambiar 'scale'

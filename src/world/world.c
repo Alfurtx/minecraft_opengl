@@ -1,8 +1,18 @@
 #include "world.h"
 
-internal uint worldoffset(uint a, uint b);
+struct block_index_value_offset
+{
+        float value;
+        uint  index;
+};
+
+internal uint worldoffset(vec3 chunk_position);
 internal uint chunkoffset(vec3 vec);
 internal uint chunkoffset3d(uint a, uint b, uint c);
+internal bool world_chunk_in_bounds(struct World* world, vec3 chunk_world_position);
+internal bool world_block_in_chunk_bounds(struct World* world, vec3 chunk_block_position);
+
+internal struct block_index_value_offset get_block_index_value_offset(vec3 block_position);
 
 void
 world_init(struct World* world, struct Renderer* renderer)
@@ -39,92 +49,99 @@ world_render(struct World* world)
 struct Block
 world_get_block(struct World* world, vec3 chunk_world_position, vec3 chunk_block_position)
 {
-        struct Chunk* chunk;
-        for (uint i = 0; i < 3; i++)
+        if (world_block_in_chunk_bounds(world, chunk_block_position))
+                return world->chunks[worldoffset(chunk_world_position)].blocks[chunkoffset(chunk_block_position)];
+        else
         {
-                if (i != 1)
+                // calcular el chunk al que le pertenece el bloque
+                struct block_index_value_offset offset_data = get_block_index_value_offset(chunk_block_position);
+                if (offset_data.index == 1)
+                        return BLOCK_DEFAULT;
+
+                vec3 aux;
+                vec3 neighbor_block;
+
+                glm_vec3_copy(chunk_block_position, neighbor_block);
+                glm_vec3_copy(chunk_world_position, aux);
+
+                if (offset_data.value >= 16)
                 {
-                        // NOTE(fonsi): ya que el bloque esta fuera de coordenada se obtiene el bloque al limite
-                        // del siguiente chunk o se devuelve el bloque default si esta en el limite de los
-                        // chunks
-                        if (chunk_block_position[i] <= -1)
-                        {
-                                vec3 aux = GLM_VEC3_ZERO_INIT;
-                                aux[i]   = -1.0f;
-                                glm_vec3_add(chunk_world_position, aux, aux);
-                                chunk = world_get_chunk(world, aux);
-
-                                if (chunk)
-                                {
-                                        glm_vec3_copy(chunk_block_position, aux);
-                                        aux[i] = 15.0f;
-                                        return (chunk->blocks[chunkoffset(aux)]);
-                                }
-
-                                return BLOCK_DEFAULT;
-                        }
-                        else if (chunk_block_position[i] >= 16)
-                        {
-                                vec3 aux = GLM_VEC3_ZERO_INIT;
-                                aux[i]   = 1.0f;
-                                glm_vec3_add(chunk_world_position, aux, aux);
-                                chunk = world_get_chunk(world, aux);
-
-                                if (chunk)
-                                {
-                                        glm_vec3_copy(chunk_block_position, aux);
-                                        aux[i] = 0.0f;
-                                        return (chunk->blocks[chunkoffset(aux)]);
-                                }
-
-                                return BLOCK_DEFAULT;
-                        }
+                        aux[offset_data.index] += 1.0f;
+                        neighbor_block[offset_data.index] = 0.0f;
                 }
+                else
+                {
+                        aux[offset_data.index] -= 1.0f;
+                        neighbor_block[offset_data.index] = 15.0f;
+                }
+
+                struct Chunk* chunk = world_get_chunk(world, aux);
+                if (!chunk)
+                        return BLOCK_DEFAULT;
+                else
+                        return chunk->blocks[chunkoffset(neighbor_block)];
         }
 
-        chunk = world_get_chunk(world, chunk_world_position);
-        return (chunk->blocks[chunkoffset(chunk_block_position)]);
+        return BLOCK_DEFAULT;
 }
 
 // TODO(fonsi): debug
 struct Chunk*
 world_get_chunk(struct World* world, vec3 chunk_world_position)
 {
-        for (uint i = 0; i < 3; i++)
-        {
-                if (chunk_world_position[i] <= -1)
-                {
-                        vec3 aux = GLM_VEC3_ZERO_INIT;
-                        aux[i]   = 1.0f;
-                        glm_vec3_add(chunk_world_position, aux, aux);
-                        return &world->chunks[worldoffset(aux[0], aux[2])];
-                }
-                else if (chunk_world_position[i] >= 16)
-                {
-                        vec3 aux = GLM_VEC3_ZERO_INIT;
-                        aux[i]   = -1.0f;
-                        glm_vec3_add(chunk_world_position, aux, aux);
-                        return &world->chunks[worldoffset(aux[0], aux[2])];
-                }
-        }
-
-        return NULL;
+        if (!world_chunk_in_bounds(world, chunk_world_position))
+                return NULL;
+        return &world->chunks[worldoffset(chunk_world_position)];
 }
 
 internal uint
-worldoffset(uint a, uint b)
+worldoffset(vec3 chunk_position)
 {
-        return (a * 16 + b);
+        return ((uint) chunk_position[2] * WORLD_STATIC_SIDE + (uint) chunk_position[0]);
 }
 
 internal uint
 chunkoffset(vec3 vec)
 {
-        return (vec[0] + CHUNK_SIZE_X * vec[1] + CHUNK_SIZE_X * CHUNK_SIZE_Y * vec[2]);
+        return ((uint) vec[0] + CHUNK_SIZE_X * (uint) vec[1] + CHUNK_SIZE_X * CHUNK_SIZE_Y * (uint) vec[2]);
 }
 
 internal uint
 chunkoffset3d(uint a, uint b, uint c)
 {
         return (a + CHUNK_SIZE_X * b + CHUNK_SIZE_X * CHUNK_SIZE_Y * c);
+}
+
+internal bool
+world_chunk_in_bounds(struct World* world, vec3 chunk_world_position)
+{
+        return (chunk_world_position[0] >= 0 && chunk_world_position[2] >= 0 &&
+                chunk_world_position[0] < WORLD_STATIC_SIDE && chunk_world_position[2] < WORLD_STATIC_SIDE);
+}
+
+internal bool
+world_block_in_chunk_bounds(struct World* world, vec3 chunk_block_position)
+{
+        return (chunk_block_position[0] >= 0 && chunk_block_position[1] >= 0 && chunk_block_position[2] >= 0 &&
+                chunk_block_position[0] < CHUNK_SIZE_X && chunk_block_position[1] < CHUNK_SIZE_Y &&
+                chunk_block_position[2] < CHUNK_SIZE_Z);
+}
+
+internal struct block_index_value_offset
+get_block_index_value_offset(vec3 block_position)
+{
+        struct block_index_value_offset res = {0};
+        for (uint i = 0; i < 3; i++)
+        {
+                if (block_position[i] <= -1 || (block_position[i] >= 16 && i != 1) || block_position[i] >= 256)
+                {
+                        res.index = i;
+                        res.value = block_position[i];
+                        return (res);
+                }
+        }
+
+        res.index = -1;
+        res.value = 0;
+        return res;
 }

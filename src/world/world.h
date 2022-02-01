@@ -6,6 +6,7 @@
 #include "chunk.h"
 
 #define WORLD_CHUNK_COUNT 256
+#define WORLD_STATIC_SIDE 16
 
 struct World
 {
