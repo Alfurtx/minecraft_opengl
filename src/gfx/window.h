@@ -38,6 +38,10 @@ struct Window
         window_func destroy;
         window_func update;
         window_func render;
+
+        float deltatime;
+        float lastframe;
+        float currentframe;
 };
 
 extern void window_init(window_func init, window_func destroy, window_func update, window_func render);

@@ -7,10 +7,12 @@
 
 enum CameraMovement
 {
-        FORWARD,
-        BACKWAR,
-        LEFT,
-        RIGHT,
+        CAM_MOVE_FORWARD,
+        CAM_MOVE_BACKWAR,
+        CAM_MOVE_LEFT,
+        CAM_MOVE_RIGHT,
+        CAM_MOVE_UP,
+        CAM_MOVE_DOWN,
 };
 
 /* Render Distance of CHUNK_SIZE_Z (16) * NUMBER_OF_CHUNKS_RENDERED (16)*/
@@ -34,12 +36,14 @@ struct Camera
 
         float speed;
         float sensitivity;
+
+        bool firstmouse;
 };
 
 extern void camera_init(struct Camera* camera);
 extern void camera_get_view(struct Camera* camera, mat4 dest);
 extern void camera_get_projection(struct Camera* camera, mat4 dest);
-extern void camera_process_keyboard(struct Camera* camera, enum CameraMovement direction, float deltatime);
+extern void camera_process_keyboard(struct Camera* camera, int key, int action, float deltatime);
 extern void camera_process_mouse(struct Camera* camera, float x_off, float y_off);
 
 #endif // CAMERA_H_

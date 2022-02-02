@@ -1,5 +1,7 @@
 #include "../utils/types.h"
+#include "camera.h"
 #include "gfx.h"
+#include "../state.h"
 #include "window.h"
 #include <assert.h>
 #include <stdio.h>
@@ -21,6 +23,9 @@ window_init(window_func init, window_func destroy, window_func update, window_fu
         window.destroy = destroy;
         window.update  = update;
         window.render  = render;
+
+        window.deltatime = 0.0f;
+        window.lastframe = 0.0f;
 
         glfwSetErrorCallback(_error_callback);
 
@@ -66,10 +71,13 @@ window_loop()
 
         while (!glfwWindowShouldClose(window.handle))
         {
+                window.currentframe = glfwGetTime();
+                window.deltatime    = window.currentframe - window.lastframe;
+                window.lastframe    = window.currentframe;
 
                 window.update();
 
-                glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
+                glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
                 window.render();
@@ -91,14 +99,7 @@ _size_callback(GLFWwindow* window_handle, int width, int height)
 internal void
 _cursor_callback(GLFWwindow* window_handle, double x_pos, double y_pos)
 {
-        vec2 pos = {x_pos, y_pos};
-        glm_vec2_sub(pos, window.mouse.position, window.mouse.position);
-        if (window.mouse.delta[0] < -100)
-                window.mouse.delta[0] = -100;
-        if (window.mouse.delta[1] > 100)
-                window.mouse.delta[1] = 100;
-
-        // TODO(fonsi): lidiar apropiadamente con los cursor_callbacks
+        camera_process_mouse(state.renderer.current_camera, x_pos, y_pos);
 }
 
 internal void
@@ -106,8 +107,7 @@ _key_callback(GLFWwindow* window_handle, int key, int scancode, int action, int 
 {
         if (GLFW_KEY_ESCAPE == key && GLFW_PRESS == action)
                 glfwSetWindowShouldClose(window.handle, GLFW_TRUE);
-
-        // TODO(fonsi): lidiar con los key_callbacks
+        camera_process_keyboard(&state.renderer.cameras[RENDERER_CHUNK], key, action, window.deltatime);
 }
 
 internal void

@@ -18,6 +18,7 @@ camera_init(struct Camera* camera)
         glm_vec3_copy((vec3){0.0f, 1.0f, 0.0f}, camera->world_up);
         glm_vec3_copy((vec3){0.0f, 0.0f, -1.0f}, camera->front);
         camera->yaw         = CAMERA_YAW;
+        camera->firstmouse  = false;
         camera->pitch       = CAMERA_PITCH;
         camera->speed       = CAMERA_SPEED;
         camera->sensitivity = CAMERA_SENSITIVITY;
@@ -43,9 +44,38 @@ camera_get_projection(struct Camera* camera, mat4 dest)
 }
 
 void
-camera_process_keyboard(struct Camera* camera, enum CameraMovement direction, float deltatime)
+camera_process_keyboard(struct Camera* camera, int key, int action, float deltatime)
 {
-        // TODO(fonsi): implementar keyboard con window keyboard callback
+        float speed = camera->speed * deltatime;
+        vec3  tmp;
+
+        if (action == GLFW_PRESS)
+        {
+                switch (key)
+                {
+                case GLFW_KEY_W:
+                        glm_vec3_muladds(camera->front, speed, camera->position);
+                        break;
+                case GLFW_KEY_A:
+                        glm_vec3_scale(camera->right, speed, tmp);
+                        glm_vec3_sub(camera->position, tmp, camera->position);
+                        break;
+                case GLFW_KEY_S:
+                        glm_vec3_scale(camera->front, speed, tmp);
+                        glm_vec3_sub(camera->position, tmp, camera->position);
+                        break;
+                case GLFW_KEY_D:
+                        glm_vec3_muladds(camera->right, speed, camera->position);
+                        break;
+                case GLFW_KEY_SPACE:
+                        glm_vec3_muladds(camera->up, speed, camera->position);
+                        break;
+                case GLFW_KEY_LEFT_CONTROL:
+                        glm_vec3_scale(camera->up, speed, tmp);
+                        glm_vec3_sub(camera->position, tmp, camera->position);
+                        break;
+                }
+        }
 }
 
 void

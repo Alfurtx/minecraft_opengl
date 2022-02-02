@@ -86,7 +86,6 @@ mesh_render(struct Mesh* mesh)
 {
         vao_bind(&mesh->vao);
         glDrawArrays(GL_TRIANGLES, 0, mesh->vertex_buffer_count);
-        glBindVertexArray(0);
 }
 
 internal void
