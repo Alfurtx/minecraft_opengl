@@ -42,6 +42,8 @@ struct Window
         float deltatime;
         float lastframe;
         float currentframe;
+
+        bool wireframe;
 };
 
 extern void window_init(window_func init, window_func destroy, window_func update, window_func render);

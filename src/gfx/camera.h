@@ -8,7 +8,7 @@
 enum CameraMovement
 {
         CAM_MOVE_FORWARD,
-        CAM_MOVE_BACKWAR,
+        CAM_MOVE_BACKWARD,
         CAM_MOVE_LEFT,
         CAM_MOVE_RIGHT,
         CAM_MOVE_UP,
@@ -37,13 +37,15 @@ struct Camera
         float speed;
         float sensitivity;
 
+        float lastx;
+        float lasty;
         bool firstmouse;
 };
 
 extern void camera_init(struct Camera* camera);
 extern void camera_get_view(struct Camera* camera, mat4 dest);
 extern void camera_get_projection(struct Camera* camera, mat4 dest);
-extern void camera_process_keyboard(struct Camera* camera, int key, int action, float deltatime);
-extern void camera_process_mouse(struct Camera* camera, float x_off, float y_off);
+extern void camera_proccess_keyboard(struct Camera* camera, enum CameraMovement direction, float deltatime);
+extern void camera_proccess_mouse(struct Camera* camera, float xoff, float yoff);
 
 #endif // CAMERA_H_
