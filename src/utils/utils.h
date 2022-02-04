@@ -3,6 +3,7 @@
 
 #include "direction.h"
 #include "stb_image.h"
+#include "FastNoiseLite.h"
 #include <cglm/cglm.h>
 
 #endif // UTILS_H_
