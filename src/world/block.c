@@ -9,16 +9,16 @@ grass_get_texture_location(enum Direction direction, vec2 dest)
         switch (direction)
         {
         case UP:
-                glm_vec2_copy((vec2){2, 0}, dest);
+                glm_vec2_copy((vec2){0, 0}, dest);
                 break;
         case DOWN:
-                glm_vec2_copy((vec2){18, 1}, dest);
+                glm_vec2_copy((vec2){2, 0}, dest);
                 break;
         case EAST:
         case WEST:
         case NORTH:
         case SOUTH:
-                glm_vec2_copy((vec2){3, 0}, dest);
+                glm_vec2_copy((vec2){1, 0}, dest);
                 break;
         }
 }
@@ -42,7 +42,7 @@ sand_get_texture_location(enum Direction direction, vec2 dest)
         case WEST:
         case NORTH:
         case SOUTH:
-                glm_vec2_copy((vec2){5, 1}, dest);
+                glm_vec2_copy((vec2){0, 1}, dest);
                 break;
         }
 }
@@ -66,7 +66,7 @@ snow_get_texture_location(enum Direction direction, vec2 dest)
         case WEST:
         case NORTH:
         case SOUTH:
-                glm_vec2_copy((vec2){12, 4}, dest);
+                glm_vec2_copy((vec2){1, 1}, dest);
                 break;
         }
 }
@@ -90,7 +90,7 @@ water_get_texture_location(enum Direction direction, vec2 dest)
         case WEST:
         case NORTH:
         case SOUTH:
-                glm_vec2_copy((vec2){0, 14}, dest);
+                glm_vec2_copy((vec2){0, 2}, dest);
                 break;
         }
 }
@@ -114,7 +114,7 @@ clay_get_texture_location(enum Direction direction, vec2 dest)
         case WEST:
         case NORTH:
         case SOUTH:
-                glm_vec2_copy((vec2){4, 1}, dest);
+                glm_vec2_copy((vec2){5, 1}, dest);
                 break;
         }
 }
@@ -138,7 +138,7 @@ gravel_get_texture_location(enum Direction direction, vec2 dest)
         case WEST:
         case NORTH:
         case SOUTH:
-                glm_vec2_copy((vec2){17, 1}, dest);
+                glm_vec2_copy((vec2){6, 0}, dest);
                 break;
         }
 }
@@ -162,7 +162,7 @@ dirt_get_texture_location(enum Direction direction, vec2 dest)
         case WEST:
         case NORTH:
         case SOUTH:
-                glm_vec2_copy((vec2){3, 0}, dest);
+                glm_vec2_copy((vec2){2, 0}, dest);
                 break;
         }
 }
@@ -186,7 +186,7 @@ stone_get_texture_location(enum Direction direction, vec2 dest)
         case WEST:
         case NORTH:
         case SOUTH:
-                glm_vec2_copy((vec2){19, 0}, dest);
+                glm_vec2_copy((vec2){3, 0}, dest);
                 break;
         }
 }

@@ -11,10 +11,9 @@ renderer_init(struct Renderer* renderer)
                 #ifdef __APPLE__
                         renderer->shaders[i]  = shader_create("/Users/alfonso/Desktop/Proyectos Personales/minecraft_opengl/res/shaders/chunk.vert", "/Users/alfonso/Desktop/Proyectos Personales/minecraft_opengl/res/shaders/chunk.frag");
                         renderer->textures[i] = texture_create("/Users/alfonso/Desktop/Proyectos Personales/minecraft_opengl/res/textures/blockatlas.png");
-                #else
+                #endif
                         renderer->shaders[i]  = shader_create("/home/fonsi/proyectos/minecraft_opengl/res/shaders/chunk.vert", "/home/fonsi/proyectos/minecraft_opengl/res/shaders/chunk.frag");
                         renderer->textures[i] = texture_create("/home/fonsi/proyectos/minecraft_opengl/res/textures/blockatlas.png");
-                #endif
                         break;
                 }
                 camera_init(&renderer->cameras[i]);

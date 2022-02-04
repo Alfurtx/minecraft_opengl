@@ -104,7 +104,7 @@ internal void
 get_real_texture_coords(vec2 face_text_position, enum Direction direction, uint vertex_index, vec2 dest)
 {
         float scaleX = 1.0f / 16.0f;
-        float scaleZ = 1.0f / 33.0f;
+        float scaleZ = 1.0f / 16.0f;
 
         vec2 tex_coords[4];
         for (uint i = 0; i < 4; i++)
