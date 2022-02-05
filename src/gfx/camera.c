@@ -2,7 +2,7 @@
 #include "camera.h"
 #include "gfx.h"
 
-const float CAMERA_RENDER_DISTANCE = 100.0f;
+const float CAMERA_RENDER_DISTANCE = 8.0f;
 const float CAMERA_YAW             = -90.0f;
 const float CAMERA_PITCH           = 0.0f;
 const float CAMERA_SPEED           = 2.5f;
@@ -22,8 +22,8 @@ camera_init(struct Camera* camera)
         camera->pitch       = CAMERA_PITCH;
         camera->speed       = CAMERA_SPEED;
         camera->sensitivity = CAMERA_SENSITIVITY;
-        camera->lastx = (float) WINDOW_SCREEN_WIDTH / 2.0f;
-        camera->lasty = (float) WINDOW_SCREEN_HEIGHT / 2.0f;
+        camera->lastx       = (float) WINDOW_SCREEN_WIDTH / 2.0f;
+        camera->lasty       = (float) WINDOW_SCREEN_HEIGHT / 2.0f;
         camera_update_vectors(camera);
 }
 
@@ -41,7 +41,8 @@ camera_get_projection(struct Camera* camera, mat4 dest)
         glm_perspective(glm_rad(CAMERA_FOV),
                         WINDOW_SCREEN_WIDTH / WINDOW_SCREEN_HEIGHT,
                         0.1f,
-                        CAMERA_RENDER_DISTANCE,
+                        CAMERA_RENDER_DISTANCE *
+                            16.0f, // render distance = number of chunks and 16 is the side of one chunk
                         dest);
 }
 
@@ -87,8 +88,8 @@ camera_proccess_mouse(struct Camera* camera, float xoff, float yoff)
                 camera->firstmouse = false;
         }
 
-        float x     = xoff - camera->lastx;
-        float y     = camera->lasty - yoff;
+        float x       = xoff - camera->lastx;
+        float y       = camera->lasty - yoff;
         camera->lastx = xoff;
         camera->lasty = yoff;
 

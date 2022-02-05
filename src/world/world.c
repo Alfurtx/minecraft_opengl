@@ -10,29 +10,53 @@ internal struct block_index_value_offset get_block_index_value_offset(vec3 block
 internal uint worldoffset(vec3 chunk_position);
 internal uint chunkoffset(vec3 vec);
 internal uint chunkoffset3d(uint a, uint b, uint c);
+
+// TODO(fonsi): Actualizar estos metodos para adecuarlos a la generacion infinita del mundo, asi como a chunks con chunk
+// position negativas
 internal bool world_chunk_in_bounds(struct World* world, vec3 chunk_world_position);
 internal bool world_block_in_chunk_bounds(struct World* world, vec3 chunk_block_position);
+
+#define FOR_EACH_CHUNK(ptr, func)                    \
+        for (uint i = 0; i < WORLD_CHUNK_COUNT; i++) \
+                func(ptr->chunks[i]);
+
+#define FOR_EACH_CHUNK_XZ(i, j)                      \
+        for (uint i = 0; i < WORLD_STATIC_SIDE; i++) \
+                for (uint j = 0; j < WORLD_STATIC_SIDE; j++)
+
+/*
+ * NOTE(fonsi): Recordar cambiar de orden el X y Z a la hora de pasar los valores a chunk_position
+ *
+ * =>
+ *
+ * FOR_EACH_CHUNK_XZ(i, j) { chunk_init(renderer, (vec3){j, 0, i}); }
+ *
+ */
+
+const vec3 WORLD_CHUNK_SURROUNDINGS[] = {
+    { 1.0f, 0.0f,  0.0f}, // +x
+    {-1.0f, 0.0f,  0.0f}, // -x
+    { 0.0f, 0.0f,  1.0f}, // +z
+    { 0.0f, 0.0f, -1.0f}, // -z
+    { 1.0f, 0.0f, -1.0f},
+    {-1.0f, 0.0f,  1.0f},
+    { 1.0f, 0.0f,  1.0f},
+    {-1.0f, 0.0f, -1.0f},
+};
+
+internal void world_load_surrounding_chunks(struct World* world);
 
 void
 world_init(struct World* world, struct Renderer* renderer)
 {
-        world->chunks = malloc(WORLD_CHUNK_COUNT * sizeof *world->chunks);
-
         world->renderer = renderer;
-        for (uint i = 0; i < WORLD_STATIC_SIDE; i++)
-                for (uint j = 0; j < WORLD_STATIC_SIDE; j++)
-                        chunk_init(world->chunks[i * WORLD_STATIC_SIDE + j], renderer, (vec3){j, 0, i});
-
-        for (uint i = 0; i < WORLD_CHUNK_COUNT; i++)
-                chunk_prepare_render(world->chunks[i]);
+        world->chunks   = malloc(sizeof *world->chunks * WORLD_CHUNK_COUNT);
+        glm_vec3_zero(world->chunk_origin);
 }
 
 void
 world_destroy(struct World* world)
 {
-        for (uint i = 0; i < WORLD_CHUNK_COUNT; i++)
-                chunk_destroy(world->chunks[i]);
-        free(world->chunks);
 }
 
 void
@@ -43,8 +67,6 @@ world_update(struct World* world)
 void
 world_render(struct World* world)
 {
-        for (uint i = 0; i < WORLD_CHUNK_COUNT; i++)
-                chunk_render(world->chunks[i]);
 }
 
 struct Block
@@ -144,4 +166,9 @@ get_block_index_value_offset(vec3 block_position)
         res.index = -1;
         res.value = 0;
         return res;
+}
+
+internal void
+world_load_surrounding_chunks(struct World* world)
+{
 }
