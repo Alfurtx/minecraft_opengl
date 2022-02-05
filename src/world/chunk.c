@@ -7,20 +7,27 @@ internal void chunk_setup_map(struct Chunk* chunk);
 internal uint offset(uint x, uint y, uint z);
 internal void offset3d(uint offset, vec3 dest);
 
-#define FOR_EACH_BLOCK(func) for (uint i = 0; i < CHUNK_BLOCK_COUNT; i++) func(&chunk->blocks[i]);
+#define FOR_EACH_BLOCK(ptr, func)                    \
+        for (uint i = 0; i < CHUNK_BLOCK_COUNT; i++) \
+                func(&ptr->blocks[i]);
+
+#define FOR_EACH_BLOCK_XYZ(i, j, k)                     \
+        for (uint i = 0; i < CHUNK_SIZE_X; i++)         \
+                for (uint j = 0; j < CHUNK_SIZE_Y; j++) \
+                        for (uint k = 0; k < CHUNK_SIZE_Z; k++)
 
 struct Chunk*
 chunk_init(struct Renderer* renderer, vec3 world_position)
 {
         struct Chunk* chunk = calloc(1, sizeof *chunk);
+        chunk->loaded       = false;
+        chunk->renderer     = renderer;
+
         mesh_init(&chunk->mesh);
-        chunk->loaded   = false;
-        chunk->renderer = renderer;
         glm_vec3_copy(world_position, chunk->world_position);
         glm_vec3_scale(world_position, 16.0f, chunk->world_offset);
 
-        for (uint i = 0; i < CHUNK_BLOCK_COUNT; i++)
-                block_init(&chunk->blocks[i]);
+        FOR_EACH_BLOCK(chunk, block_init)
 
         chunk_setup_map(chunk);
 
@@ -36,40 +43,38 @@ void
 chunk_destroy(struct Chunk* chunk)
 {
         mesh_destroy(&chunk->mesh);
+        free(chunk);
 }
 
 void
 chunk_prepare_render(struct Chunk* chunk)
 {
-        for (uint i = 0; i < CHUNK_SIZE_X; i++)
-                for (uint j = 0; j < CHUNK_SIZE_Y; j++)
-                        for (uint k = 0; k < CHUNK_SIZE_Z; k++)
+        FOR_EACH_BLOCK_XYZ(i, j, k)
+        {
+                vec3 block_position;
+                glm_vec3_copy((vec3){i, j, k}, block_position);
+                struct Block current_block = chunk->blocks[offset(i, j, k)];
+                if (current_block.active)
+                {
+                        // ir cara por cara de cada bloque
+                        for (uint d = 0; d < DIRECTION_COUNT; d++)
                         {
-                                vec3 block_position;
-                                glm_vec3_copy((vec3){i, j, k}, block_position);
-                                struct Block current_block = chunk->blocks[offset(i, j, k)];
-                                if (current_block.active)
-                                {
-                                        // ir cara por cara de cada bloque
-                                        for (uint d = 0; d < DIRECTION_COUNT; d++)
-                                        {
-                                                // conseguir el bloque vecino
-                                                vec3 aux;
-                                                glm_vec3_add(block_position, DIRECTION_VEC[d], aux);
-                                                struct Block neighbor_block =
-                                                    world_get_block(&state.world, chunk->world_position, aux);
+                                // conseguir el bloque vecino
+                                vec3 aux;
+                                glm_vec3_add(block_position, DIRECTION_VEC[d], aux);
+                                struct Block neighbor_block = world_get_block(&state.world, chunk->world_position, aux);
 
-                                                // comprobar que si bloque adyacente no esta activo
-                                                if (!neighbor_block.active)
-                                                {
-                                                        // pasarlo al mesh
-                                                        vec2 texture_coords;
-                                                        current_block.get_texture_location(d, texture_coords);
-                                                        mesh_add_face(&chunk->mesh, block_position, texture_coords, d);
-                                                }
-                                        }
+                                // comprobar que si bloque adyacente no esta activo
+                                if (!neighbor_block.active)
+                                {
+                                        // pasarlo al mesh
+                                        vec2 texture_coords;
+                                        current_block.get_texture_location(d, texture_coords);
+                                        mesh_add_face(&chunk->mesh, block_position, texture_coords, d);
                                 }
                         }
+                }
+        }
         mesh_prepare_render(&chunk->mesh);
 }
 
