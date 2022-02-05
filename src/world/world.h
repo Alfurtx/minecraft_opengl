@@ -14,7 +14,9 @@ struct World
         // struct Heightmap heigthmap;
 
         struct Renderer* renderer;
-        struct Chunk     chunks[WORLD_CHUNK_COUNT];
+        struct Chunk**     chunks;
+
+        vec3 chunk_origin; // el chunk donde se encuentra el personaje/camara
 };
 
 extern void world_init(struct World* world, struct Renderer* renderer);

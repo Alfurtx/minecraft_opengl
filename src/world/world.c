@@ -5,6 +5,7 @@ struct block_index_value_offset
         float value;
         uint  index;
 };
+internal struct block_index_value_offset get_block_index_value_offset(vec3 block_position);
 
 internal uint worldoffset(vec3 chunk_position);
 internal uint chunkoffset(vec3 vec);
@@ -12,25 +13,26 @@ internal uint chunkoffset3d(uint a, uint b, uint c);
 internal bool world_chunk_in_bounds(struct World* world, vec3 chunk_world_position);
 internal bool world_block_in_chunk_bounds(struct World* world, vec3 chunk_block_position);
 
-internal struct block_index_value_offset get_block_index_value_offset(vec3 block_position);
-
 void
 world_init(struct World* world, struct Renderer* renderer)
 {
+        world->chunks = malloc(WORLD_CHUNK_COUNT * sizeof *world->chunks);
+
         world->renderer = renderer;
         for (uint i = 0; i < WORLD_STATIC_SIDE; i++)
                 for (uint j = 0; j < WORLD_STATIC_SIDE; j++)
-                        chunk_init(&world->chunks[i * WORLD_STATIC_SIDE + j], renderer, (vec3){j, 0, i});
+                        chunk_init(world->chunks[i * WORLD_STATIC_SIDE + j], renderer, (vec3){j, 0, i});
 
         for (uint i = 0; i < WORLD_CHUNK_COUNT; i++)
-                chunk_prepare_render(&world->chunks[i]);
+                chunk_prepare_render(world->chunks[i]);
 }
 
 void
 world_destroy(struct World* world)
 {
         for (uint i = 0; i < WORLD_CHUNK_COUNT; i++)
-                chunk_destroy(&world->chunks[i]);
+                chunk_destroy(world->chunks[i]);
+        free(world->chunks);
 }
 
 void
@@ -42,15 +44,14 @@ void
 world_render(struct World* world)
 {
         for (uint i = 0; i < WORLD_CHUNK_COUNT; i++)
-                chunk_render(&world->chunks[i]);
+                chunk_render(world->chunks[i]);
 }
 
-// TODO(fonsi): debug
 struct Block
 world_get_block(struct World* world, vec3 chunk_world_position, vec3 chunk_block_position)
 {
         if (world_block_in_chunk_bounds(world, chunk_block_position))
-                return world->chunks[worldoffset(chunk_world_position)].blocks[chunkoffset(chunk_block_position)];
+                return world->chunks[worldoffset(chunk_world_position)]->blocks[chunkoffset(chunk_block_position)];
         else
         {
                 // calcular el chunk al que le pertenece el bloque
@@ -85,13 +86,12 @@ world_get_block(struct World* world, vec3 chunk_world_position, vec3 chunk_block
         return BLOCK_DEFAULT;
 }
 
-// TODO(fonsi): debug
 struct Chunk*
 world_get_chunk(struct World* world, vec3 chunk_world_position)
 {
         if (!world_chunk_in_bounds(world, chunk_world_position))
                 return NULL;
-        return &world->chunks[worldoffset(chunk_world_position)];
+        return world->chunks[worldoffset(chunk_world_position)];
 }
 
 internal uint
