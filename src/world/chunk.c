@@ -7,6 +7,9 @@ internal void chunk_setup_map(struct Chunk* chunk);
 internal uint offset(uint x, uint y, uint z);
 internal void offset3d(uint offset, vec3 dest);
 
+// NOTE(fonsi): necesario que dentro de cada metodo haya un puntero CHUNK llamado chunk
+#define FOR_EACH_BLOCK(ptr, func) for(uint i = 0; i < CHUNK_BLOCK_COUNT; i++) func(&ptr->blocks[i]);
+
 void
 chunk_init(struct Chunk* chunk, struct Renderer* renderer, vec3 world_position)
 {
@@ -14,8 +17,8 @@ chunk_init(struct Chunk* chunk, struct Renderer* renderer, vec3 world_position)
         chunk->renderer = renderer;
         glm_vec3_copy(world_position, chunk->world_position);
         glm_vec3_scale(world_position, 16.0f, chunk->world_offset);
-        for (uint i = 0; i < CHUNK_BLOCK_COUNT; i++)
-                block_init(&chunk->blocks[i]);
+
+        FOR_EACH_BLOCK(chunk, block_init)
 
         chunk_setup_map(chunk);
 }
