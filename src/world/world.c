@@ -15,6 +15,7 @@ internal uint chunkoffset3d(uint a, uint b, uint c);
 // position negativas
 internal bool world_chunk_in_bounds(struct World* world, vec3 chunk_world_position);
 internal bool world_block_in_chunk_bounds(struct World* world, vec3 chunk_block_position);
+internal bool check_player_in_chunk_origin(struct World* world);
 
 #define FOR_EACH_CHUNK(ptr, func)                    \
         for (uint i = 0; i < WORLD_CHUNK_COUNT; i++) \
@@ -33,7 +34,8 @@ internal bool world_block_in_chunk_bounds(struct World* world, vec3 chunk_block_
  *
  */
 
-const vec3 WORLD_CHUNK_SURROUNDINGS[] = {
+#define WORLD_CHUNK_SURROUNDINGS_COUNT 8
+vec3 WORLD_CHUNK_SURROUNDINGS[] = {
     { 1.0f, 0.0f,  0.0f}, // +x
     {-1.0f, 0.0f,  0.0f}, // -x
     { 0.0f, 0.0f,  1.0f}, // +z
@@ -171,4 +173,29 @@ get_block_index_value_offset(vec3 block_position)
 internal void
 world_load_surrounding_chunks(struct World* world)
 {
+        for (uint i = 0; i < WORLD_CHUNK_SURROUNDINGS_COUNT; i++)
+                for (uint j = 0; j < WORLD_CHUNK_SURROUNDINGS_COUNT; j++)
+                {
+                        vec3 aux;
+                        glm_vec3_add(WORLD_CHUNK_SURROUNDINGS[i], WORLD_CHUNK_SURROUNDINGS[j], aux);
+                        glm_vec3_add(world->chunk_origin, aux, aux);
+                        if(world->chunks[worldoffset(aux)])
+                        {
+                        }
+                }
+}
+
+internal bool
+check_player_in_chunk_origin(struct World* world)
+{
+        vec3 pos;
+        glm_vec3_copy(world->renderer->cameras[RENDERER_CHUNK].position, pos);
+        vec3 chunk_min;
+        glm_vec3_scale(world->chunk_origin, CHUNK_SIZE_X, chunk_min);
+        vec3 chunk_max;
+        glm_vec3_adds(chunk_min, CHUNK_SIZE_X, chunk_max);
+
+        return ((pos[0] <= chunk_max[0] && pos[0] >= chunk_min[0]) &&
+                (pos[1] <= chunk_max[1] && pos[1] >= chunk_min[1]) &&
+                (pos[2] <= chunk_max[2] && pos[2] >= chunk_min[2]));
 }
