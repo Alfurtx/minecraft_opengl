@@ -18,9 +18,9 @@ void
 world_init(struct World* world, struct Renderer* renderer)
 {
         world->renderer = renderer;
-        for (uint i = 0; i < 16; i++)
-                for (uint j = 0; j < 16; j++)
-                        chunk_init(&world->chunks[i * 16 + j], renderer, (vec3){j, 0, i});
+        for (uint i = 0; i < WORLD_STATIC_SIDE; i++)
+                for (uint j = 0; j < WORLD_STATIC_SIDE; j++)
+                        chunk_init(&world->chunks[i * WORLD_STATIC_SIDE + j], renderer, (vec3){j, 0, i});
 
         for (uint i = 0; i < WORLD_CHUNK_COUNT; i++)
                 chunk_prepare_render(&world->chunks[i]);

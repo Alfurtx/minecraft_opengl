@@ -2,7 +2,7 @@
 #include "camera.h"
 #include "gfx.h"
 
-const float CAMERA_RENDER_DISTANCE = 512.0f;
+const float CAMERA_RENDER_DISTANCE = 100.0f;
 const float CAMERA_YAW             = -90.0f;
 const float CAMERA_PITCH           = 0.0f;
 const float CAMERA_SPEED           = 2.5f;
@@ -22,6 +22,8 @@ camera_init(struct Camera* camera)
         camera->pitch       = CAMERA_PITCH;
         camera->speed       = CAMERA_SPEED;
         camera->sensitivity = CAMERA_SENSITIVITY;
+        camera->lastx = (float) WINDOW_SCREEN_WIDTH / 2.0f;
+        camera->lasty = (float) WINDOW_SCREEN_HEIGHT / 2.0f;
         camera_update_vectors(camera);
 }
 
@@ -44,50 +46,63 @@ camera_get_projection(struct Camera* camera, mat4 dest)
 }
 
 void
-camera_process_keyboard(struct Camera* camera, int key, int action, float deltatime)
+camera_proccess_keyboard(struct Camera* camera, enum CameraMovement direction, float deltatime)
 {
         float speed = camera->speed * deltatime;
         vec3  tmp;
 
-        if (action == GLFW_PRESS)
+        switch (direction)
         {
-                switch (key)
-                {
-                case GLFW_KEY_W:
-                        glm_vec3_muladds(camera->front, speed, camera->position);
-                        break;
-                case GLFW_KEY_A:
-                        glm_vec3_scale(camera->right, speed, tmp);
-                        glm_vec3_sub(camera->position, tmp, camera->position);
-                        break;
-                case GLFW_KEY_S:
-                        glm_vec3_scale(camera->front, speed, tmp);
-                        glm_vec3_sub(camera->position, tmp, camera->position);
-                        break;
-                case GLFW_KEY_D:
-                        glm_vec3_muladds(camera->right, speed, camera->position);
-                        break;
-                case GLFW_KEY_SPACE:
-                        glm_vec3_muladds(camera->up, speed, camera->position);
-                        break;
-                case GLFW_KEY_LEFT_CONTROL:
-                        glm_vec3_scale(camera->up, speed, tmp);
-                        glm_vec3_sub(camera->position, tmp, camera->position);
-                        break;
-                }
+        case CAM_MOVE_FORWARD:
+                glm_vec3_muladds(camera->front, speed, camera->position);
+                break;
+        case CAM_MOVE_BACKWARD:
+                glm_vec3_scale(camera->front, speed, tmp);
+                glm_vec3_sub(camera->position, tmp, camera->position);
+                break;
+        case CAM_MOVE_LEFT:
+                glm_vec3_scale(camera->right, speed, tmp);
+                glm_vec3_sub(camera->position, tmp, camera->position);
+                break;
+        case CAM_MOVE_RIGHT:
+                glm_vec3_muladds(camera->right, speed, camera->position);
+                break;
+        case CAM_MOVE_UP:
+                glm_vec3_muladds(camera->up, speed, camera->position);
+                break;
+        case CAM_MOVE_DOWN:
+                glm_vec3_scale(camera->up, speed, tmp);
+                glm_vec3_sub(camera->position, tmp, camera->position);
+                break;
         }
 }
 
 void
-camera_process_mouse(struct Camera* camera, float x_off, float y_off)
+camera_proccess_mouse(struct Camera* camera, float xoff, float yoff)
 {
-        // TODO(fonsi): mejorar implementación con window mouse callback
+        if (camera->firstmouse)
+        {
+                camera->lastx      = xoff;
+                camera->lasty      = yoff;
+                camera->firstmouse = false;
+        }
 
-        x_off *= camera->sensitivity;
-        y_off *= camera->sensitivity;
-        camera->yaw += x_off;
-        camera->pitch += y_off;
-        camera->pitch = glm_clamp(camera->pitch, -89.0f, 89.0f);
+        float x     = xoff - camera->lastx;
+        float y     = camera->lasty - yoff;
+        camera->lastx = xoff;
+        camera->lasty = yoff;
+
+        x *= camera->sensitivity;
+        y *= camera->sensitivity;
+
+        camera->yaw += x;
+        camera->pitch += y;
+
+        if (camera->pitch > 89.0f)
+                camera->pitch = 89.0f;
+        if (camera->pitch < -89.0f)
+                camera->pitch = -89.0f;
+
         camera_update_vectors(camera);
 }
 

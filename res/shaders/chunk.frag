@@ -9,4 +9,5 @@ out vec4 color;
 void main()
 {
     color = texture(chunk_texture, textcoords);
+    // color = vec4(1.0, 0.2, 0.5, 1.0);
 }
