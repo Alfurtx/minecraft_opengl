@@ -45,7 +45,6 @@ world_render(struct World* world)
                 chunk_render(&world->chunks[i]);
 }
 
-// TODO(fonsi): debug
 struct Block
 world_get_block(struct World* world, vec3 chunk_world_position, vec3 chunk_block_position)
 {
@@ -85,7 +84,6 @@ world_get_block(struct World* world, vec3 chunk_world_position, vec3 chunk_block
         return BLOCK_DEFAULT;
 }
 
-// TODO(fonsi): debug
 struct Chunk*
 world_get_chunk(struct World* world, vec3 chunk_world_position)
 {
