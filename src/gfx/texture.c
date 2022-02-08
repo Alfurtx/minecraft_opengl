@@ -5,7 +5,7 @@
 struct Texture
 texture_create(const char* texture_file_path)
 {
-        struct Texture res;
+        struct Texture res = {0};
 
         res.texture_type = GL_TEXTURE_2D;
         glGenTextures(1, &res.handle);
