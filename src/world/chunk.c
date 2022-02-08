@@ -20,7 +20,7 @@ struct Chunk*
 chunk_init(struct Renderer* renderer, vec3 world_position)
 {
         struct Chunk* chunk = calloc(1, sizeof *chunk);
-        chunk->loaded       = false;
+        chunk->loaded       = true;
         chunk->renderer     = renderer;
 
         mesh_init(&chunk->mesh);

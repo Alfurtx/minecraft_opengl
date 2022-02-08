@@ -16,6 +16,7 @@ internal uint chunkoffset3d(uint a, uint b, uint c);
 internal bool world_chunk_in_bounds(struct World* world, vec3 chunk_world_position);
 internal bool world_block_in_chunk_bounds(struct World* world, vec3 chunk_block_position);
 internal bool check_player_in_chunk_origin(struct World* world);
+internal void free_unloaded_chunks(struct World* world);
 
 #define FOR_EACH_CHUNK(ptr, func)                    \
         for (uint i = 0; i < WORLD_CHUNK_COUNT; i++) \
@@ -34,8 +35,9 @@ internal bool check_player_in_chunk_origin(struct World* world);
  *
  */
 
-#define WORLD_CHUNK_SURROUNDINGS_COUNT 8
+#define WORLD_CHUNK_SURROUNDINGS_COUNT 9
 vec3 WORLD_CHUNK_SURROUNDINGS[] = {
+    { 0.0f, 0.0f,  0.0f},
     { 1.0f, 0.0f,  0.0f}, // +x
     {-1.0f, 0.0f,  0.0f}, // -x
     { 0.0f, 0.0f,  1.0f}, // +z
@@ -46,7 +48,9 @@ vec3 WORLD_CHUNK_SURROUNDINGS[] = {
     {-1.0f, 0.0f, -1.0f},
 };
 
-internal void world_load_surrounding_chunks(struct World* world);
+internal void world_init_surrounding_chunks(struct World* world);
+internal void world_set_unload_surrounding_chunks(struct World* world);
+internal void set_new_chunk_origin(struct World* world, vec3 dest);
 
 void
 world_init(struct World* world, struct Renderer* renderer)
@@ -64,6 +68,18 @@ world_destroy(struct World* world)
 void
 world_update(struct World* world)
 {
+        // comprobar si camara position es diferente de chunk_origin
+        if (!check_player_in_chunk_origin(world))
+        {
+                // set el nuevo chunk_origin
+                set_new_chunk_origin(world, world->chunk_origin);
+
+                // set loaded=false en los chunks fuera del radio de chunk_origin
+                world_set_unload_surrounding_chunks(world);
+
+                // free los chunks con loaded=false
+                // comprobar que todos los chunks dentro del radio nuevo esten inicializados y sino, inicializarlos
+        }
 }
 
 void
@@ -170,21 +186,6 @@ get_block_index_value_offset(vec3 block_position)
         return res;
 }
 
-internal void
-world_load_surrounding_chunks(struct World* world)
-{
-        for (uint i = 0; i < WORLD_CHUNK_SURROUNDINGS_COUNT; i++)
-                for (uint j = 0; j < WORLD_CHUNK_SURROUNDINGS_COUNT; j++)
-                {
-                        vec3 aux;
-                        glm_vec3_add(WORLD_CHUNK_SURROUNDINGS[i], WORLD_CHUNK_SURROUNDINGS[j], aux);
-                        glm_vec3_add(world->chunk_origin, aux, aux);
-                        if(world->chunks[worldoffset(aux)])
-                        {
-                        }
-                }
-}
-
 internal bool
 check_player_in_chunk_origin(struct World* world)
 {
@@ -198,4 +199,55 @@ check_player_in_chunk_origin(struct World* world)
         return ((pos[0] <= chunk_max[0] && pos[0] >= chunk_min[0]) &&
                 (pos[1] <= chunk_max[1] && pos[1] >= chunk_min[1]) &&
                 (pos[2] <= chunk_max[2] && pos[2] >= chunk_min[2]));
+}
+
+internal void
+world_init_surrounding_chunks(struct World* world)
+{
+        for (uint i = 0; i < WORLD_CHUNK_SURROUNDINGS_COUNT; i++)
+                for (uint j = 0; j < WORLD_CHUNK_SURROUNDINGS_COUNT; j++)
+                {
+                        vec3 aux;
+                        glm_vec3_add(WORLD_CHUNK_SURROUNDINGS[i], WORLD_CHUNK_SURROUNDINGS[j], aux);
+                        glm_vec3_add(world->chunk_origin, aux, aux);
+                        struct Chunk* chunk = world->chunks[worldoffset(aux)];
+                        if (!chunk)
+                                chunk = chunk_init(world->renderer, aux);
+                }
+}
+
+// NOTE(fonsi): para cada chunk, una vez actualizado chunk_origin, comprobar que no se encuentra en el nuevo rango de
+// chunks deseados. Si no está, marcarlo para hacerle unload
+internal void
+world_set_unload_surrounding_chunks(struct World* world)
+{
+        for (uint k = 0; k < WORLD_CHUNK_COUNT; k++)
+        {
+                bool          should_stay_loaded = false;
+                struct Chunk* chunk              = world->chunks[k];
+
+                for (uint i = 0; i < WORLD_CHUNK_SURROUNDINGS_COUNT; i++)
+                        for (uint j = 0; j < WORLD_CHUNK_SURROUNDINGS_COUNT; j++)
+                        {
+                                vec3 aux;
+                                glm_vec3_add(WORLD_CHUNK_SURROUNDINGS[i], WORLD_CHUNK_SURROUNDINGS[j], aux);
+                                glm_vec3_add(world->chunk_origin, aux, aux);
+                                if (glm_vec3_eqv(chunk->world_position, aux))
+                                        should_stay_loaded = true;
+                        }
+                chunk->loaded = should_stay_loaded;
+        }
+}
+
+internal void
+set_new_chunk_origin(struct World* world, vec3 dest)
+{
+        uint x = world->renderer->current_camera->position[0] / 16;
+        uint z = world->renderer->current_camera->position[2] / 16;
+        glm_vec3_copy((vec3){x, 0, z}, dest);
+}
+
+internal void
+free_unloaded_chunks(struct World* world)
+{
 }
