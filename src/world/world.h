@@ -12,9 +12,6 @@ extern vec3 WORLD_CHUNK_SURROUNDINGS[];
 
 struct World
 {
-        // TODO(fonsi): implementar heightmap
-        // struct Heightmap heigthmap;
-
         struct Renderer* renderer;
         struct Chunk**   chunks;
 
