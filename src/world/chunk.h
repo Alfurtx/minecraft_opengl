@@ -20,7 +20,7 @@ struct Chunk
         vec3 world_offset;
         vec3 world_position;
 
-        bool loaded;
+        bool keep_loaded;
 };
 
 extern struct Chunk* chunk_init(struct Renderer* renderer, vec3 world_position);

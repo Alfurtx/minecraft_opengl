@@ -48,7 +48,8 @@ world_init(struct World* world, struct Renderer* renderer)
         for (int i = 2; i >= -2; i--)
                 for (int j = 2; j >= -2; j--)
                 {
-                        vec3 aux = (vec3){i, 0, j};
+                        vec3 aux;
+                        glm_vec3_copy((vec3){i, 0, j}, aux);
                         glm_vec3_add(world->chunk_origin, aux, aux);
                         chunk_init(renderer, aux);
                 }
@@ -67,6 +68,44 @@ world_update(struct World* world)
         // TODO(fonsi): implemtentar esta mierda
         // comprobar que cam position esta en chunk_origin, sino lo esta, update el radio de chunks a cargar y cambiar a
         // un nuevo chunk_origin
+        if (!check_player_in_chunk_origin(world))
+        {
+                vec3 new_chunk_origin;
+                get_chunkpos_from_position(world->renderer->current_camera->position, new_chunk_origin);
+                glm_vec3_copy(new_chunk_origin, world->chunk_origin);
+
+                // por cada chunk, comprobar que debe mantenerse cargado, sino flagearlo para su posterior free
+                for (uint i = 0; i < WORLD_CHUNK_COUNT; i++)
+                {
+                        world->chunks[i]->keep_loaded = false;
+                        for (int i = 2; i >= -2; i--)
+                                for (int j = 2; j >= -2; j--)
+                                {
+                                        vec3 aux;
+                                        glm_vec3_copy((vec3){i, 0, j}, aux);
+                                        glm_vec3_add(world->chunk_origin, aux, aux);
+                                        if (glm_vec3_eqv(aux, world->chunks[i]->world_position))
+                                                world->chunks[i]->keep_loaded = true;
+                                }
+                }
+
+                // free los chunks que no estan keep_loaded
+                for (uint i = 0; i < WORLD_CHUNK_COUNT; i++)
+                        if (!world->chunks[i]->keep_loaded)
+                                chunk_destroy(world->chunks[i]);
+
+                // inicializar los espacios vacios a nuevos chunks
+                for (int i = 2; i >= -2; i--)
+                        for (int j = 2; j >= -2; j--)
+                        {
+                                        vec3 aux;
+                                        glm_vec3_copy((vec3){i, 0, j}, aux);
+                                glm_vec3_add(world->chunk_origin, aux, aux);
+                                struct Chunk* chunk = world_get_chunk(world, aux);
+                                if (!chunk)
+                                        chunk = chunk_init(world->renderer, aux);
+                        }
+        }
 }
 
 void

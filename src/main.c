@@ -29,7 +29,6 @@ update()
 internal void
 render()
 {
-        world_render(&state.world);
 }
 
 int
