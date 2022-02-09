@@ -10,7 +10,6 @@ init()
 {
         block_list_init();
         direction_init();
-        renderer_init(&state.renderer);
         world_init(&state.world, &state.renderer);
 }
 
@@ -34,6 +33,7 @@ render()
 int
 main(void)
 {
+        renderer_init(&state.renderer);
         window_init(init, destroy, update, render);
         window_loop();
         return (0);
