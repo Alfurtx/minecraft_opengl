@@ -24,6 +24,8 @@ renderer_init(struct Renderer* renderer)
                 }
                 camera_init(&renderer->cameras[i]);
         }
+
+        renderer_set_type(renderer, RENDERER_CHUNK);
 }
 
 // NOTE(fonsi): comprobar que de verdad necesito esto
