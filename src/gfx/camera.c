@@ -14,16 +14,16 @@ internal void camera_update_vectors(struct Camera* camera);
 void
 camera_init(struct Camera* camera)
 {
-        glm_vec3_copy(GLM_VEC3_ZERO, camera->front);
+        glm_vec3_copy((vec3){-1.0f, 9.0f, 1.0f}, camera->position);
         glm_vec3_copy((vec3){0.0f, 1.0f, 0.0f}, camera->world_up);
-        glm_vec3_copy((vec3){0.0f, 0.0f, -1.0f}, camera->front);
+        glm_vec3_copy((vec3){-0.7f, -0.1f, 0.67f}, camera->front);
         camera->yaw         = CAMERA_YAW;
         camera->firstmouse  = false;
         camera->pitch       = CAMERA_PITCH;
         camera->speed       = CAMERA_SPEED;
         camera->sensitivity = CAMERA_SENSITIVITY;
-        camera->lastx = (float) WINDOW_SCREEN_WIDTH / 2.0f;
-        camera->lasty = (float) WINDOW_SCREEN_HEIGHT / 2.0f;
+        camera->lastx       = (float) WINDOW_SCREEN_WIDTH / 2.0f;
+        camera->lasty       = (float) WINDOW_SCREEN_HEIGHT / 2.0f;
         camera_update_vectors(camera);
 }
 
@@ -87,8 +87,8 @@ camera_proccess_mouse(struct Camera* camera, float xoff, float yoff)
                 camera->firstmouse = false;
         }
 
-        float x     = xoff - camera->lastx;
-        float y     = camera->lasty - yoff;
+        float x       = xoff - camera->lastx;
+        float y       = camera->lasty - yoff;
         camera->lastx = xoff;
         camera->lasty = yoff;
 

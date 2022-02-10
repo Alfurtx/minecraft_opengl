@@ -24,6 +24,7 @@ destroy()
 internal void
 update()
 {
+        world_update(&state.world);
 }
 
 internal void
