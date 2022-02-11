@@ -114,9 +114,8 @@ offset3d(uint offset, vec3 dest)
 internal void
 chunk_setup_map(struct Chunk* chunk)
 {
-        uint index = (uint) chunk->world_position[0] % 8 + (uint) chunk->world_position[2] % 8;
         for (uint i = 0; i < CHUNK_SIZE_X; i++)
                 for (uint j = 0; j < CHUNK_SIZE_Z; j++)
                         for (uint k = 0; k < 4; k++)
-                                chunk->blocks[offset(i, k, j)] = BLOCKS[index];
+                                chunk->blocks[offset(i, k, j)] = BLOCKS[BLOCK_GRASS];
 }

@@ -42,16 +42,18 @@ world_init(struct World* world, struct Renderer* renderer)
 {
         world->renderer = renderer;
         world->chunks   = malloc(WORLD_CHUNK_COUNT * sizeof *world->chunks);
-        glm_vec3_zero(world->chunk_origin);
+        get_chunkpos_from_position(world->renderer->current_camera->position, world->chunk_origin);
 
         // ir inicializando cada chunk, basandose en la direccion desde el chunk_origin
+        int k = 0;
         for (int i = 2; i >= -2; i--)
                 for (int j = 2; j >= -2; j--)
                 {
                         vec3 aux;
                         glm_vec3_copy((vec3){i, 0, j}, aux);
                         glm_vec3_add(world->chunk_origin, aux, aux);
-                        chunk_init(renderer, aux);
+                        world->chunks[k] = chunk_init(renderer, aux);
+                        k++;
                 }
 }
 
@@ -60,14 +62,13 @@ world_destroy(struct World* world)
 {
         for (uint i = 0; i < WORLD_CHUNK_COUNT; i++)
                 chunk_destroy(world->chunks[i]);
+        free(world->chunks);
 }
 
+// TODO(fonsi): debug, hay algun error por aqui
 void
 world_update(struct World* world)
 {
-        // TODO(fonsi): implemtentar esta mierda
-        // comprobar que cam position esta en chunk_origin, sino lo esta, update el radio de chunks a cargar y cambiar a
-        // un nuevo chunk_origin
         if (!check_player_in_chunk_origin(world))
         {
                 vec3 new_chunk_origin;
@@ -75,9 +76,9 @@ world_update(struct World* world)
                 glm_vec3_copy(new_chunk_origin, world->chunk_origin);
 
                 // por cada chunk, comprobar que debe mantenerse cargado, sino flagearlo para su posterior free
-                for (uint i = 0; i < WORLD_CHUNK_COUNT; i++)
+                for (uint k = 0; k < WORLD_CHUNK_COUNT; k++)
                 {
-                        world->chunks[i]->keep_loaded = false;
+                        world->chunks[k]->keep_loaded = false;
                         for (int i = 2; i >= -2; i--)
                                 for (int j = 2; j >= -2; j--)
                                 {
@@ -98,8 +99,8 @@ world_update(struct World* world)
                 for (int i = 2; i >= -2; i--)
                         for (int j = 2; j >= -2; j--)
                         {
-                                        vec3 aux;
-                                        glm_vec3_copy((vec3){i, 0, j}, aux);
+                                vec3 aux;
+                                glm_vec3_copy((vec3){i, 0, j}, aux);
                                 glm_vec3_add(world->chunk_origin, aux, aux);
                                 struct Chunk* chunk = world_get_chunk(world, aux);
                                 if (!chunk)
@@ -111,6 +112,8 @@ world_update(struct World* world)
 void
 world_render(struct World* world)
 {
+        for (uint i = 0; i < WORLD_CHUNK_COUNT; i++)
+                chunk_render(world->chunks[i]);
 }
 
 struct Block
@@ -164,10 +167,9 @@ world_get_chunk(struct World* world, vec3 chunk_world_position)
 internal void
 get_chunkpos_from_position(vec3 position, vec3 dest)
 {
-        int x   = position[0];
-        int z   = position[2];
-        dest[0] = x;
-        dest[2] = z;
+        dest[0] = floorf(position[0] / 16.0f);
+        dest[1] = 0;
+        dest[2] = floorf(position[2] / 16.0f);
 }
 
 internal struct value_index
