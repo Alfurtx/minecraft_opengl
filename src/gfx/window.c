@@ -10,6 +10,7 @@
 // NOTE(fonsi): global window
 struct Window window;
 
+
 internal void          _size_callback(GLFWwindow* window_handle, int width, int height);
 internal void          _cursor_callback(GLFWwindow* window_handle, double x_pos, double y_pos);
 internal void          _key_callback(GLFWwindow* window_handle, int key, int scancode, int action, int mods);
@@ -90,8 +91,21 @@ window_loop()
 {
         window.init();
 
+        double lastTime = glfwGetTime();
+        int nbFrames = 0;
+
         while (!glfwWindowShouldClose(window.handle))
         {
+                double currentTime = glfwGetTime();
+                nbFrames++;
+
+                if ( currentTime - lastTime >= 1.0 ){ // If last prinf() was more than 1 sec ago
+                        // printf and reset timer
+                        printf("%f ms/frame\n", 1000.0/(double)nbFrames);
+                        nbFrames = 0;
+                        lastTime += 1.0;
+                }
+
                 window.currentframe = glfwGetTime();
                 window.deltatime    = window.currentframe - window.lastframe;
                 window.lastframe    = window.currentframe;
