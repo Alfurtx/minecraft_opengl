@@ -85,8 +85,8 @@ world_update(struct World* world)
                                         vec3 aux;
                                         glm_vec3_copy((vec3){i, 0, j}, aux);
                                         glm_vec3_add(world->chunk_origin, aux, aux);
-                                        if (glm_vec3_eqv(aux, world->chunks[i]->world_position))
-                                                world->chunks[i]->keep_loaded = true;
+                                        if (glm_vec3_eqv(aux, world->chunks[k]->world_position))
+                                                world->chunks[k]->keep_loaded = true;
                                 }
                 }
 
