@@ -113,6 +113,9 @@ void
 world_render(struct World* world)
 {
         for (uint i = 0; i < WORLD_CHUNK_COUNT; i++)
+                chunk_prepare_render(world->chunks[i]);
+
+        for (uint i = 0; i < WORLD_CHUNK_COUNT; i++)
                 chunk_render(world->chunks[i]);
 }
 
