@@ -107,9 +107,12 @@ world_update(struct World* world)
                                         chunk = chunk_init(world->renderer, aux);
                         }
         }
+
+        for (uint i = 0; i < WORLD_CHUNK_COUNT; i++)
+                chunk_prepare_render(world->chunks[i]);
 }
 
-// PERFORMANCE(fonsi): rendimiento pesimo
+// PERFORMANCE(fonsi): rendimiento pesimo con chunk_prepare_render -> o hago hilos o veo como optimizar esa funcion
 void
 world_render(struct World* world)
 {

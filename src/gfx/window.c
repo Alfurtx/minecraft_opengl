@@ -91,11 +91,13 @@ window_loop()
 {
         window.init();
 
+        // NOTE(fonsi): tmp frame counter variables
         double lastTime = glfwGetTime();
         int nbFrames = 0;
 
         while (!glfwWindowShouldClose(window.handle))
         {
+                // NOTE(fonsi): tmp counter 'function' - begin
                 double currentTime = glfwGetTime();
                 nbFrames++;
 
@@ -105,6 +107,7 @@ window_loop()
                         nbFrames = 0;
                         lastTime += 1.0;
                 }
+                // NOTE(fonsi): tmp counter 'function' - end
 
                 window.currentframe = glfwGetTime();
                 window.deltatime    = window.currentframe - window.lastframe;

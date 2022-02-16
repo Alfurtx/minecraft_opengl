@@ -49,5 +49,17 @@ clean:
 debug:
 	gdb --tui -q $(BIN)/app
 
+ifeq ($(UNAME_S), Darwin)
+leak:
+	cd /usr/local/lib
+	sudo ln -s /Applications/Xcode.app/Contents/Developer/usr/lib/libLeaksAtExit.dylib
+	leaks -atExit -- ./$(BIN)/app | grep LEAK:
+endif
+
+ifeq ($(UNAME_S), Linux)
+leak:
+	valgrind --leak-check=full --show-leak-kinds=all ./$(BIN)/app
+endif
+
 leak:
 	valgrind --leak-check=full --show-leak-kinds=all ./$(BIN)/app
