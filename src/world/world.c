@@ -65,7 +65,6 @@ world_destroy(struct World* world)
         free(world->chunks);
 }
 
-// PERFORMANCE(fonsi): esta funcion va demasiado lento
 void
 world_update(struct World* world)
 {
@@ -109,7 +108,6 @@ world_update(struct World* world)
         }
 }
 
-// PERFORMANCE(fonsi): rendimiento pesimo con chunk_prepare_render -> o hago hilos o veo como optimizar esa funcion
 void
 world_render(struct World* world)
 {
