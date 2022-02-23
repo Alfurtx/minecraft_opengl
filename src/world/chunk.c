@@ -118,5 +118,5 @@ chunk_setup_map(struct Chunk* chunk)
         for (uint i = 0; i < CHUNK_SIZE_X; i++)
                 for (uint j = 0; j < CHUNK_SIZE_Z; j++)
                         for (uint k = 0; k < 4; k++)
-                                chunk->blocks[offset(i, k, j)] = BLOCKS[BLOCK_STONE];
+                                chunk->blocks[offset(i, k, j)] = BLOCKS[BLOCK_SNOW];
 }
