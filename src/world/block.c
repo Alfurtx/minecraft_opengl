@@ -74,9 +74,9 @@ snow_get_texture_location(enum Direction direction, vec2 dest)
 internal void
 snow_init()
 {
-        BLOCKS[BLOCK_SNOW].active               = true;
-        BLOCKS[BLOCK_SNOW].type                 = BLOCK_SNOW;
-        BLOCKS[BLOCK_SNOW].get_texture_location = snow_get_texture_location;
+        BLOCKS[BLOCK_GLASS].active               = true;
+        BLOCKS[BLOCK_GLASS].type                 = BLOCK_GLASS;
+        BLOCKS[BLOCK_GLASS].get_texture_location = snow_get_texture_location;
 }
 
 internal void

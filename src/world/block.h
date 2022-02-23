@@ -9,7 +9,7 @@ enum BlockType
         BLOCK_GRASS = 0,
         BLOCK_STONE,
         BLOCK_SAND,
-        BLOCK_SNOW,
+        BLOCK_GLASS,
         BLOCK_WATER,
         BLOCK_CLAY,
         BLOCK_GRAVEL,
