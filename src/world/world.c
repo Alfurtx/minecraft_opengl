@@ -121,7 +121,8 @@ world_render(struct World* world)
                 }
 
         for (uint i = 0; i < WORLD_CHUNK_COUNT; i++)
-                chunk_render(world->chunks[i]);
+                if(world->chunks[i]->loaded && world->chunks[i]->prepared)
+                        chunk_render(world->chunks[i]);
 }
 
 struct Block
