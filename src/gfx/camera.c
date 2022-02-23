@@ -52,6 +52,8 @@ camera_proccess_keyboard(struct Camera* camera, enum CameraMovement direction, f
         float speed = camera->speed * deltatime;
         vec3  tmp;
 
+        speed *= 10;
+
         switch (direction)
         {
         case CAM_MOVE_FORWARD:
