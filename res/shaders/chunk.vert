@@ -12,6 +12,5 @@ out vec2 textcoords;
 void main()
 {
     gl_Position = projection * view * model * vec4(position_coords, 1.0);
-    textcoords = texture_coords
-;
+    textcoords = texture_coords;
 }
