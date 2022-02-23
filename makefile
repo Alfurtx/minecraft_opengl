@@ -6,8 +6,10 @@
 
 UNAME_S = $(shell uname -s)
 
+# TODO(fonsi): añadir flag -O3 cuando sea la build final
+
 CC = clang
-CFLAGS = -std=c11 -O3 -g -Wall -Wextra -Wpedantic -Wstrict-aliasing
+CFLAGS = -std=c11 -g -Wall -Wextra -Wpedantic -Wstrict-aliasing
 CFLAGS += -Wno-unused-parameter -Wno-switch -Wno-unused-function
 LDFLAGS = -lm -lglfw libs/glad/src/glad.o
 

@@ -15,19 +15,19 @@ struct Chunk
 {
         struct Mesh      mesh;
         struct Renderer* renderer;
+        struct Block     blocks[CHUNK_BLOCK_COUNT];
 
-        // TODO(fonsi): heightmap implementation
-        // struct Heightmap heightmap;
+        vec3 world_offset;
+        vec3 world_position;
 
-        struct Block blocks[CHUNK_BLOCK_COUNT];
-        vec3         world_offset;
-        vec3         world_position;
+        bool loaded;
+        bool prepared;
 };
 
-extern void chunk_init(struct Chunk* chunk, struct Renderer* renderer, vec3 world_position);
-extern void chunk_update(struct Chunk* chunk);
-extern void chunk_destroy(struct Chunk* chunk);
-extern void chunk_prepare_render(struct Chunk* chunk);
-extern void chunk_render(struct Chunk* chunk);
+extern struct Chunk* chunk_init(struct Renderer* renderer, vec3 world_position);
+extern void          chunk_update(struct Chunk* chunk);
+extern void          chunk_destroy(struct Chunk* chunk);
+extern void          chunk_prepare_render(struct Chunk* chunk);
+extern void          chunk_render(struct Chunk* chunk);
 
 #endif // CHUNK_H_

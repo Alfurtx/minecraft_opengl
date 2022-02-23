@@ -2,7 +2,7 @@
 #include "camera.h"
 #include "gfx.h"
 
-const float CAMERA_RENDER_DISTANCE = 100.0f;
+const float CAMERA_RENDER_DISTANCE = 8.0f;
 const float CAMERA_YAW             = -90.0f;
 const float CAMERA_PITCH           = 0.0f;
 const float CAMERA_SPEED           = 2.5f;
@@ -41,7 +41,8 @@ camera_get_projection(struct Camera* camera, mat4 dest)
         glm_perspective(glm_rad(CAMERA_FOV),
                         WINDOW_SCREEN_WIDTH / WINDOW_SCREEN_HEIGHT,
                         0.1f,
-                        CAMERA_RENDER_DISTANCE,
+                        CAMERA_RENDER_DISTANCE *
+                            16.0f, // render distance = number of chunks and 16 is the side of one chunk
                         dest);
 }
 

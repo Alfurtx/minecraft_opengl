@@ -8,6 +8,7 @@ renderer_init(struct Renderer* renderer)
                 switch (i)
                 {
                 case RENDERER_CHUNK:
+// TODO(fonsi): cambiar paths para que pueda funcionar en cualquier maquina donde se installe
 #ifdef __APPLE__
                         renderer->shaders[i] = shader_create(
                             "/Users/alfonso/Desktop/Proyectos Personales/minecraft_opengl/res/shaders/chunk.vert",
@@ -25,6 +26,8 @@ renderer_init(struct Renderer* renderer)
                 }
                 camera_init(&renderer->cameras[i]);
         }
+
+        renderer_set_type(renderer, RENDERER_CHUNK);
 }
 
 // NOTE(fonsi): comprobar que de verdad necesito esto
