@@ -20,8 +20,9 @@ struct Chunk*
 chunk_init(struct Renderer* renderer, vec3 world_position)
 {
         struct Chunk* chunk = calloc(1, sizeof *chunk);
-        chunk->keep_loaded  = true;
-        chunk->renderer     = renderer;
+        chunk->loaded   = true;
+        chunk->prepared = false;
+        chunk->renderer = renderer;
 
         mesh_init(&chunk->mesh);
         glm_vec3_copy(world_position, chunk->world_position);
@@ -117,5 +118,5 @@ chunk_setup_map(struct Chunk* chunk)
         for (uint i = 0; i < CHUNK_SIZE_X; i++)
                 for (uint j = 0; j < CHUNK_SIZE_Z; j++)
                         for (uint k = 0; k < 4; k++)
-                                chunk->blocks[offset(i, k, j)] = BLOCKS[BLOCK_GRASS];
+                                chunk->blocks[offset(i, k, j)] = BLOCKS[BLOCK_STONE];
 }

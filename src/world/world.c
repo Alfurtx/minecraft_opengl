@@ -65,7 +65,7 @@ world_destroy(struct World* world)
         free(world->chunks);
 }
 
-// TODO(fonsi): debug, hay algun error por aqui
+// PERFORMANCE(fonsi): esta funcion va demasiado lento
 void
 world_update(struct World* world)
 {
@@ -78,7 +78,7 @@ world_update(struct World* world)
                 // por cada chunk, comprobar que debe mantenerse cargado, sino flagearlo para su posterior free
                 for (uint k = 0; k < WORLD_CHUNK_COUNT; k++)
                 {
-                        world->chunks[k]->keep_loaded = false;
+                        world->chunks[k]->loaded = false;
                         for (int i = 2; i >= -2; i--)
                                 for (int j = 2; j >= -2; j--)
                                 {
@@ -86,13 +86,13 @@ world_update(struct World* world)
                                         glm_vec3_copy((vec3){i, 0, j}, aux);
                                         glm_vec3_add(world->chunk_origin, aux, aux);
                                         if (glm_vec3_eqv(aux, world->chunks[k]->world_position))
-                                                world->chunks[k]->keep_loaded = true;
+                                                world->chunks[k]->loaded = true;
                                 }
                 }
 
-                // free los chunks que no estan keep_loaded
+                // free los chunks que no estan loaded
                 for (uint i = 0; i < WORLD_CHUNK_COUNT; i++)
-                        if (!world->chunks[i]->keep_loaded)
+                        if (!world->chunks[i]->loaded)
                                 chunk_destroy(world->chunks[i]);
 
                 // inicializar los espacios vacios a nuevos chunks
@@ -107,17 +107,18 @@ world_update(struct World* world)
                                         chunk = chunk_init(world->renderer, aux);
                         }
         }
-
-        for (uint i = 0; i < WORLD_CHUNK_COUNT; i++)
-                chunk_prepare_render(world->chunks[i]);
 }
 
 // PERFORMANCE(fonsi): rendimiento pesimo con chunk_prepare_render -> o hago hilos o veo como optimizar esa funcion
 void
 world_render(struct World* world)
 {
-        // for (uint i = 0; i < WORLD_CHUNK_COUNT; i++)
-        //         chunk_prepare_render(world->chunks[i]);
+        for (uint i = 0; i < WORLD_CHUNK_COUNT; i++)
+                if(!world->chunks[i]->prepared)
+                {
+                        chunk_prepare_render(world->chunks[i]);
+                        world->chunks[i]->prepared = true;
+                }
 
         for (uint i = 0; i < WORLD_CHUNK_COUNT; i++)
                 chunk_render(world->chunks[i]);
