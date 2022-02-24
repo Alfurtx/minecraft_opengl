@@ -22,6 +22,7 @@ struct value_index
         float value;
         int   index;
 };
+
 // NOTE(fonsi): si block_position no tiene ninguna coordenada fuera del rango de un chunk (ej. -1, 16 o 256), devuelve
 // index = -1
 internal struct value_index get_block_index_value_coord(vec3 block_position);
