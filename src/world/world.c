@@ -16,6 +16,9 @@ vec3 WORLD_CHUNK_SURROUNDINGS[] = {
 
 #define BLOCKOFFSET(vec) ((uint) vec[0] + CHUNK_SIZE_X * (uint) vec[1] + CHUNK_SIZE_X * CHUNK_SIZE_Y * (uint) vec[2])
 #define CHUNKOFFSET(vec) ((uint) vec[0] + WORLD_CHUNK_SIDE * (uint) vec[2])
+#define FOR_EACH_POSITION(i, j)                     \
+        for (int i = -2; i < 2; i++)         \
+                for (int j = -2; j < 2; j++)
 
 struct value_index
 {
@@ -30,7 +33,7 @@ internal struct value_index get_block_index_value_coord(vec3 block_position);
 internal bool is_chunk_in_bounds(struct World* world, vec3 chunk_world_position);
 internal bool is_block_in_chunk_bounds(struct World* world, vec3 chunk_block_position);
 internal void get_chunkpos_from_position(vec3 position, vec3 dest);
-internal bool check_player_in_chunk_origin(struct World* world);
+internal bool player_in_chunk_origin(struct World* world);
 
 /*
  * NOTE(fonsi): Recordar cambiar de orden el X y Z a la hora de pasar los valores a chunk_position
@@ -66,11 +69,11 @@ world_destroy(struct World* world)
         free(world->chunks);
 }
 
-// PERFORMANCE(fonsi): esta funcion va demasiado lento
+// NOTE(fonsi): no soy un puto genio, soy un puto gilipollas y esto no funciona bien, mierda
 void
 world_update(struct World* world)
 {
-        if (!check_player_in_chunk_origin(world))
+        if (!player_in_chunk_origin(world))
         {
                 vec3 new_chunk_origin;
                 get_chunkpos_from_position(world->renderer->current_camera->position, new_chunk_origin);
@@ -110,7 +113,7 @@ world_update(struct World* world)
         }
 }
 
-// PERFORMANCE(fonsi): rendimiento pesimo con chunk_prepare_render -> o hago hilos o veo como optimizar esa funcion
+// IMPORTANT(fonsi): al hacer prepare render solo en los "nuevos" cuando uno nuevo en el borde cargue datos y no los cambie, cuando se cargue un nuevo chunk despues de ese, este chunk ahora antiguo no actualizara sus datos y mantendra renderizando las caras entre los chunks
 void
 world_render(struct World* world)
 {
@@ -199,7 +202,7 @@ get_block_index_value_coord(vec3 block_position)
 }
 
 internal bool
-check_player_in_chunk_origin(struct World* world)
+player_in_chunk_origin(struct World* world)
 {
         vec3 aux = GLM_VEC3_ZERO_INIT;
         get_chunkpos_from_position(world->renderer->current_camera->position, aux);
