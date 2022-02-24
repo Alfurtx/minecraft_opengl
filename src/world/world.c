@@ -16,6 +16,9 @@ vec3 WORLD_CHUNK_SURROUNDINGS[] = {
 
 #define BLOCKOFFSET(vec) ((uint) vec[0] + CHUNK_SIZE_X * (uint) vec[1] + CHUNK_SIZE_X * CHUNK_SIZE_Y * (uint) vec[2])
 #define CHUNKOFFSET(vec) ((uint) vec[0] + WORLD_CHUNK_SIDE * (uint) vec[2])
+#define FOR_EACH_POSITION(i, j)                     \
+        for (int i = -2; i < 2; i++)         \
+                for (int j = -2; j < 2; j++)
 
 struct value_index
 {
