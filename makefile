@@ -8,8 +8,10 @@ UNAME_S = $(shell uname -s)
 
 # TODO(fonsi): añadir flag -O3 cuando sea la build final
 
+# NOTE(fonsi): definido CGLM_ALL_UNALIGNED porque habia ciertos problemas con el alineamiento en MACOS
+
 CC = clang
-CFLAGS = -std=c11 -g -Wall -Wextra -Wpedantic -Wstrict-aliasing
+CFLAGS = -std=c11 -g -Wall -Wextra -Wpedantic -Wstrict-aliasing -DCGLM_ALL_UNALIGNED
 CFLAGS += -Wno-unused-parameter -Wno-switch -Wno-unused-function
 LDFLAGS = -lm -lglfw libs/glad/src/glad.o
 

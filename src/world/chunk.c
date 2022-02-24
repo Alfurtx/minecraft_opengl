@@ -20,10 +20,10 @@ struct Chunk*
 chunk_init(struct Renderer* renderer, vec3 world_position)
 {
         struct Chunk* chunk = calloc(1, sizeof *chunk);
-        chunk->renderer = renderer;
+        chunk->renderer     = renderer;
 
         chunk->prepared = false;
-        chunk->border = false;
+        chunk->border   = false;
 
         mesh_init(&chunk->mesh);
         glm_vec3_copy(world_position, chunk->world_position);

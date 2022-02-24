@@ -1,23 +1,45 @@
 #include "world.h"
 
-// TODO(fonsi): eliminar si al final no es usado
-#define WORLD_CHUNK_SURROUNDINGS_COUNT 9
+// TODO(fonsi): cambiar por un enfoque algo mas dinamico que esto, pero estoy cansado de listas de mierda
+#define WORLD_CHUNK_SURROUNDINGS_COUNT 25
 vec3 WORLD_CHUNK_SURROUNDINGS[] = {
     { 0.0f, 0.0f,  0.0f},
+
     { 1.0f, 0.0f,  0.0f},
     {-1.0f, 0.0f,  0.0f},
     { 0.0f, 0.0f,  1.0f},
     { 0.0f, 0.0f, -1.0f},
+
     { 1.0f, 0.0f, -1.0f},
     {-1.0f, 0.0f,  1.0f},
     { 1.0f, 0.0f,  1.0f},
     {-1.0f, 0.0f, -1.0f},
+
+    { 2.0f, 0.0f,  0.0f},
+    {-2.0f, 0.0f,  0.0f},
+    { 0.0f, 0.0f,  2.0f},
+    { 0.0f, 0.0f, -2.0f},
+
+    { 2.0f, 0.0f, -1.0f},
+    {-2.0f, 0.0f,  1.0f},
+    { 2.0f, 0.0f,  1.0f},
+    {-2.0f, 0.0f, -1.0f},
+
+    { 1.0f, 0.0f, -2.0f},
+    {-1.0f, 0.0f,  2.0f},
+    { 1.0f, 0.0f,  2.0f},
+    {-1.0f, 0.0f, -2.0f},
+
+    { 2.0f, 0.0f, -2.0f},
+    {-2.0f, 0.0f,  2.0f},
+    { 2.0f, 0.0f,  2.0f},
+    {-2.0f, 0.0f, -2.0f},
 };
 
 #define BLOCKOFFSET(vec) ((uint) vec[0] + CHUNK_SIZE_X * (uint) vec[1] + CHUNK_SIZE_X * CHUNK_SIZE_Y * (uint) vec[2])
 #define CHUNKOFFSET(vec) ((uint) vec[0] + WORLD_CHUNK_SIDE * (uint) vec[2])
-#define FOR_EACH_POSITION(i, j)                     \
-        for (int i = -2; i < 3; i++)         \
+#define FOR_EACH_POSITION(i, j)      \
+        for (int i = -2; i < 3; i++) \
                 for (int j = -2; j < 3; j++)
 
 struct value_index
@@ -49,18 +71,12 @@ world_init(struct World* world, struct Renderer* renderer)
         get_chunkpos_from_position(world->renderer->current_camera->position, world->chunk_origin);
 
         // ir inicializando cada chunk, basandose en la direccion desde el chunk_origin
-        int k = 0;
-        for (int i = 2; i >= -2; i--)
-                for (int j = 2; j >= -2; j--)
-                {
-                        vec3 aux;
-                        aux[0] = i;
-                        aux[2] = j;
-                        glm_vec3_copy((vec3){i, 0, j}, aux);
-                        glm_vec3_add(world->chunk_origin, aux, aux);
-                        world->chunks[k] = chunk_init(renderer, aux);
-                        k++;
-                }
+        for (uint i = 0; i < WORLD_CHUNK_SURROUNDINGS_COUNT; i++)
+        {
+                vec3 aux;
+                glm_vec3_add(world->chunk_origin, WORLD_CHUNK_SURROUNDINGS[i], aux);
+                world->chunks[i] = chunk_init(renderer, aux);
+        }
 
         set_border_chunks(world);
 }
@@ -88,37 +104,50 @@ world_update(struct World* world)
                 for (uint k = 0; k < WORLD_CHUNK_COUNT; k++)
                 {
                         bool keep_loaded = false;
-                        FOR_EACH_POSITION(i, j)
+                        for (uint i = 0; i < WORLD_CHUNK_SURROUNDINGS_COUNT; i++)
                         {
                                 vec3 aux;
-                                glm_vec3_add(world->chunk_origin, (vec3){i, 0, j}, aux);
+                                glm_vec3_add(world->chunk_origin, WORLD_CHUNK_SURROUNDINGS[i], aux);
                                 if (glm_vec3_eqv(aux, world->chunks[k]->world_position))
                                         keep_loaded = true;
                         }
 
+                        // TODO(fonsi): aqui ocurre el bug raro, no destruyo bien el chunk, algo pasa
                         if (!keep_loaded)
                                 chunk_destroy(world->chunks[k]);
+
+                        // tmp, elimina mas tarde
+                        for (uint i = 0; i < WORLD_CHUNK_COUNT; i++)
+                        {
+                                assert(world->chunks[i]); // porque se salta esto?
+                                assert(world->chunks[i]->mesh.vertex_buffer_size != 0);
+                        }
                 }
 
                 // inicializar los espacios vacios a nuevos chunks
-                FOR_EACH_POSITION(i, j)
+                for (uint i = 0; i < WORLD_CHUNK_SURROUNDINGS_COUNT; i++)
                 {
                         vec3 aux;
-                        glm_vec3_add(world->chunk_origin, (vec3){i, 0, j}, aux);
+                        glm_vec3_add(world->chunk_origin, WORLD_CHUNK_SURROUNDINGS[i], aux);
                         struct Chunk* chunk = world_get_chunk(world, aux);
                         if (!chunk)
                                 chunk = chunk_init(world->renderer, aux);
+
+                        // desmarcar como 'preparados' a los chunks que antes estaban en el borde y ya no
+                        bool was_border = chunk->border;
+                        if (glm_vec3_max(WORLD_CHUNK_SURROUNDINGS[i]) == 2 ||
+                            glm_vec3_min(WORLD_CHUNK_SURROUNDINGS[i]) == -2)
+                                chunk->border = true;
+
+                        if (was_border && !chunk->border && chunk->prepared)
+                                chunk->prepared = false;
                 }
 
-                // desmarcar como 'preparados' a los chunks que antes estaban en el borde y ya no
-                FOR_EACH_POSITION(i, j)
+                // tmp, elimina mas tarde
+                for (uint i = 0; i < WORLD_CHUNK_COUNT; i++)
                 {
-                        vec3 aux;
-                        glm_vec3_add(world->chunk_origin, (vec3){i, 0, j}, aux);
-                        struct Chunk* chunk = world_get_chunk(world, aux);
-                        bool was_border = chunk->border;
-                        chunk->border = (i == 2 || i == -2 || j == 2 || j == -2) ?  true : false;
-                        if(was_border && !chunk->border && chunk->prepared) chunk->prepared = false;
+                        assert(world->chunks[i]);
+                        assert(world->chunks[i]->mesh.vertex_buffer_size != 0);
                 }
         }
 }
@@ -127,7 +156,7 @@ void
 world_render(struct World* world)
 {
         for (uint i = 0; i < WORLD_CHUNK_COUNT; i++)
-                if(!world->chunks[i]->prepared)
+                if (!world->chunks[i]->prepared)
                 {
                         chunk_prepare_render(world->chunks[i]);
                         world->chunks[i]->prepared = true;
@@ -217,14 +246,14 @@ player_in_chunk_origin(struct World* world)
         return glm_vec3_eqv(world->chunk_origin, aux);
 }
 
-internal
-void set_border_chunks(struct World* world)
+internal void
+set_border_chunks(struct World* world)
 {
         FOR_EACH_POSITION(i, j)
         {
                 vec3 aux;
                 glm_vec3_add(world->chunk_origin, (vec3){i, 0, j}, aux);
                 struct Chunk* chunk = world_get_chunk(world, aux);
-                chunk->border = (i == 2 || i == -2 || j == 2 || j == -2) ?  true : false;
+                chunk->border       = (i == 2 || i == -2 || j == 2 || j == -2) ? true : false;
         }
 }
