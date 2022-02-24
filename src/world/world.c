@@ -32,7 +32,7 @@ internal struct value_index get_block_index_value_coord(vec3 block_position);
 internal bool is_chunk_in_bounds(struct World* world, vec3 chunk_world_position);
 internal bool is_block_in_chunk_bounds(struct World* world, vec3 chunk_block_position);
 internal void get_chunkpos_from_position(vec3 position, vec3 dest);
-internal bool check_player_in_chunk_origin(struct World* world);
+internal bool player_in_chunk_origin(struct World* world);
 
 /*
  * NOTE(fonsi): Recordar cambiar de orden el X y Z a la hora de pasar los valores a chunk_position
@@ -71,7 +71,7 @@ world_destroy(struct World* world)
 void
 world_update(struct World* world)
 {
-        if (!check_player_in_chunk_origin(world))
+        if (!player_in_chunk_origin(world))
         {
                 vec3 new_chunk_origin;
                 get_chunkpos_from_position(world->renderer->current_camera->position, new_chunk_origin);
@@ -198,7 +198,7 @@ get_block_index_value_coord(vec3 block_position)
 }
 
 internal bool
-check_player_in_chunk_origin(struct World* world)
+player_in_chunk_origin(struct World* world)
 {
         vec3 aux = GLM_VEC3_ZERO_INIT;
         get_chunkpos_from_position(world->renderer->current_camera->position, aux);
