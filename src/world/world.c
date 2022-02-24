@@ -54,6 +54,8 @@ world_init(struct World* world, struct Renderer* renderer)
                 for (int j = 2; j >= -2; j--)
                 {
                         vec3 aux;
+                        aux[0] = i;
+                        aux[2] = j;
                         glm_vec3_copy((vec3){i, 0, j}, aux);
                         glm_vec3_add(world->chunk_origin, aux, aux);
                         world->chunks[k] = chunk_init(renderer, aux);
