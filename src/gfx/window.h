@@ -44,6 +44,7 @@ struct Window
         float currentframe;
 
         bool wireframe;
+        bool speed_boost;
 };
 
 extern void window_init(window_func init, window_func destroy, window_func update, window_func render);

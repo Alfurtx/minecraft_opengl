@@ -17,8 +17,8 @@ vec3 WORLD_CHUNK_SURROUNDINGS[] = {
 #define BLOCKOFFSET(vec) ((uint) vec[0] + CHUNK_SIZE_X * (uint) vec[1] + CHUNK_SIZE_X * CHUNK_SIZE_Y * (uint) vec[2])
 #define CHUNKOFFSET(vec) ((uint) vec[0] + WORLD_CHUNK_SIDE * (uint) vec[2])
 #define FOR_EACH_POSITION(i, j)                     \
-        for (int i = -2; i < 2; i++)         \
-                for (int j = -2; j < 2; j++)
+        for (int i = -2; i < 3; i++)         \
+                for (int j = -2; j < 3; j++)
 
 struct value_index
 {
@@ -33,6 +33,7 @@ internal bool is_chunk_in_bounds(struct World* world, vec3 chunk_world_position)
 internal bool is_block_in_chunk_bounds(struct World* world, vec3 chunk_block_position);
 internal void get_chunkpos_from_position(vec3 position, vec3 dest);
 internal bool player_in_chunk_origin(struct World* world);
+internal void set_border_chunks(struct World* world);
 
 /*
  * NOTE(fonsi): Recordar cambiar de orden el X y Z a la hora de pasar los valores a chunk_position
@@ -58,6 +59,8 @@ world_init(struct World* world, struct Renderer* renderer)
                         world->chunks[k] = chunk_init(renderer, aux);
                         k++;
                 }
+
+        set_border_chunks(world);
 }
 
 void
@@ -71,43 +74,50 @@ world_destroy(struct World* world)
 void
 world_update(struct World* world)
 {
+        // comprobar si player esta en el chunk origin
         if (!player_in_chunk_origin(world))
         {
+                // actualizar el chunk origin al nuevo chunk
                 vec3 new_chunk_origin;
                 get_chunkpos_from_position(world->renderer->current_camera->position, new_chunk_origin);
                 glm_vec3_copy(new_chunk_origin, world->chunk_origin);
 
-                // por cada chunk, comprobar que debe mantenerse cargado, sino flagearlo para su posterior free
+                // liberar chunks que ya no esten en el radio de chunk origin
                 for (uint k = 0; k < WORLD_CHUNK_COUNT; k++)
                 {
-                        world->chunks[k]->loaded = false;
-                        for (int i = 2; i >= -2; i--)
-                                for (int j = 2; j >= -2; j--)
-                                {
-                                        vec3 aux;
-                                        glm_vec3_copy((vec3){i, 0, j}, aux);
-                                        glm_vec3_add(world->chunk_origin, aux, aux);
-                                        if (glm_vec3_eqv(aux, world->chunks[k]->world_position))
-                                                world->chunks[k]->loaded = true;
-                                }
-                }
-
-                // free los chunks que no estan loaded
-                for (uint i = 0; i < WORLD_CHUNK_COUNT; i++)
-                        if (!world->chunks[i]->loaded)
-                                chunk_destroy(world->chunks[i]);
-
-                // inicializar los espacios vacios a nuevos chunks
-                for (int i = 2; i >= -2; i--)
-                        for (int j = 2; j >= -2; j--)
+                        bool keep_loaded = false;
+                        FOR_EACH_POSITION(i, j)
                         {
                                 vec3 aux;
-                                glm_vec3_copy((vec3){i, 0, j}, aux);
-                                glm_vec3_add(world->chunk_origin, aux, aux);
-                                struct Chunk* chunk = world_get_chunk(world, aux);
-                                if (!chunk)
-                                        chunk = chunk_init(world->renderer, aux);
+                                glm_vec3_add(world->chunk_origin, (vec3){i, 0, j}, aux);
+                                if (glm_vec3_eqv(aux, world->chunks[k]->world_position))
+                                        keep_loaded = true;
                         }
+
+                        if (!keep_loaded)
+                                chunk_destroy(world->chunks[k]);
+                }
+
+                // inicializar los espacios vacios a nuevos chunks
+                FOR_EACH_POSITION(i, j)
+                {
+                        vec3 aux;
+                        glm_vec3_add(world->chunk_origin, (vec3){i, 0, j}, aux);
+                        struct Chunk* chunk = world_get_chunk(world, aux);
+                        if (!chunk)
+                                chunk = chunk_init(world->renderer, aux);
+                }
+
+                // desmarcar como 'preparados' a los chunks que antes estaban en el borde y ya no
+                FOR_EACH_POSITION(i, j)
+                {
+                        vec3 aux;
+                        glm_vec3_add(world->chunk_origin, (vec3){i, 0, j}, aux);
+                        struct Chunk* chunk = world_get_chunk(world, aux);
+                        bool was_border = chunk->border;
+                        chunk->border = (i == 2 || i == -2 || j == 2 || j == -2) ?  true : false;
+                        if(was_border && !chunk->border && chunk->prepared) chunk->prepared = false;
+                }
         }
 }
 
@@ -168,7 +178,7 @@ struct Chunk*
 world_get_chunk(struct World* world, vec3 chunk_world_position)
 {
         for (uint i = 0; i < WORLD_CHUNK_COUNT; i++)
-                if (glm_vec3_eqv(world->chunks[i]->world_position, chunk_world_position))
+                if (world->chunks[i] && glm_vec3_eqv(world->chunks[i]->world_position, chunk_world_position))
                         return world->chunks[i];
         return NULL;
 }
@@ -203,4 +213,16 @@ player_in_chunk_origin(struct World* world)
         vec3 aux = GLM_VEC3_ZERO_INIT;
         get_chunkpos_from_position(world->renderer->current_camera->position, aux);
         return glm_vec3_eqv(world->chunk_origin, aux);
+}
+
+internal
+void set_border_chunks(struct World* world)
+{
+        FOR_EACH_POSITION(i, j)
+        {
+                vec3 aux;
+                glm_vec3_add(world->chunk_origin, (vec3){i, 0, j}, aux);
+                struct Chunk* chunk = world_get_chunk(world, aux);
+                chunk->border = (i == 2 || i == -2 || j == 2 || j == -2) ?  true : false;
+        }
 }

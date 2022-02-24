@@ -28,6 +28,8 @@ BIN = bin
 .PHONY: all clean
 
 all: dirs libs app
+
+run:
 	$(BIN)/app
 
 app: $(OBJ)
