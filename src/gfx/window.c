@@ -37,6 +37,7 @@ window_init(window_func init, window_func destroy, window_func update, window_fu
         window.lastframe = 0.0f;
 
         window.wireframe = false;
+        window.speed_boost = false;
 
         glfwInit();
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -152,6 +153,16 @@ _key_callback(GLFWwindow* window_handle, int key, int scancode, int action, int 
         {
                 glPolygonMode(GL_FRONT_AND_BACK, window.wireframe ? GL_FILL : GL_LINE);
                 window.wireframe = !window.wireframe;
+        }
+
+        if(GLFW_KEY_LEFT_SHIFT == key && action == GLFW_PRESS)
+        {
+                if(window.speed_boost)
+                        state.renderer.current_camera->speed /= 10;
+                else
+                        state.renderer.current_camera->speed *= 10;
+
+                window.speed_boost = !window.speed_boost;
         }
 }
 

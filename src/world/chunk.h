@@ -20,7 +20,7 @@ struct Chunk
         vec3 world_offset;
         vec3 world_position;
 
-        bool loaded;
+        bool border;
         bool prepared;
 };
 

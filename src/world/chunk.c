@@ -20,9 +20,10 @@ struct Chunk*
 chunk_init(struct Renderer* renderer, vec3 world_position)
 {
         struct Chunk* chunk = calloc(1, sizeof *chunk);
-        chunk->loaded   = true;
+        chunk->renderer     = renderer;
+
         chunk->prepared = false;
-        chunk->renderer = renderer;
+        chunk->border   = false;
 
         mesh_init(&chunk->mesh);
         glm_vec3_copy(world_position, chunk->world_position);
@@ -45,6 +46,7 @@ chunk_destroy(struct Chunk* chunk)
 {
         mesh_destroy(&chunk->mesh);
         free(chunk);
+        chunk = NULL;
 }
 
 void
