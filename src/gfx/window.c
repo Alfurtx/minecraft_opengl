@@ -57,7 +57,7 @@ window_init(window_func init, window_func destroy, window_func update, window_fu
         }
         glfwMakeContextCurrent(window.handle);
 
-        glfwSetInputMode(window.handle, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        glfwSetInputMode(window.handle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         glfwSetFramebufferSizeCallback(window.handle, _size_callback);
         glfwSetKeyCallback(window.handle, _key_callback);
         glfwSetCursorPosCallback(window.handle, _cursor_callback);
