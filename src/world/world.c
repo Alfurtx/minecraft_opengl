@@ -114,13 +114,9 @@ world_update(struct World* world)
 
                         // TODO(fonsi): aqui ocurre el bug raro, no destruyo bien el chunk, algo pasa
                         if (!keep_loaded)
-                                chunk_destroy(world->chunks[k]);
-
-                        // tmp, elimina mas tarde
-                        for (uint i = 0; i < WORLD_CHUNK_COUNT; i++)
                         {
-                                assert(world->chunks[i]); // porque se salta esto?
-                                assert(world->chunks[i]->mesh.vertex_buffer_size != 0);
+                                chunk_destroy(world->chunks[k]);
+                                world->chunks[k] = NULL;
                         }
                 }
 
@@ -129,25 +125,43 @@ world_update(struct World* world)
                 {
                         vec3 aux;
                         glm_vec3_add(world->chunk_origin, WORLD_CHUNK_SURROUNDINGS[i], aux);
-                        struct Chunk* chunk = world_get_chunk(world, aux);
-                        if (!chunk)
-                                chunk = chunk_init(world->renderer, aux);
 
-                        // desmarcar como 'preparados' a los chunks que antes estaban en el borde y ya no
-                        bool was_border = chunk->border;
-                        if (glm_vec3_max(WORLD_CHUNK_SURROUNDINGS[i]) == 2 ||
-                            glm_vec3_min(WORLD_CHUNK_SURROUNDINGS[i]) == -2)
-                                chunk->border = true;
+                        bool exist = false;
+                        for (uint k = 0; k < WORLD_CHUNK_COUNT; k++)
+                                if (world->chunks[k] && glm_vec3_eqv(aux, world->chunks[k]->world_position))
+                                        exist = true;
 
-                        if (was_border && !chunk->border && chunk->prepared)
-                                chunk->prepared = false;
+                        if (!exist)
+                        {
+                                bool set = false;
+                                for (uint k = 0; k < WORLD_CHUNK_COUNT; k++)
+                                        if (!world->chunks[k] && !set)
+                                        {
+                                                world->chunks[k] = chunk_init(world->renderer, aux);
+                                                set              = true;
+                                        }
+                        }
                 }
 
-                // tmp, elimina mas tarde
-                for (uint i = 0; i < WORLD_CHUNK_COUNT; i++)
+                // setear los nuevos chunks en el borde y si hay que prepararlos de nuevo
+                for (uint k = 0; k < WORLD_CHUNK_COUNT; k++)
                 {
-                        assert(world->chunks[i]);
-                        assert(world->chunks[i]->mesh.vertex_buffer_size != 0);
+                        vec3 aux;
+                        glm_vec3_sub(world->chunks[k]->world_position, world->chunk_origin, aux);
+
+                        bool was_border = world->chunks[k]->border;
+                        if (glm_vec3_max(aux) == 2 || glm_vec3_min(aux) == -2)
+                        {
+                                world->chunks[k]->border   = true;
+                                world->chunks[k]->prepared = false;
+                        }
+                        else if (was_border)
+                        {
+                                world->chunks[k]->border   = false;
+                                world->chunks[k]->prepared = false;
+                        }
+                        else
+                                world->chunks[k]->border = false;
                 }
         }
 }
