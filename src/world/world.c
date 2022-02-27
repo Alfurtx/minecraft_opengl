@@ -1,46 +1,17 @@
 #include "world.h"
 
-// TODO(fonsi): cambiar por un enfoque algo mas dinamico que esto, pero estoy cansado de listas de mierda
-#define WORLD_CHUNK_SURROUNDINGS_COUNT 25
-vec3 WORLD_CHUNK_SURROUNDINGS[] = {
-    { 0.0f, 0.0f,  0.0f},
+#define WORLD_CHUNK_RENDER_DISTANCE 2
+#define WORLD_CHUNK_SURROUNDINGS_COUNT ((WORLD_CHUNK_RENDER_DISTANCE * 2 + 1) * (WORLD_CHUNK_RENDER_DISTANCE * 2 + 1))
+vec3 WORLD_CHUNK_SURROUNDINGS[WORLD_CHUNK_SURROUNDINGS_COUNT];
 
-    { 1.0f, 0.0f,  0.0f},
-    {-1.0f, 0.0f,  0.0f},
-    { 0.0f, 0.0f,  1.0f},
-    { 0.0f, 0.0f, -1.0f},
-
-    { 1.0f, 0.0f, -1.0f},
-    {-1.0f, 0.0f,  1.0f},
-    { 1.0f, 0.0f,  1.0f},
-    {-1.0f, 0.0f, -1.0f},
-
-    { 2.0f, 0.0f,  0.0f},
-    {-2.0f, 0.0f,  0.0f},
-    { 0.0f, 0.0f,  2.0f},
-    { 0.0f, 0.0f, -2.0f},
-
-    { 2.0f, 0.0f, -1.0f},
-    {-2.0f, 0.0f,  1.0f},
-    { 2.0f, 0.0f,  1.0f},
-    {-2.0f, 0.0f, -1.0f},
-
-    { 1.0f, 0.0f, -2.0f},
-    {-1.0f, 0.0f,  2.0f},
-    { 1.0f, 0.0f,  2.0f},
-    {-1.0f, 0.0f, -2.0f},
-
-    { 2.0f, 0.0f, -2.0f},
-    {-2.0f, 0.0f,  2.0f},
-    { 2.0f, 0.0f,  2.0f},
-    {-2.0f, 0.0f, -2.0f},
-};
+#define WORLD_CHUNK_SIDE_COUNT (WORLD_CHUNK_RENDER_DISTANCE * 2 + 1)
+#define WORLD_CHUNK_COUNT WORLD_CHUNK_SURROUNDINGS_COUNT
 
 #define BLOCKOFFSET(vec) ((uint) vec[0] + CHUNK_SIZE_X * (uint) vec[1] + CHUNK_SIZE_X * CHUNK_SIZE_Y * (uint) vec[2])
 #define CHUNKOFFSET(vec) ((uint) vec[0] + WORLD_CHUNK_SIDE * (uint) vec[2])
-#define FOR_EACH_POSITION(i, j)      \
-        for (int i = -2; i < 3; i++) \
-                for (int j = -2; j < 3; j++)
+#define FOR_EACH_POSITION(i, j)                                                              \
+        for (int i = -WORLD_CHUNK_RENDER_DISTANCE; i < WORLD_CHUNK_RENDER_DISTANCE + 1; i++) \
+                for (int j = -WORLD_CHUNK_RENDER_DISTANCE; j < WORLD_CHUNK_RENDER_DISTANCE + 1; j++)
 
 struct value_index
 {
@@ -71,12 +42,23 @@ world_init(struct World* world, struct Renderer* renderer)
         world->chunks   = malloc(WORLD_CHUNK_COUNT * sizeof *world->chunks);
         get_chunkpos_from_position(world->renderer->current_camera->position, world->chunk_origin);
 
+        uint index = 0;
+        FOR_EACH_POSITION(i, j) { glm_vec3_copy((vec3){i, 0, j}, WORLD_CHUNK_SURROUNDINGS[index++]); }
+
+        // FastNoiseLite init
+        // world->noise_state = fnlCreateState();
+        // world->noise_state.noise_type       = FNL_NOISE_OPENSIMPLEX2;
+        // world->noise_state.octaves          = 16;
+        // world->noise_state.lacunarity       = 4.0;
+        // world->noise_state.frequency        = 0.01;
+        // world->noise_state.fractal_type     = FNL_FRACTAL_FBM;
+
         // ir inicializando cada chunk, basandose en la direccion desde el chunk_origin
         for (uint i = 0; i < WORLD_CHUNK_SURROUNDINGS_COUNT; i++)
         {
                 vec3 aux;
                 glm_vec3_add(world->chunk_origin, WORLD_CHUNK_SURROUNDINGS[i], aux);
-                world->chunks[i] = chunk_init(renderer, aux);
+                world->chunks[i] = chunk_init(renderer, aux, &world->noise_state);
         }
 
         set_border_chunks(world);
@@ -138,8 +120,9 @@ world_update(struct World* world)
                                 for (uint k = 0; k < WORLD_CHUNK_COUNT; k++)
                                         if (!world->chunks[k] && !set)
                                         {
-                                                world->chunks[k] = chunk_init(world->renderer, aux);
-                                                set              = true;
+                                                world->chunks[k] =
+                                                    chunk_init(world->renderer, aux, &world->noise_state);
+                                                set = true;
                                         }
                         }
                 }
@@ -151,7 +134,8 @@ world_update(struct World* world)
                         glm_vec3_sub(world->chunks[k]->world_position, world->chunk_origin, aux);
 
                         bool was_border = world->chunks[k]->border;
-                        if (glm_vec3_max(aux) == 2 || glm_vec3_min(aux) == -2)
+                        if (glm_vec3_max(aux) == WORLD_CHUNK_RENDER_DISTANCE ||
+                            glm_vec3_min(aux) == -WORLD_CHUNK_RENDER_DISTANCE)
                         {
                                 world->chunks[k]->border   = true;
                                 world->chunks[k]->prepared = false;
@@ -178,7 +162,7 @@ world_render(struct World* world)
                 }
 
         for (uint i = 0; i < WORLD_CHUNK_COUNT; i++)
-                if(world->chunks[i]->prepared)
+                if (world->chunks[i]->prepared)
                         chunk_render(world->chunks[i]);
 }
 
@@ -270,6 +254,10 @@ set_border_chunks(struct World* world)
                 vec3 aux;
                 glm_vec3_add(world->chunk_origin, (vec3){i, 0, j}, aux);
                 struct Chunk* chunk = world_get_chunk(world, aux);
-                chunk->border       = (i == 2 || i == -2 || j == 2 || j == -2) ? true : false;
+
+                chunk->border = (i == WORLD_CHUNK_RENDER_DISTANCE || i == -WORLD_CHUNK_RENDER_DISTANCE ||
+                                 j == WORLD_CHUNK_RENDER_DISTANCE || j == -WORLD_CHUNK_RENDER_DISTANCE)
+                                    ? true
+                                    : false;
         }
 }

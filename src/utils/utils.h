@@ -6,5 +6,6 @@
 #include "FastNoiseLite.h"
 #include <cglm/cglm.h>
 #include <assert.h>
+#include <time.h>
 
 #endif // UTILS_H_

@@ -1,4 +1,5 @@
 #include "../state.h"
+#include "../utils/utils.h"
 #include "chunk.h"
 #include "world.h"
 
@@ -17,9 +18,9 @@ internal void offset3d(uint offset, vec3 dest);
                         for (uint k = 0; k < CHUNK_SIZE_Z; k++)
 
 struct Chunk*
-chunk_init(struct Renderer* renderer, vec3 world_position)
+chunk_init(struct Renderer* renderer, vec3 world_position, fnl_state* noise_state)
 {
-        struct Chunk* chunk = calloc(1, sizeof *chunk);
+        struct Chunk* chunk = malloc(sizeof *chunk);
         chunk->renderer     = renderer;
 
         chunk->prepared = false;
@@ -28,6 +29,8 @@ chunk_init(struct Renderer* renderer, vec3 world_position)
         mesh_init(&chunk->mesh);
         glm_vec3_copy(world_position, chunk->world_position);
         glm_vec3_scale(world_position, 16.0f, chunk->world_offset);
+
+        // chunk->heightmap.noise_state = noise_state;
 
         FOR_EACH_BLOCK(chunk, block_init)
 
@@ -117,8 +120,23 @@ offset3d(uint offset, vec3 dest)
 internal void
 chunk_setup_map(struct Chunk* chunk)
 {
-        for (uint i = 0; i < CHUNK_SIZE_X; i++)
-                for (uint j = 0; j < CHUNK_SIZE_Z; j++)
-                        for (uint k = 0; k < 4; k++)
-                                chunk->blocks[offset(i, k, j)] = BLOCKS[BLOCK_GRASS];
+        chunk->heightmap.noise_state              = fnlCreateState();
+        chunk->heightmap.noise_state.noise_type   = FNL_NOISE_OPENSIMPLEX2;
+        chunk->heightmap.noise_state.octaves      = 16;
+        chunk->heightmap.noise_state.lacunarity   = 4.0;
+        chunk->heightmap.noise_state.frequency    = 0.01;
+        chunk->heightmap.noise_state.fractal_type = FNL_FRACTAL_FBM;
+        chunk->heightmap.noise_state.seed = chunk->world_offset[0] + chunk->world_offset[1] + chunk->world_offset[2];
+
+        heightmap_generate(&chunk->heightmap);
+
+        for (uint i = 0; i < HEIGHTMAP_X; i++)
+                for (uint j = 0; j < HEIGHTMAP_Z; j++)
+                {
+                        double height                       = 55.0f * (double) chunk->heightmap.elevation[i][j];
+                        chunk->blocks[offset(i, height, j)] = BLOCKS[BLOCK_GRASS];
+                        if (height != 0)
+                                for (uint k = height - 1; k > 0; k--)
+                                        chunk->blocks[offset(i, k, j)] = BLOCKS[BLOCK_STONE];
+                }
 }

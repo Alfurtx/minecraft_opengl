@@ -5,8 +5,6 @@
 #include "../utils/utils.h"
 #include "chunk.h"
 
-#define WORLD_CHUNK_SIDE_COUNT 5
-#define WORLD_CHUNK_COUNT (WORLD_CHUNK_SIDE_COUNT * WORLD_CHUNK_SIDE_COUNT)
 
 extern vec3 WORLD_CHUNK_SURROUNDINGS[];
 
@@ -14,6 +12,7 @@ struct World
 {
         struct Renderer* renderer;
         struct Chunk**   chunks;
+        fnl_state noise_state;
 
         vec3 chunk_origin; // el chunk donde se encuentra el personaje/camara
 };
