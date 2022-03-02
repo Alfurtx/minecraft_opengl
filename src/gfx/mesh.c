@@ -1,7 +1,7 @@
 #include "mesh.h"
 #include <stdlib.h>
 
-const uint MESH_BUFFER_SIZE_BASE = 25600;
+const uint MESH_BUFFER_SIZE_BASE = 393216;
 
 const uint MESH_BLOCK_INDICES[][6] = {
     {0, 1, 3, 1, 2, 3}, // north(-z)
