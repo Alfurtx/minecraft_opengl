@@ -4,8 +4,8 @@
 #include "../gfx/mesh.h"
 #include "../utils/types.h"
 #include "../utils/utils.h"
-#include "block.h"
 #include "../utils/worldgen.h"
+#include "block.h"
 
 #define CHUNK_SIZE_X 16
 #define CHUNK_SIZE_Y 256
@@ -31,6 +31,7 @@ extern struct Chunk* chunk_init(struct Renderer* renderer, vec3 world_position, 
 extern void          chunk_update(struct Chunk* chunk);
 extern void          chunk_destroy(struct Chunk* chunk);
 extern void          chunk_prepare_render(struct Chunk* chunk);
+extern void          chunk_generate_mesh(struct Chunk* chunk);
 extern void          chunk_render(struct Chunk* chunk);
 
 #endif // CHUNK_H_

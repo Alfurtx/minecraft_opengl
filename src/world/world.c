@@ -217,6 +217,41 @@ world_get_chunk(struct World* world, vec3 chunk_world_position)
         return NULL;
 }
 
+bool
+world_is_block_at(struct World* world, vec3 chunk_world_position, vec3 chunk_block_position)
+{
+        struct value_index aux = get_block_index_value_coord(chunk_block_position);
+        struct Chunk*      chunk;
+        vec3               new_chunk_position;
+        vec3               new_block_position;
+
+        glm_vec3_copy(chunk_world_position, new_chunk_position);
+        glm_vec3_copy(chunk_block_position, new_block_position);
+
+        if (aux.index == 1)
+                return (false);
+
+        // modificar valor de chunk_world_position si el bloque esta fuera de chunk
+        if (aux.value == -1)
+        {
+                new_chunk_position[aux.index]--;
+                new_block_position[aux.index] = 15;
+        }
+        else if (aux.value == 16)
+        {
+                new_chunk_position[aux.index]++;
+                new_block_position[aux.index] = 0;
+        }
+
+        // conseguir el chunk del bloque
+        chunk = world_get_chunk(world, new_chunk_position);
+
+        if(!chunk || !chunk->blocks[BLOCKOFFSET(new_block_position)].active)
+                return(false);
+
+        return(true);
+}
+
 internal void
 get_chunkpos_from_position(vec3 position, vec3 dest)
 {

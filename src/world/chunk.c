@@ -100,6 +100,53 @@ chunk_render(struct Chunk* chunk)
         mesh_render(&chunk->mesh);
 }
 
+// TODO(fonsi): Terminar la funcion, basandome en la funcion que vi en este repo
+// (https://gist.github.com/Vercidium/a3002bd083cce2bc854c9ff8f0118d33)
+void
+chunk_generate_mesh(struct Chunk* chunk)
+{
+        for (uint d = 0; d < 3; d++)
+        {
+                int i, j, k, l, w, h;
+                int u = (d + 1) % 3;
+                int v = (d + 2) % 3;
+                int x[3];
+                int q[3];
+
+                bool mask[CHUNK_SIZE_X * CHUNK_SIZE_Z];
+                q[d] = 1;
+
+                for (x[d] = -1; x[d] < CHUNK_SIZE_X;)
+                {
+                        int n = 0;
+                        for (x[v] = 0; x[v] < CHUNK_SIZE_X; x[v]++)
+                        {
+                                for (x[u] = 0; x[u] < CHUNK_SIZE_X; x[u]++)
+                                {
+                                        bool block_current =
+                                            0 <= x[d] ? world_is_block_at(&state.world,
+                                                                          chunk->world_position,
+                                                                          (vec3){x[0] + chunk->world_position[0],
+                                                                                 x[1] + chunk->world_position[1],
+                                                                                 x[2] + chunk->world_position[2]})
+                                                      : true;
+
+                                        bool block_compare =
+                                            x[d] < CHUNK_SIZE_X - 1
+                                                ? world_is_block_at(&state.world,
+                                                                    chunk->world_position,
+                                                                    (vec3){x[0] + q[0] + chunk->world_position[0],
+                                                                           x[1] + q[1] + chunk->world_position[1],
+                                                                           x[2] + q[2] + chunk->world_position[2]})
+                                                : true;
+
+                                        mask[n++] = block_compare != block_current;
+                                }
+                        }
+                }
+        }
+}
+
 internal uint
 offset(uint x, uint y, uint z)
 {
