@@ -45,14 +45,6 @@ world_init(struct World* world, struct Renderer* renderer)
         uint index = 0;
         FOR_EACH_POSITION(i, j) { glm_vec3_copy((vec3){i, 0, j}, WORLD_CHUNK_SURROUNDINGS[index++]); }
 
-        // FastNoiseLite init
-        // world->noise_state = fnlCreateState();
-        // world->noise_state.noise_type       = FNL_NOISE_OPENSIMPLEX2;
-        // world->noise_state.octaves          = 16;
-        // world->noise_state.lacunarity       = 4.0;
-        // world->noise_state.frequency        = 0.01;
-        // world->noise_state.fractal_type     = FNL_FRACTAL_FBM;
-
         // ir inicializando cada chunk, basandose en la direccion desde el chunk_origin
         for (uint i = 0; i < WORLD_CHUNK_SURROUNDINGS_COUNT; i++)
         {
@@ -178,10 +170,9 @@ world_get_block(struct World* world, vec3 chunk_world_position, vec3 chunk_block
         glm_vec3_copy(chunk_block_position, new_block_position);
 
         // modificar valor de chunk_world_position si el bloque esta fuera de chunk
-        if (aux.index != -1)
+        if (aux.value == -1 || aux.value == 16 || aux.value == 256)
         {
-                if (aux.index == 1)
-                        return BLOCK_DEFAULT;
+                if (aux.index == 1 || aux.value == 256) return BLOCK_DEFAULT;
                 if (aux.value == -1)
                 {
                         new_chunk_position[aux.index]--;
