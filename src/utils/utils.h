@@ -3,6 +3,7 @@
 
 #include "direction.h"
 #include "stb_image.h"
+#include "stb_ds.h"
 #include "FastNoiseLite.h"
 #include <cglm/cglm.h>
 #include <assert.h>

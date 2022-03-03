@@ -1,6 +1,6 @@
 #include "world.h"
 
-#define WORLD_CHUNK_RENDER_DISTANCE 2
+#define WORLD_CHUNK_RENDER_DISTANCE 4
 #define WORLD_CHUNK_SURROUNDINGS_COUNT ((WORLD_CHUNK_RENDER_DISTANCE * 2 + 1) * (WORLD_CHUNK_RENDER_DISTANCE * 2 + 1))
 vec3 WORLD_CHUNK_SURROUNDINGS[WORLD_CHUNK_SURROUNDINGS_COUNT];
 
@@ -72,6 +72,9 @@ world_destroy(struct World* world)
         free(world->chunks);
 }
 
+// NOTE(fonsi): Lo que mas cuesta son los malloc y los free de los chunk_{init, destroy}
+// por lo que lo mejor que puedo hacer es agruparlos en un solo malloc y un solo free
+// edit: son como max 10 mallocs y 10 frees (con CHUNK_RENDER_DISTANCE 2), por lo que lo peor seria el mesh_init
 void
 world_update(struct World* world)
 {

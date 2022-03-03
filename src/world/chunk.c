@@ -57,8 +57,6 @@ chunk_prepare_render(struct Chunk* chunk)
 {
         FOR_EACH_BLOCK_XYZ(i, j, k)
         {
-                vec3 block_position;
-                glm_vec3_copy((vec3){i, j, k}, block_position);
                 struct Block current_block = chunk->blocks[offset(i, j, k)];
                 if (current_block.active)
                 {
@@ -67,7 +65,7 @@ chunk_prepare_render(struct Chunk* chunk)
                         {
                                 // conseguir el bloque vecino
                                 vec3 aux;
-                                glm_vec3_add(block_position, DIRECTION_VEC[d], aux);
+                                glm_vec3_add((vec3){i, j, k}, DIRECTION_VEC[d], aux);
                                 struct Block neighbor_block = world_get_block(&state.world, chunk->world_position, aux);
 
                                 // comprobar que si bloque adyacente no esta activo
@@ -76,7 +74,7 @@ chunk_prepare_render(struct Chunk* chunk)
                                         // pasarlo al mesh
                                         vec2 texture_coords;
                                         current_block.get_texture_location(d, texture_coords);
-                                        mesh_add_face(&chunk->mesh, block_position, texture_coords, d);
+                                        mesh_add_face(&chunk->mesh, (vec3){i, j, k}, texture_coords, d);
                                 }
                         }
                 }
@@ -117,26 +115,32 @@ offset3d(uint offset, vec3 dest)
         dest[0] = offset % CHUNK_SIZE_X;
 }
 
+// TODO(fonsi): cuantos mas bloques mas tarda, F
 internal void
 chunk_setup_map(struct Chunk* chunk)
 {
-        chunk->heightmap.noise_state              = fnlCreateState();
-        chunk->heightmap.noise_state.noise_type   = FNL_NOISE_OPENSIMPLEX2;
-        chunk->heightmap.noise_state.octaves      = 16;
-        chunk->heightmap.noise_state.lacunarity   = 4.0;
-        chunk->heightmap.noise_state.frequency    = 0.01;
-        chunk->heightmap.noise_state.fractal_type = FNL_FRACTAL_FBM;
-        chunk->heightmap.noise_state.seed = chunk->world_offset[0] + chunk->world_offset[1] + chunk->world_offset[2];
+        // chunk->heightmap.noise_state              = fnlCreateState();
+        // chunk->heightmap.noise_state.noise_type   = FNL_NOISE_OPENSIMPLEX2;
+        // chunk->heightmap.noise_state.octaves      = 16;
+        // chunk->heightmap.noise_state.lacunarity   = 4.0;
+        // chunk->heightmap.noise_state.frequency    = 0.01;
+        // chunk->heightmap.noise_state.fractal_type = FNL_FRACTAL_FBM;
+        // chunk->heightmap.noise_state.seed = chunk->world_offset[0] + chunk->world_offset[1] + chunk->world_offset[2];
 
-        heightmap_generate(&chunk->heightmap);
+        // heightmap_generate(&chunk->heightmap);
 
-        for (uint i = 0; i < HEIGHTMAP_X; i++)
-                for (uint j = 0; j < HEIGHTMAP_Z; j++)
-                {
-                        double height                       = 55.0f * (double) chunk->heightmap.elevation[i][j];
-                        chunk->blocks[offset(i, height, j)] = BLOCKS[BLOCK_GRASS];
-                        if (height != 0)
-                                for (uint k = height - 1; k > 0; k--)
-                                        chunk->blocks[offset(i, k, j)] = BLOCKS[BLOCK_STONE];
-                }
+        // for (uint i = 0; i < HEIGHTMAP_X; i++)
+        //         for (uint j = 0; j < HEIGHTMAP_Z; j++)
+        //         {
+        //                 double height                       = 55.0f * (double) chunk->heightmap.elevation[i][j];
+        //                 chunk->blocks[offset(i, height, j)] = BLOCKS[BLOCK_GRASS];
+        //                 if (height != 0)
+        //                         for (uint k = height - 1; k > 0; k--)
+        //                                 chunk->blocks[offset(i, k, j)] = BLOCKS[BLOCK_STONE];
+        //         }
+
+        for (uint i = 0; i < CHUNK_SIZE_X; i++)
+                for (uint j = 0; j < 55; j++)
+                        for (uint k = 0; k < CHUNK_SIZE_Z; k++)
+                                chunk->blocks[offset(i, j, k)] = BLOCKS[BLOCK_GRASS];
 }

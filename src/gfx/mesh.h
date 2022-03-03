@@ -10,14 +10,18 @@
 
 extern const uint MESH_BUFFER_SIZE_BASE;
 
+struct Vertex
+{
+        vec3 pos;
+        vec2 texture_pos;
+};
+
 struct Mesh
 {
         struct VAO vao;
         struct VBO vbo;
 
-        float* vertex_buffer_data;
-        uint   vertex_buffer_size;
-        uint   vertex_buffer_count;
+        struct Vertex* vertex_arr;
 };
 
 extern void mesh_init(struct Mesh* mesh);
