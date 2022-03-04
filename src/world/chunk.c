@@ -143,6 +143,61 @@ chunk_generate_mesh(struct Chunk* chunk)
                                         mask[n++] = block_compare != block_current;
                                 }
                         }
+
+                        x[d]++;
+
+                        n = 0;
+
+                        for(j = 0; j < CHUNK_SIZE_Z; j++)
+                        {
+                                for(i = 0; i < CHUNK_SIZE_X;)
+                                {
+                                        if(mask[n])
+                                        {
+                                                for (w = 1; i + w < CHUNK_SIZE_X && mask[n + w]; w++) {}
+
+                                                for ( h = 1; h + j < CHUNK_SIZE_Y; h++)
+                                                {
+                                                        bool done = false;
+                                                        for(k = 0; k < w; k++)
+                                                        {
+                                                                if(!mask[n + k + h * CHUNK_SIZE_Y])
+                                                                {
+                                                                        done = true;
+                                                                        break;
+                                                                }
+                                                        }
+
+                                                        if(done)
+                                                                break;
+
+                                                }
+
+                                                x[u] = i;
+                                                x[v] = j;
+                                                int du[3];
+                                                du[u] = w;
+                                                int dv[3];
+                                                dv[v] = h;
+
+                                                // TODO(fonsi): Aqui se crea el quad de la cara y se añade al mesh buffer
+
+                                                for(l = 0; l < h; l++)
+                                                        for(k = 0; k < w; k++)
+                                                                mask[n + k + l * CHUNK_SIZE_Y] = false;
+
+                                                i += w;
+                                                n += w;
+
+                                        }
+                                        else
+                                        {
+                                                i++;
+                                                n++;
+                                        }
+
+                                }
+                        }
                 }
         }
 }
