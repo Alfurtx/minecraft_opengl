@@ -100,28 +100,46 @@ chunk_render(struct Chunk* chunk)
         mesh_render(&chunk->mesh);
 }
 
-// TODO(fonsi): Terminar la funcion, basandome en la funcion que vi en este repo (https://gist.github.com/Vercidium/a3002bd083cce2bc854c9ff8f0118d33)
+// TODO(fonsi): Terminar la funcion, basandome en la funcion que vi en este repo
+// (https://gist.github.com/Vercidium/a3002bd083cce2bc854c9ff8f0118d33)
 void
 chunk_generate_mesh(struct Chunk* chunk)
 {
+        // Sweep over each axis (X, Y, Z)
+        // 'd' es el eje actual mientras que 'u' y 'v' son los otros dos
+
+        // NOTE(fonsi): Tener en cuenta estos valores para pasar las coordenadas adecuadas de cada textura
+        // correspondiente a la cara del cubo
+
+        // X -> d = 0, u = 1, v = 2
+        // Y -> d = 1, u = 2, v = 0
+        // Z -> d = 2, u = 0, v = 1
+
         for (uint d = 0; d < 3; d++)
         {
                 int i, j, k, l, w, h;
-                int u = (d + 1) % 3;
-                int v = (d + 2) % 3;
-                int x[3];
-                int q[3];
+                int u    = (d + 1) % 3;
+                int v    = (d + 2) % 3;
+                int x[3] = {0, 0, 0};
+                int q[3] = {0, 0, 0};
 
                 bool mask[CHUNK_SIZE_X * CHUNK_SIZE_Z];
+
                 q[d] = 1;
 
-                for (x[d] = -1; x[d] < CHUNK_SIZE_X;)
+                // Ir comprobando cada slice de un chunk de uno en uno
+                for (x[d] = -1; x[d] < CHUNK_SIZE_Y;)
                 {
+                        // Setear la mascara
                         int n = 0;
                         for (x[v] = 0; x[v] < CHUNK_SIZE_X; x[v]++)
                         {
-                                for (x[u] = 0; x[u] < CHUNK_SIZE_X; x[u]++)
+                                for (x[u] = 0; x[u] < CHUNK_SIZE_Z; x[u]++)
                                 {
+                                        // 'q' determina la direccion en la que estamos buscando (X, Y o Z)
+                                        // is_block_at toma la posicion relativa del bloque respecto al chunk y devuelve
+                                        // true o false si existe o no
+
                                         bool block_current =
                                             0 <= x[d] ? world_is_block_at(&state.world,
                                                                           chunk->world_position,
@@ -131,7 +149,7 @@ chunk_generate_mesh(struct Chunk* chunk)
                                                       : true;
 
                                         bool block_compare =
-                                            x[d] < CHUNK_SIZE_X - 1
+                                            x[d] < CHUNK_SIZE_Y - 1
                                                 ? world_is_block_at(&state.world,
                                                                     chunk->world_position,
                                                                     (vec3){x[0] + q[0] + chunk->world_position[0],
@@ -147,29 +165,28 @@ chunk_generate_mesh(struct Chunk* chunk)
 
                         n = 0;
 
-                        for(j = 0; j < CHUNK_SIZE_Z; j++)
+                        for (j = 0; j < CHUNK_SIZE_Z; j++)
                         {
-                                for(i = 0; i < CHUNK_SIZE_X;)
+                                for (i = 0; i < CHUNK_SIZE_X;)
                                 {
-                                        if(mask[n])
+                                        if (mask[n])
                                         {
                                                 for (w = 1; i + w < CHUNK_SIZE_X && mask[n + w]; w++) {}
 
-                                                for ( h = 1; h + j < CHUNK_SIZE_Y; h++)
+                                                for (h = 1; h + j < CHUNK_SIZE_Y; h++)
                                                 {
                                                         bool done = false;
-                                                        for(k = 0; k < w; k++)
+                                                        for (k = 0; k < w; k++)
                                                         {
-                                                                if(!mask[n + k + h * CHUNK_SIZE_Y])
+                                                                if (!mask[n + k + h * CHUNK_SIZE_Y])
                                                                 {
                                                                         done = true;
                                                                         break;
                                                                 }
                                                         }
 
-                                                        if(done)
+                                                        if (done)
                                                                 break;
-
                                                 }
 
                                                 x[u] = i;
@@ -179,22 +196,21 @@ chunk_generate_mesh(struct Chunk* chunk)
                                                 int dv[3];
                                                 dv[v] = h;
 
-                                                // TODO(fonsi): Aqui se crea el quad de la cara y se añade al mesh buffer
+                                                // TODO(fonsi): Aqui se crea el quad de la cara y se añade al mesh
+                                                // buffer
 
-                                                for(l = 0; l < h; l++)
-                                                        for(k = 0; k < w; k++)
+                                                for (l = 0; l < h; l++)
+                                                        for (k = 0; k < w; k++)
                                                                 mask[n + k + l * CHUNK_SIZE_Y] = false;
 
                                                 i += w;
                                                 n += w;
-
                                         }
                                         else
                                         {
                                                 i++;
                                                 n++;
                                         }
-
                                 }
                         }
                 }
