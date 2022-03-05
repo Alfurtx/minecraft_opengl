@@ -3,6 +3,7 @@
 
 #include "../utils/types.h"
 #include "../utils/utils.h"
+#include "../world/block.h"
 #include "gfx.h"
 #include "renderer.h"
 #include "vao.h"
@@ -30,6 +31,17 @@ extern void mesh_add_face(struct Mesh* mesh, vec3 chunk_block_pos, vec2 face_tex
 extern void mesh_prepare_render(struct Mesh* mesh);
 extern void mesh_render(struct Mesh* mesh);
 
+// The quad positions are:
+// 0 -> top left
+// 1 -> top right
+// 2 -> bottom right
+// 3 -> bottom left
+extern void mesh_add_quad(struct Mesh*   mesh,
+                          vec3           quad_positions[4],
+                          vec2           texture_position,
+                          enum BlockType block_type,
+                          enum Direction face_direction);
+
 /*
 
  QUAD DESCRIPTION
@@ -39,7 +51,7 @@ extern void mesh_render(struct Mesh* mesh);
   |            |
   |            |
   |            |
-  p3 -------- p4
+  p4 -------- p3
 
 */
 

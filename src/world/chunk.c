@@ -123,16 +123,16 @@ chunk_generate_mesh(struct Chunk* chunk)
                 int x[3] = {0, 0, 0};
                 int q[3] = {0, 0, 0};
 
-                bool mask[CHUNK_SIZE_X * CHUNK_SIZE_Z];
+                bool mask[CHUNK_SIZE_X * CHUNK_SIZE_Y];
 
                 q[d] = 1;
 
-                // Ir comprobando cada slice de un chunk de uno en uno
-                for (x[d] = -1; x[d] < CHUNK_SIZE_Y;)
+                // Nos movemos desde el frente hasta atras
+                for (x[d] = -1; x[d] < CHUNK_SIZE_Z;)
                 {
                         // Setear la mascara
                         int n = 0;
-                        for (x[v] = 0; x[v] < CHUNK_SIZE_X; x[v]++)
+                        for (x[v] = 0; x[v] < CHUNK_SIZE_Y; x[v]++)
                         {
                                 for (x[u] = 0; x[u] < CHUNK_SIZE_Z; x[u]++)
                                 {
@@ -149,7 +149,7 @@ chunk_generate_mesh(struct Chunk* chunk)
                                                       : true;
 
                                         bool block_compare =
-                                            x[d] < CHUNK_SIZE_Y - 1
+                                            x[d] < CHUNK_SIZE_Z - 1
                                                 ? world_is_block_at(&state.world,
                                                                     chunk->world_position,
                                                                     (vec3){x[0] + q[0] + chunk->world_position[0],
@@ -165,20 +165,31 @@ chunk_generate_mesh(struct Chunk* chunk)
 
                         n = 0;
 
-                        for (j = 0; j < CHUNK_SIZE_Z; j++)
+                        // Generar el mesh a traves de la mascara
+                        // llendo bloque a bloque en este slice del chunk
+                        for (j = 0; j < CHUNK_SIZE_Y; j++)
                         {
                                 for (i = 0; i < CHUNK_SIZE_X;)
                                 {
                                         if (mask[n])
                                         {
+                                                // Conseguir el ancho de este quad y almacenarlo en 'w'
+                                                // Esto se hace llendo a traves del eje actual hasta que ya no hay un
+                                                // valor de mascara que sea 'true'
                                                 for (w = 1; i + w < CHUNK_SIZE_X && mask[n + w]; w++) {}
 
+                                                // Conseguir la altura de este quad y almacenarlo en 'h'
+                                                // Para hacer esto se comprueba si todos los bloques al lado de esta
+                                                // fila (desde 0 hasta 'w') tambien estan dentro de la mascara.
+                                                // Por ejemplo, si 'w' es 5, tendriamos un quad de 1 x 5. Greedy meshing
+                                                // va a intentar expandir este quad hasta CHUNK_SIZE_Z x 'w', pero se
+                                                // detendra si encuentra un agujero en la masacara.
                                                 for (h = 1; h + j < CHUNK_SIZE_Y; h++)
                                                 {
                                                         bool done = false;
                                                         for (k = 0; k < w; k++)
                                                         {
-                                                                if (!mask[n + k + h * CHUNK_SIZE_Y])
+                                                                if (!mask[n + k + h * CHUNK_SIZE_Z])
                                                                 {
                                                                         done = true;
                                                                         break;
@@ -191,13 +202,17 @@ chunk_generate_mesh(struct Chunk* chunk)
 
                                                 x[u] = i;
                                                 x[v] = j;
+
+                                                // 'du' y 'dv' determina la direccion y orientacion de esta cara
                                                 int du[3];
-                                                du[u] = w;
                                                 int dv[3];
+                                                du[u] = w;
                                                 dv[v] = h;
 
                                                 // TODO(fonsi): Aqui se crea el quad de la cara y se añade al mesh
                                                 // buffer
+
+                                                // world_append_quad() o algo asi
 
                                                 for (l = 0; l < h; l++)
                                                         for (k = 0; k < w; k++)
