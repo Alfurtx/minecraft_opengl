@@ -30,4 +30,17 @@ extern void mesh_add_face(struct Mesh* mesh, vec3 chunk_block_pos, vec2 face_tex
 extern void mesh_prepare_render(struct Mesh* mesh);
 extern void mesh_render(struct Mesh* mesh);
 
+/*
+
+ QUAD DESCRIPTION
+
+  p1 -------- p2
+  |            |
+  |            |
+  |            |
+  |            |
+  p3 -------- p4
+
+*/
+
 #endif // MESH_H_

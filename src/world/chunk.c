@@ -100,8 +100,7 @@ chunk_render(struct Chunk* chunk)
         mesh_render(&chunk->mesh);
 }
 
-// TODO(fonsi): Terminar la funcion, basandome en la funcion que vi en este repo
-// (https://gist.github.com/Vercidium/a3002bd083cce2bc854c9ff8f0118d33)
+// TODO(fonsi): Terminar la funcion, basandome en la funcion que vi en este repo (https://gist.github.com/Vercidium/a3002bd083cce2bc854c9ff8f0118d33)
 void
 chunk_generate_mesh(struct Chunk* chunk)
 {
