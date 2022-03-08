@@ -69,7 +69,7 @@ chunk_prepare_render(struct Chunk* chunk)
                                 glm_vec3_add((vec3){i, j, k}, DIRECTION_VEC[d], aux);
 
                                 // comprobar que si bloque adyacente no esta activo
-                                if (world_block_exists(&state.world, chunk, aux))
+                                if (!world_block_exists(&state.world, chunk, aux))
                                 {
                                         // pasarlo al mesh
                                         vec2 texture_coords;
