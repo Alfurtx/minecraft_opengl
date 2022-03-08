@@ -1,6 +1,6 @@
 #include "world.h"
 
-#define WORLD_CHUNK_RENDER_DISTANCE 4
+#define WORLD_CHUNK_RENDER_DISTANCE 8
 #define WORLD_CHUNK_SURROUNDINGS_COUNT ((WORLD_CHUNK_RENDER_DISTANCE * 2 + 1) * (WORLD_CHUNK_RENDER_DISTANCE * 2 + 1))
 vec3 WORLD_CHUNK_SURROUNDINGS[WORLD_CHUNK_SURROUNDINGS_COUNT];
 
@@ -54,7 +54,7 @@ world_init(struct World* world, struct Renderer* renderer)
         // world->noise_state.fractal_type     = FNL_FRACTAL_FBM;
 
         // ir inicializando cada chunk, basandose en la direccion desde el chunk_origin
-        for (uint i = 0; i < WORLD_CHUNK_SURROUNDINGS_COUNT; i++)
+        for (uint i = 0; i < WORLD_CHUNK_COUNT; i++)
         {
                 vec3 aux;
                 glm_vec3_add(world->chunk_origin, WORLD_CHUNK_SURROUNDINGS[i], aux);
@@ -169,7 +169,7 @@ world_render(struct World* world)
                         chunk_render(world->chunks[i]);
 }
 
-struct Block
+uint
 world_get_block(struct World* world, vec3 chunk_world_position, vec3 chunk_block_position)
 {
         struct value_index aux = get_block_index_value_coord(chunk_block_position);
@@ -180,17 +180,18 @@ world_get_block(struct World* world, vec3 chunk_world_position, vec3 chunk_block
         glm_vec3_copy(chunk_world_position, new_chunk_position);
         glm_vec3_copy(chunk_block_position, new_block_position);
 
+        if (aux.index == 1)
+                return 0;
+
         // modificar valor de chunk_world_position si el bloque esta fuera de chunk
         if (aux.index != -1)
         {
-                if (aux.index == 1)
-                        return BLOCK_DEFAULT;
                 if (aux.value == -1)
                 {
                         new_chunk_position[aux.index]--;
-                        new_block_position[aux.index] = 15;
+                        new_block_position[aux.index] = CHUNK_SIZE_X - 1;
                 }
-                if (aux.value == 16)
+                if (aux.value == CHUNK_SIZE_X)
                 {
                         new_chunk_position[aux.index]++;
                         new_block_position[aux.index] = 0;
@@ -201,63 +202,42 @@ world_get_block(struct World* world, vec3 chunk_world_position, vec3 chunk_block
         chunk = world_get_chunk(world, new_chunk_position);
 
         if (!chunk)
-                return BLOCK_DEFAULT;
+                return 0;
         else
-        {
                 return chunk->blocks[BLOCKOFFSET(new_block_position)];
-        }
 }
 
 struct Chunk*
 world_get_chunk(struct World* world, vec3 chunk_world_position)
 {
         for (uint i = 0; i < WORLD_CHUNK_COUNT; i++)
-                if (world->chunks[i] && glm_vec3_eqv(world->chunks[i]->world_position, chunk_world_position))
-                        return world->chunks[i];
+        {
+                struct Chunk* aux = world->chunks[i];
+
+                if (aux && world->chunks[i]->world_position[0] && chunk_world_position[0] && aux->world_position[1] &&
+                    chunk_world_position[1] && aux->world_position[2] && chunk_world_position[2])
+                        return aux;
+        }
         return NULL;
 }
 
 bool
-world_is_block_at(struct World* world, vec3 chunk_world_position, vec3 chunk_block_position)
+world_block_exists(struct World* world, struct Chunk* chunk, vec3 chunk_block_position)
 {
-        struct value_index aux = get_block_index_value_coord(chunk_block_position);
-        struct Chunk*      chunk;
-        vec3               new_chunk_position;
-        vec3               new_block_position;
-
-        glm_vec3_copy(chunk_world_position, new_chunk_position);
-        glm_vec3_copy(chunk_block_position, new_block_position);
-
-        if (aux.index == 1)
-                return (false);
-
-        // modificar valor de chunk_world_position si el bloque esta fuera de chunk
-        if (aux.value == -1)
+        struct value_index pair = get_block_index_value_coord(chunk_block_position);
+        if(pair.index == -1)
         {
-                new_chunk_position[aux.index]--;
-                new_block_position[aux.index] = 15;
+                return chunk->blocks[BLOCKOFFSET(chunk_block_position)] & BLOCK_MASK_ACTIVE;
         }
-        else if (aux.value == 16)
-        {
-                new_chunk_position[aux.index]++;
-                new_block_position[aux.index] = 0;
-        }
-
-        // conseguir el chunk del bloque
-        chunk = world_get_chunk(world, new_chunk_position);
-
-        if(!chunk || !chunk->blocks[BLOCKOFFSET(new_block_position)].active)
-                return(false);
-
-        return(true);
+        return(false);
 }
 
 internal void
 get_chunkpos_from_position(vec3 position, vec3 dest)
 {
-        dest[0] = floorf(position[0] / 16.0f);
+        dest[0] = floorf(position[0] / CHUNK_SIZE_X);
         dest[1] = 0;
-        dest[2] = floorf(position[2] / 16.0f);
+        dest[2] = floorf(position[2] / CHUNK_SIZE_Z);
 }
 
 internal struct value_index
@@ -266,7 +246,7 @@ get_block_index_value_coord(vec3 block_position)
         struct value_index res = {0, -1};
         for (uint i = 0; i < 3; i++)
         {
-                if (block_position[i] == -1 || block_position[i] == 16 || block_position[i] == 256)
+                if (block_position[i] == -1 || block_position[i] == CHUNK_SIZE_X || block_position[i] == CHUNK_SIZE_Y)
                 {
                         res.index = i;
                         res.value = block_position[i];
@@ -293,9 +273,12 @@ set_border_chunks(struct World* world)
                 glm_vec3_add(world->chunk_origin, (vec3){i, 0, j}, aux);
                 struct Chunk* chunk = world_get_chunk(world, aux);
 
-                chunk->border = (i == WORLD_CHUNK_RENDER_DISTANCE || i == -WORLD_CHUNK_RENDER_DISTANCE ||
-                                 j == WORLD_CHUNK_RENDER_DISTANCE || j == -WORLD_CHUNK_RENDER_DISTANCE)
-                                    ? true
-                                    : false;
+                if (chunk)
+                {
+                        chunk->border = (i == WORLD_CHUNK_RENDER_DISTANCE || i == -WORLD_CHUNK_RENDER_DISTANCE ||
+                                         j == WORLD_CHUNK_RENDER_DISTANCE || j == -WORLD_CHUNK_RENDER_DISTANCE)
+                                            ? true
+                                            : false;
+                }
         }
 }

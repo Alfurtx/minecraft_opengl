@@ -7,3 +7,6 @@ bin/*
 .vscode/
 app.dSYM
 *.o
+
+gmon.out
+profiling_data

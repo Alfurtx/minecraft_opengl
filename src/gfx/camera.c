@@ -42,7 +42,7 @@ camera_get_projection(struct Camera* camera, mat4 dest)
                         WINDOW_SCREEN_WIDTH / WINDOW_SCREEN_HEIGHT,
                         0.1f,
                         CAMERA_RENDER_DISTANCE *
-                            16.0f, // render distance = number of chunks and 16 is the side of one chunk
+                            32.0f, // render distance = number of chunks and 16 is the side of one chunk
                         dest);
 }
 

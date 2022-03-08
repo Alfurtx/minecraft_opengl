@@ -11,9 +11,9 @@ UNAME_S = $(shell uname -s)
 # NOTE(fonsi): definido CGLM_ALL_UNALIGNED porque habia ciertos problemas con el alineamiento en MACOS
 
 CC = clang
-CFLAGS = -std=c11 -g -Wall -Wextra -Wpedantic -Wstrict-aliasing -DCGLM_ALL_UNALIGNED
+CFLAGS = -std=c11 -g -pg -Wall -Wextra -Wpedantic -Wstrict-aliasing -DCGLM_ALL_UNALIGNED
 CFLAGS += -Wno-unused-parameter -Wno-switch -Wno-unused-function
-LDFLAGS = -lm -lglfw libs/glad/src/glad.o
+LDFLAGS = -lm -lglfw libs/glad/src/glad.o -pg
 
 ifeq ($(UNAME_S), Darwin)
 	LDFLAGS += -framework OpenGL -framework IOKit -framework CoreVideo -framework Cocoa
@@ -49,6 +49,9 @@ dirs:
 
 clean:
 	rm -rf $(OBJ) $(TARGET)
+
+profile:
+	gprof $(BIN)/app > profiling_data
 
 debug:
 	gdb --tui -q $(BIN)/app

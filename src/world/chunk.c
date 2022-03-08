@@ -4,13 +4,13 @@
 #include "world.h"
 
 // TODO(fonsi): implementar generacion de mundo apropiada
-internal void chunk_setup_map(struct Chunk* chunk);
-internal uint offset(uint x, uint y, uint z);
-internal void offset3d(uint offset, vec3 dest);
-
-#define FOR_EACH_BLOCK(ptr, func)                    \
-        for (uint i = 0; i < CHUNK_BLOCK_COUNT; i++) \
-                func(&ptr->blocks[i]);
+internal void        chunk_setup_map(struct Chunk* chunk);
+internal inline uint offset(uint x, uint y, uint z);
+internal inline void offset3d(uint offset, vec3 dest);
+internal inline void set_block_active(uint* block, bool active);
+internal inline bool get_block_active(uint block);
+internal inline void set_block_type(uint* block, enum BlockType type);
+internal inline uint get_block_type(uint block);
 
 #define FOR_EACH_BLOCK_XYZ(i, j, k)                     \
         for (uint i = 0; i < CHUNK_SIZE_X; i++)         \
@@ -32,7 +32,8 @@ chunk_init(struct Renderer* renderer, vec3 world_position, fnl_state* noise_stat
 
         // chunk->heightmap.noise_state = noise_state;
 
-        FOR_EACH_BLOCK(chunk, block_init)
+        for (uint i = 0; i < CHUNK_BLOCK_COUNT; i++)
+                chunk->blocks[i] = 0;
 
         chunk_setup_map(chunk);
 
@@ -57,8 +58,8 @@ chunk_prepare_render(struct Chunk* chunk)
 {
         FOR_EACH_BLOCK_XYZ(i, j, k)
         {
-                struct Block current_block = chunk->blocks[offset(i, j, k)];
-                if (current_block.active)
+                uint current_block = chunk->blocks[offset(i, j, k)];
+                if (current_block & BLOCK_MASK_ACTIVE)
                 {
                         // ir cara por cara de cada bloque
                         for (uint d = 0; d < DIRECTION_COUNT; d++)
@@ -66,14 +67,13 @@ chunk_prepare_render(struct Chunk* chunk)
                                 // conseguir el bloque vecino
                                 vec3 aux;
                                 glm_vec3_add((vec3){i, j, k}, DIRECTION_VEC[d], aux);
-                                struct Block neighbor_block = world_get_block(&state.world, chunk->world_position, aux);
 
                                 // comprobar que si bloque adyacente no esta activo
-                                if (!neighbor_block.active)
+                                if (world_block_exists(&state.world, chunk, aux))
                                 {
                                         // pasarlo al mesh
                                         vec2 texture_coords;
-                                        current_block.get_texture_location(d, texture_coords);
+                                        BLOCKS[get_block_type(current_block)].get_texture_location(d, texture_coords);
                                         mesh_add_face(&chunk->mesh, (vec3){i, j, k}, texture_coords, d);
                                 }
                         }
@@ -105,140 +105,15 @@ chunk_render(struct Chunk* chunk)
 void
 chunk_generate_mesh(struct Chunk* chunk)
 {
-        // Sweep over each axis (X, Y, Z)
-        // 'd' es el eje actual mientras que 'u' y 'v' son los otros dos
-
-        // NOTE(fonsi): Tener en cuenta estos valores para pasar las coordenadas adecuadas de cada textura
-        // correspondiente a la cara del cubo
-
-        // X -> d = 0, u = 1, v = 2
-        // Y -> d = 1, u = 2, v = 0
-        // Z -> d = 2, u = 0, v = 1
-
-        for (uint d = 0; d < 3; d++)
-        {
-                int i, j, k, l, w, h;
-                int u    = (d + 1) % 3;
-                int v    = (d + 2) % 3;
-                int x[3] = {0, 0, 0};
-                int q[3] = {0, 0, 0};
-
-                bool mask[CHUNK_SIZE_X * CHUNK_SIZE_Y];
-
-                q[d] = 1;
-
-                // Nos movemos desde el frente hasta atras
-                for (x[d] = -1; x[d] < CHUNK_SIZE_Z;)
-                {
-                        // Setear la mascara
-                        int n = 0;
-                        for (x[v] = 0; x[v] < CHUNK_SIZE_Y; x[v]++)
-                        {
-                                for (x[u] = 0; x[u] < CHUNK_SIZE_Z; x[u]++)
-                                {
-                                        // 'q' determina la direccion en la que estamos buscando (X, Y o Z)
-                                        // is_block_at toma la posicion relativa del bloque respecto al chunk y devuelve
-                                        // true o false si existe o no
-
-                                        bool block_current =
-                                            0 <= x[d] ? world_is_block_at(&state.world,
-                                                                          chunk->world_position,
-                                                                          (vec3){x[0] + chunk->world_position[0],
-                                                                                 x[1] + chunk->world_position[1],
-                                                                                 x[2] + chunk->world_position[2]})
-                                                      : true;
-
-                                        bool block_compare =
-                                            x[d] < CHUNK_SIZE_Z - 1
-                                                ? world_is_block_at(&state.world,
-                                                                    chunk->world_position,
-                                                                    (vec3){x[0] + q[0] + chunk->world_position[0],
-                                                                           x[1] + q[1] + chunk->world_position[1],
-                                                                           x[2] + q[2] + chunk->world_position[2]})
-                                                : true;
-
-                                        mask[n++] = block_compare != block_current;
-                                }
-                        }
-
-                        x[d]++;
-
-                        n = 0;
-
-                        // Generar el mesh a traves de la mascara
-                        // llendo bloque a bloque en este slice del chunk
-                        for (j = 0; j < CHUNK_SIZE_Y; j++)
-                        {
-                                for (i = 0; i < CHUNK_SIZE_X;)
-                                {
-                                        if (mask[n])
-                                        {
-                                                // Conseguir el ancho de este quad y almacenarlo en 'w'
-                                                // Esto se hace llendo a traves del eje actual hasta que ya no hay un
-                                                // valor de mascara que sea 'true'
-                                                for (w = 1; i + w < CHUNK_SIZE_X && mask[n + w]; w++) {}
-
-                                                // Conseguir la altura de este quad y almacenarlo en 'h'
-                                                // Para hacer esto se comprueba si todos los bloques al lado de esta
-                                                // fila (desde 0 hasta 'w') tambien estan dentro de la mascara.
-                                                // Por ejemplo, si 'w' es 5, tendriamos un quad de 1 x 5. Greedy meshing
-                                                // va a intentar expandir este quad hasta CHUNK_SIZE_Z x 'w', pero se
-                                                // detendra si encuentra un agujero en la masacara.
-                                                for (h = 1; h + j < CHUNK_SIZE_Y; h++)
-                                                {
-                                                        bool done = false;
-                                                        for (k = 0; k < w; k++)
-                                                        {
-                                                                if (!mask[n + k + h * CHUNK_SIZE_Z])
-                                                                {
-                                                                        done = true;
-                                                                        break;
-                                                                }
-                                                        }
-
-                                                        if (done)
-                                                                break;
-                                                }
-
-                                                x[u] = i;
-                                                x[v] = j;
-
-                                                // 'du' y 'dv' determina la direccion y orientacion de esta cara
-                                                int du[3];
-                                                int dv[3];
-                                                du[u] = w;
-                                                dv[v] = h;
-
-                                                // TODO(fonsi): Aqui se crea el quad de la cara y se añade al mesh
-                                                // buffer
-
-                                                // world_append_quad() o algo asi
-
-                                                for (l = 0; l < h; l++)
-                                                        for (k = 0; k < w; k++)
-                                                                mask[n + k + l * CHUNK_SIZE_Y] = false;
-
-                                                i += w;
-                                                n += w;
-                                        }
-                                        else
-                                        {
-                                                i++;
-                                                n++;
-                                        }
-                                }
-                        }
-                }
-        }
 }
 
-internal uint
+internal inline uint
 offset(uint x, uint y, uint z)
 {
         return (x + CHUNK_SIZE_X * y + CHUNK_SIZE_X * CHUNK_SIZE_Y * z);
 }
 
-internal void
+internal inline void
 offset3d(uint offset, vec3 dest)
 {
         dest[2] = offset / (CHUNK_SIZE_X * CHUNK_SIZE_Y);
@@ -247,7 +122,6 @@ offset3d(uint offset, vec3 dest)
         dest[0] = offset % CHUNK_SIZE_X;
 }
 
-// TODO(fonsi): cuantos mas bloques mas tarda, F
 internal void
 chunk_setup_map(struct Chunk* chunk)
 {
@@ -272,7 +146,36 @@ chunk_setup_map(struct Chunk* chunk)
         //         }
 
         for (uint i = 0; i < CHUNK_SIZE_X; i++)
-                for (uint j = 0; j < 55; j++)
+                for (uint j = 0; j < 4; j++)
                         for (uint k = 0; k < CHUNK_SIZE_Z; k++)
-                                chunk->blocks[offset(i, j, k)] = BLOCKS[BLOCK_GRASS];
+                        {
+                                uint* block = &chunk->blocks[offset(i, j, k)];
+                                *block      = *block | 0x01;
+                                *block      = (*block & BLOCK_MASK_TYPE) | (((uint) BLOCK_STONE) << 8);
+                        }
+}
+
+internal inline void
+set_block_active(uint* block, bool active)
+{
+        *block = active ? *block | 0x01 : *block & BLOCK_MASK_ACTIVE;
+}
+
+internal inline bool
+get_block_active(uint block)
+{
+        return block & 0x000000ff;
+}
+
+internal inline void
+set_block_type(uint* block, enum BlockType type)
+{
+        uint aux = type;
+        *block   = (*block & BLOCK_MASK_TYPE) | (aux << 8);
+}
+
+internal inline uint
+get_block_type(uint block)
+{
+        return (block & BLOCK_MASK_TYPE) >> 8;
 }

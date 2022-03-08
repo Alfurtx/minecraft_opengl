@@ -1,8 +1,8 @@
 #ifndef WORLDGEN_H_
 #define WORLDGEN_H_
 
-#define HEIGHTMAP_X 16
-#define HEIGHTMAP_Z 16
+#define HEIGHTMAP_X 32
+#define HEIGHTMAP_Z 32
 #include "utils.h"
 
 struct Heightmap

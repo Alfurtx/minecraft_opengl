@@ -21,8 +21,8 @@ extern void world_destroy(struct World* world);
 extern void world_update(struct World* world);
 extern void world_render(struct World* world);
 
-extern struct Block  world_get_block(struct World* world, vec3 chunk_world_position, vec3 chunk_block_position);
+extern uint          world_get_block(struct World* world, vec3 chunk_world_position, vec3 chunk_block_position);
 extern struct Chunk* world_get_chunk(struct World* world, vec3 chunk_world_position);
-extern bool          world_is_block_at(struct World* world, vec3 chunk_world_position, vec3 chunk_block_position);
+extern bool          world_block_exists(struct World* world, struct Chunk* chunk, vec3 chunk_block_position);
 
 #endif // WORLD_H_
