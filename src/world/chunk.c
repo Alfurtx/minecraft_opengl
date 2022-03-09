@@ -124,34 +124,39 @@ offset3d(uint offset, vec3 dest)
 internal void
 chunk_setup_map(struct Chunk* chunk)
 {
-        // chunk->heightmap.noise_state              = fnlCreateState();
-        // chunk->heightmap.noise_state.noise_type   = FNL_NOISE_OPENSIMPLEX2;
-        // chunk->heightmap.noise_state.octaves      = 16;
-        // chunk->heightmap.noise_state.lacunarity   = 4.0;
-        // chunk->heightmap.noise_state.frequency    = 0.01;
-        // chunk->heightmap.noise_state.fractal_type = FNL_FRACTAL_FBM;
-        // chunk->heightmap.noise_state.seed = chunk->world_offset[0] + chunk->world_offset[1] + chunk->world_offset[2];
+        chunk->heightmap.noise_state              = fnlCreateState();
+        chunk->heightmap.noise_state.noise_type   = FNL_NOISE_OPENSIMPLEX2;
+        chunk->heightmap.noise_state.octaves      = 16;
+        chunk->heightmap.noise_state.lacunarity   = 4.0;
+        chunk->heightmap.noise_state.frequency    = 0.01;
+        chunk->heightmap.noise_state.fractal_type = FNL_FRACTAL_FBM;
+        chunk->heightmap.noise_state.seed = chunk->world_offset[0] + chunk->world_offset[1] + chunk->world_offset[2];
 
-        // heightmap_generate(&chunk->heightmap);
+        heightmap_generate(&chunk->heightmap);
 
-        // for (uint i = 0; i < HEIGHTMAP_X; i++)
-        //         for (uint j = 0; j < HEIGHTMAP_Z; j++)
-        //         {
-        //                 double height                       = 55.0f * (double) chunk->heightmap.elevation[i][j];
-        //                 chunk->blocks[offset(i, height, j)] = BLOCKS[BLOCK_GRASS];
-        //                 if (height != 0)
-        //                         for (uint k = height - 1; k > 0; k--)
-        //                                 chunk->blocks[offset(i, k, j)] = BLOCKS[BLOCK_STONE];
-        //         }
+        for (uint i = 0; i < HEIGHTMAP_X; i++)
+                for (uint j = 0; j < HEIGHTMAP_Z; j++)
+                {
+                        double height                       = 55.0f * (double) chunk->heightmap.elevation[i][j];
+                        uint* block = &chunk->blocks[offset(i, height, j)];
+                        *block      = *block | 0x01;
+                        *block      = (*block & BLOCK_MASK_TYPE) | (((uint) BLOCK_GRASS) << 8);
+                        if (height != 0)
+                                for (uint k = height - 1; k > 0; k--)
+                                {
+                                        uint* block = &chunk->blocks[offset(i, k, j)];
+                                        *block      = (*block & BLOCK_MASK_TYPE) | (((uint) BLOCK_STONE) << 8);
+                                }
+                }
 
-        for (uint i = 0; i < CHUNK_SIZE_X; i++)
-                for (uint j = 0; j < CHUNK_SIZE_Y; j++)
-                        for (uint k = 0; k < CHUNK_SIZE_Z; k++)
-                        {
-                                uint* block = &chunk->blocks[offset(i, j, k)];
-                                *block      = *block | 0x01;
-                                *block      = (*block & BLOCK_MASK_TYPE) | (((uint) BLOCK_STONE) << 8);
-                        }
+        // for (uint i = 0; i < CHUNK_SIZE_X; i++)
+        //         for (uint j = 0; j < CHUNK_SIZE_Y; j++)
+        //                 for (uint k = 0; k < CHUNK_SIZE_Z; k++)
+        //                 {
+        //                         uint* block = &chunk->blocks[offset(i, j, k)];
+        //                         *block      = *block | 0x01;
+        //                         *block      = (*block & BLOCK_MASK_TYPE) | (((uint) BLOCK_STONE) << 8);
+        //                 }
 }
 
 internal inline void
