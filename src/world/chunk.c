@@ -33,7 +33,7 @@ chunk_init(struct Renderer* renderer, vec3 world_position, fnl_state* noise_stat
 
         mesh_init(&chunk->mesh);
         glm_vec3_copy(world_position, chunk->world_position);
-        glm_vec3_scale(world_position, 16.0f, chunk->world_offset);
+        glm_vec3_scale(world_position, CHUNK_SIZE_X, chunk->world_offset);
 
         // chunk->heightmap.noise_state = noise_state;
 

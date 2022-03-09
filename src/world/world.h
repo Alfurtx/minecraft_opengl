@@ -7,7 +7,7 @@
 
 extern vec3 WORLD_CHUNK_SURROUNDINGS[];
 
-#define WORLD_CHUNK_RENDER_DISTANCE 3
+#define WORLD_CHUNK_RENDER_DISTANCE 4
 #define WORLD_CHUNK_SURROUNDINGS_COUNT ((WORLD_CHUNK_RENDER_DISTANCE * 2 + 1) * (WORLD_CHUNK_RENDER_DISTANCE * 2 + 1))
 vec3 WORLD_CHUNK_SURROUNDINGS[WORLD_CHUNK_SURROUNDINGS_COUNT];
 
@@ -15,7 +15,7 @@ vec3 WORLD_CHUNK_SURROUNDINGS[WORLD_CHUNK_SURROUNDINGS_COUNT];
 #define WORLD_CHUNK_COUNT WORLD_CHUNK_SURROUNDINGS_COUNT
 
 #define BLOCKOFFSET(vec) ((uint) vec[0] + CHUNK_SIZE_X * (uint) vec[1] + CHUNK_SIZE_X * CHUNK_SIZE_Y * (uint) vec[2])
-#define CHUNKOFFSET(vec) ((uint) vec[0] + WORLD_CHUNK_SIDE * (uint) vec[2])
+// #define CHUNKOFFSET(vec) ((uint) vec[0] + WORLD_CHUNK_SIDE * (uint) vec[2])
 #define FOR_EACH_POSITION(i, j)                                                              \
         for (int i = -WORLD_CHUNK_RENDER_DISTANCE; i < WORLD_CHUNK_RENDER_DISTANCE + 1; i++) \
                 for (int j = -WORLD_CHUNK_RENDER_DISTANCE; j < WORLD_CHUNK_RENDER_DISTANCE + 1; j++)
