@@ -137,7 +137,7 @@ chunk_setup_map(struct Chunk* chunk)
         for (uint i = 0; i < HEIGHTMAP_X; i++)
                 for (uint j = 0; j < HEIGHTMAP_Z; j++)
                 {
-                        double height                       = 55.0f * (double) chunk->heightmap.elevation[i][j];
+                        double height                       = 32.0f * (double) chunk->heightmap.elevation[i][j];
                         uint* block = &chunk->blocks[offset(i, height, j)];
                         *block      = *block | 0x01;
                         *block      = (*block & BLOCK_MASK_TYPE) | (((uint) BLOCK_GRASS) << 8);
@@ -145,7 +145,7 @@ chunk_setup_map(struct Chunk* chunk)
                                 for (uint k = height - 1; k > 0; k--)
                                 {
                                         uint* block = &chunk->blocks[offset(i, k, j)];
-                                        *block      = (*block & BLOCK_MASK_TYPE) | (((uint) BLOCK_STONE) << 8);
+                                        *block      = (*block & BLOCK_MASK_TYPE) | ((k % 2 == 0 ? BLOCK_GRASS : BLOCK_STONE) << 8);
                                 }
                 }
 
@@ -181,5 +181,5 @@ set_block_type(uint* block, enum BlockType type)
 internal inline uint
 get_block_type(uint block)
 {
-        return (block & BLOCK_MASK_TYPE) >> 8;
+        return (block & 0x0000ff00) >> 8;
 }
