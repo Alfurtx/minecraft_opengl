@@ -1,18 +1,5 @@
 #include "world.h"
 
-#define WORLD_CHUNK_RENDER_DISTANCE 8
-#define WORLD_CHUNK_SURROUNDINGS_COUNT ((WORLD_CHUNK_RENDER_DISTANCE * 2 + 1) * (WORLD_CHUNK_RENDER_DISTANCE * 2 + 1))
-vec3 WORLD_CHUNK_SURROUNDINGS[WORLD_CHUNK_SURROUNDINGS_COUNT];
-
-#define WORLD_CHUNK_SIDE_COUNT (WORLD_CHUNK_RENDER_DISTANCE * 2 + 1)
-#define WORLD_CHUNK_COUNT WORLD_CHUNK_SURROUNDINGS_COUNT
-
-#define BLOCKOFFSET(vec) ((uint) vec[0] + CHUNK_SIZE_X * (uint) vec[1] + CHUNK_SIZE_X * CHUNK_SIZE_Y * (uint) vec[2])
-#define CHUNKOFFSET(vec) ((uint) vec[0] + WORLD_CHUNK_SIDE * (uint) vec[2])
-#define FOR_EACH_POSITION(i, j)                                                              \
-        for (int i = -WORLD_CHUNK_RENDER_DISTANCE; i < WORLD_CHUNK_RENDER_DISTANCE + 1; i++) \
-                for (int j = -WORLD_CHUNK_RENDER_DISTANCE; j < WORLD_CHUNK_RENDER_DISTANCE + 1; j++)
-
 struct value_index
 {
         float value;
@@ -60,6 +47,9 @@ world_init(struct World* world, struct Renderer* renderer)
                 glm_vec3_add(world->chunk_origin, WORLD_CHUNK_SURROUNDINGS[i], aux);
                 world->chunks[i] = chunk_init(renderer, aux, &world->noise_state);
         }
+
+        for (uint i = 0; i < WORLD_CHUNK_COUNT; i++)
+                world_set_neighbor_chunks(world->chunks[i], world);
 
         set_border_chunks(world);
 }
@@ -150,7 +140,11 @@ world_update(struct World* world)
                         }
                         else
                                 world->chunks[k]->border = false;
+
+                        if(was_border != world->chunks[k]->border)
+                                world_set_neighbor_chunks(world->chunks[k], world);
                 }
+
         }
 }
 
@@ -229,7 +223,68 @@ world_block_exists(struct World* world, struct Chunk* chunk, vec3 chunk_block_po
         {
                 return chunk->blocks[BLOCKOFFSET(chunk_block_position)] & BLOCK_MASK_ACTIVE;
         }
+
+        // vec3 new_block_pos;
+        // glm_vec3_copy(chunk_block_position, new_block_pos);
+
+        // if (pair.value == -1)
+        // {
+        //         if(pair.index == 0 && chunk->xn)
+        //         {
+        //                 new_block_pos[pair.index] = CHUNK_SIZE_X - 1;
+        //                 return chunk->xn->blocks[BLOCKOFFSET(new_block_pos)] & BLOCK_MASK_ACTIVE;
+        //         }
+
+        //         if(pair.index == 2 && chunk->zn)
+        //         {
+        //                 new_block_pos[pair.index] = CHUNK_SIZE_Z - 1;
+        //                 return chunk->zn->blocks[BLOCKOFFSET(new_block_pos)] & BLOCK_MASK_ACTIVE;
+        //         }
+        // }
+
+        // if (pair.value == CHUNK_SIZE_X)
+        // {
+        //         if(pair.index == 0 && chunk->xp)
+        //         {
+        //                 new_block_pos[pair.index] = 0;
+        //                 return chunk->xp->blocks[BLOCKOFFSET(new_block_pos)] & BLOCK_MASK_ACTIVE;
+        //         }
+
+        //         if(pair.index == 2 && chunk->zp)
+        //         {
+        //                 new_block_pos[pair.index] = 0;
+        //                 return chunk->zp->blocks[BLOCKOFFSET(new_block_pos)] & BLOCK_MASK_ACTIVE;
+        //         }
+        // }
+
         return(false);
+}
+
+void
+world_set_neighbor_chunks(struct Chunk* chunk, struct World* world)
+{
+        for(uint i = 0; i < WORLD_CHUNK_COUNT; i++)
+        {
+                struct Chunk* aux = world->chunks[i];
+                if(aux)
+                {
+                        if(glm_vec3_eqv(aux->world_position, (vec3){chunk->world_position[0] + 1, chunk->world_position[1], chunk->world_position[2]}))
+                                chunk->xp = aux;
+                        else chunk->xp = NULL;
+
+                        if(glm_vec3_eqv(aux->world_position, (vec3){chunk->world_position[0] - 1, chunk->world_position[1], chunk->world_position[2]}))
+                                chunk->xn = aux;
+                        else chunk->xn = NULL;
+
+                        if(glm_vec3_eqv(aux->world_position, (vec3){chunk->world_position[0], chunk->world_position[1], chunk->world_position[2] + 1}))
+                                chunk->zp = aux;
+                        else chunk->zp = NULL;
+
+                        if(glm_vec3_eqv(aux->world_position, (vec3){chunk->world_position[0], chunk->world_position[1], chunk->world_position[2] - 1}))
+                                chunk->zn = aux;
+                        else chunk->zn = NULL;
+                }
+        }
 }
 
 internal void

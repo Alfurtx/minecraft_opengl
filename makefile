@@ -11,16 +11,17 @@ UNAME_S = $(shell uname -s)
 # NOTE(fonsi): definido CGLM_ALL_UNALIGNED porque habia ciertos problemas con el alineamiento en MACOS
 
 CC = clang
-CFLAGS = -std=c11 -g -pg -Wall -Wextra -Wpedantic -Wstrict-aliasing -DCGLM_ALL_UNALIGNED
+CFLAGS = -std=c11 -g -Wall -Wextra -Wpedantic -Wstrict-aliasing -DCGLM_ALL_UNALIGNED
 CFLAGS += -Wno-unused-parameter -Wno-switch -Wno-unused-function
-LDFLAGS = -lm -lglfw libs/glad/src/glad.o -pg
+LDFLAGS = -lm -lglfw libs/glad/src/glad.o
 
 ifeq ($(UNAME_S), Darwin)
 	LDFLAGS += -framework OpenGL -framework IOKit -framework CoreVideo -framework Cocoa
 endif
 
 ifeq ($(UNAME_S), Linux)
-	LDFLAGS += -ldl -lpthread -lGL -lX11 -lXrandr -lXi
+	CFLAGS += -pg
+	LDFLAGS += -ldl -lpthread -lGL -lX11 -lXrandr -lXi -pg
 endif
 
 SRC = $(wildcard src/*.c) $(wildcard src/**/*.c) $(wildcard src/**/**/*.c) $(wildcard src/**/**/**/*.c)

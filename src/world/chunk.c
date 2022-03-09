@@ -26,6 +26,11 @@ chunk_init(struct Renderer* renderer, vec3 world_position, fnl_state* noise_stat
         chunk->prepared = false;
         chunk->border   = false;
 
+        chunk->xn = NULL;
+        chunk->xp = NULL;
+        chunk->zn = NULL;
+        chunk->zp = NULL;
+
         mesh_init(&chunk->mesh);
         glm_vec3_copy(world_position, chunk->world_position);
         glm_vec3_scale(world_position, 16.0f, chunk->world_offset);
@@ -100,12 +105,6 @@ chunk_render(struct Chunk* chunk)
         mesh_render(&chunk->mesh);
 }
 
-// TODO(fonsi): Terminar la funcion, basandome en la funcion que vi en este repo
-// (https://gist.github.com/Vercidium/a3002bd083cce2bc854c9ff8f0118d33)
-void
-chunk_generate_mesh(struct Chunk* chunk)
-{
-}
 
 internal inline uint
 offset(uint x, uint y, uint z)
@@ -146,7 +145,7 @@ chunk_setup_map(struct Chunk* chunk)
         //         }
 
         for (uint i = 0; i < CHUNK_SIZE_X; i++)
-                for (uint j = 0; j < CHUNK_SIZE_Y; j++)
+                for (uint j = 0; j < 16; j++)
                         for (uint k = 0; k < CHUNK_SIZE_Z; k++)
                         {
                                 uint* block = &chunk->blocks[offset(i, j, k)];

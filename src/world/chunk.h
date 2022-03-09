@@ -20,6 +20,9 @@ struct Chunk
         struct Mesh      mesh;
         struct Renderer* renderer;
 
+        // Estos son los chunks vecinos al 'self'
+        struct Chunk* xp, *xn, *zp, *zn;
+
         /*
         ** BYTE FIELDS
         ** -----------
