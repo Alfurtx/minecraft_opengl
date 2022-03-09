@@ -8,13 +8,11 @@ struct value_index
 
 // NOTE(fonsi): si block_position no tiene ninguna coordenada fuera del rango de un chunk (ej. -1, 16 o 256), devuelve
 // index = -1
-internal struct value_index get_block_index_value_coord(vec3 block_position);
+internal inline struct value_index get_block_index_value_coord(vec3 block_position);
 
-internal bool is_chunk_in_bounds(struct World* world, vec3 chunk_world_position);
-internal bool is_block_in_chunk_bounds(struct World* world, vec3 chunk_block_position);
-internal void get_chunkpos_from_position(vec3 position, vec3 dest);
-internal bool player_in_chunk_origin(struct World* world);
-internal void set_border_chunks(struct World* world);
+internal inline void get_chunkpos_from_position(vec3 position, vec3 dest);
+internal inline bool player_in_chunk_origin(struct World* world);
+internal inline void set_border_chunks(struct World* world);
 
 /*
  * NOTE(fonsi): Recordar cambiar de orden el X y Z a la hora de pasar los valores a chunk_position
@@ -287,7 +285,7 @@ world_set_neighbor_chunks(struct Chunk* chunk, struct World* world)
         }
 }
 
-internal void
+internal inline void
 get_chunkpos_from_position(vec3 position, vec3 dest)
 {
         dest[0] = floorf(position[0] / CHUNK_SIZE_X);
@@ -295,7 +293,7 @@ get_chunkpos_from_position(vec3 position, vec3 dest)
         dest[2] = floorf(position[2] / CHUNK_SIZE_Z);
 }
 
-internal struct value_index
+internal inline struct value_index
 get_block_index_value_coord(vec3 block_position)
 {
         struct value_index res = {0, -1};
@@ -311,7 +309,7 @@ get_block_index_value_coord(vec3 block_position)
         return res;
 }
 
-internal bool
+internal inline bool
 player_in_chunk_origin(struct World* world)
 {
         vec3 aux = GLM_VEC3_ZERO_INIT;
@@ -319,7 +317,7 @@ player_in_chunk_origin(struct World* world)
         return glm_vec3_eqv(world->chunk_origin, aux);
 }
 
-internal void
+internal inline void
 set_border_chunks(struct World* world)
 {
         FOR_EACH_POSITION(i, j)

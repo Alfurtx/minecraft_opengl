@@ -6,6 +6,7 @@
 #include "stb_ds.h"
 #include "FastNoiseLite.h"
 #include <cglm/cglm.h>
+#include <cglm/call.h>
 #include <assert.h>
 #include <time.h>
 

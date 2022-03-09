@@ -11,7 +11,7 @@ UNAME_S = $(shell uname -s)
 # NOTE(fonsi): definido CGLM_ALL_UNALIGNED porque habia ciertos problemas con el alineamiento en MACOS
 
 CC = clang
-CFLAGS = -std=c11 -g -Wall -Wextra -Wpedantic -Wstrict-aliasing -DCGLM_ALL_UNALIGNED
+CFLAGS = -std=c11 -g -Wall -Wextra -Wpedantic -Wstrict-aliasing
 CFLAGS += -Wno-unused-parameter -Wno-switch -Wno-unused-function
 LDFLAGS = -lm -lglfw libs/glad/src/glad.o
 
@@ -20,7 +20,7 @@ ifeq ($(UNAME_S), Darwin)
 endif
 
 ifeq ($(UNAME_S), Linux)
-	CFLAGS += -pg
+	CFLAGS += -pg -DCGLM_ALL_UNALIGNED
 	LDFLAGS += -ldl -lpthread -lGL -lX11 -lXrandr -lXi -pg
 endif
 
