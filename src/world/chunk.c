@@ -145,7 +145,7 @@ chunk_setup_map(struct Chunk* chunk)
         //         }
 
         for (uint i = 0; i < CHUNK_SIZE_X; i++)
-                for (uint j = 0; j < 16; j++)
+                for (uint j = 0; j < CHUNK_SIZE_Y; j++)
                         for (uint k = 0; k < CHUNK_SIZE_Z; k++)
                         {
                                 uint* block = &chunk->blocks[offset(i, j, k)];

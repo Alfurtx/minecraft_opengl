@@ -224,7 +224,6 @@ world_block_exists(struct World* world, struct Chunk* chunk, vec3 chunk_block_po
 
         // vec3 new_block_pos;
         // glm_vec3_copy(chunk_block_position, new_block_pos);
-
         // if (pair.value == -1)
         // {
         //         if(pair.index == 0 && chunk->xn)
@@ -232,14 +231,12 @@ world_block_exists(struct World* world, struct Chunk* chunk, vec3 chunk_block_po
         //                 new_block_pos[pair.index] = CHUNK_SIZE_X - 1;
         //                 return chunk->xn->blocks[BLOCKOFFSET(new_block_pos)] & BLOCK_MASK_ACTIVE;
         //         }
-
         //         if(pair.index == 2 && chunk->zn)
         //         {
         //                 new_block_pos[pair.index] = CHUNK_SIZE_Z - 1;
         //                 return chunk->zn->blocks[BLOCKOFFSET(new_block_pos)] & BLOCK_MASK_ACTIVE;
         //         }
         // }
-
         // if (pair.value == CHUNK_SIZE_X)
         // {
         //         if(pair.index == 0 && chunk->xp)
@@ -247,7 +244,6 @@ world_block_exists(struct World* world, struct Chunk* chunk, vec3 chunk_block_po
         //                 new_block_pos[pair.index] = 0;
         //                 return chunk->xp->blocks[BLOCKOFFSET(new_block_pos)] & BLOCK_MASK_ACTIVE;
         //         }
-
         //         if(pair.index == 2 && chunk->zp)
         //         {
         //                 new_block_pos[pair.index] = 0;
