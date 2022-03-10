@@ -13,7 +13,7 @@ UNAME_S = $(shell uname -s)
 CC = clang
 CFLAGS = -std=c11 -g -Wall -Wextra -Wpedantic -Wstrict-aliasing
 CFLAGS += -Wno-unused-parameter -Wno-switch -Wno-unused-function
-LDFLAGS = -lm -lglfw libs/glad/src/glad.o
+LDFLAGS = -lm -lglfw libs/glad/src/glad.o -lpthread
 
 ifeq ($(UNAME_S), Darwin)
 	LDFLAGS += -framework OpenGL -framework IOKit -framework CoreVideo -framework Cocoa

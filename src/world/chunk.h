@@ -7,6 +7,7 @@
 #include "../utils/worldgen.h"
 #include "block.h"
 
+#define CHUNK_SIZE 32
 #define CHUNK_SIZE_X 32
 #define CHUNK_SIZE_Y 32
 #define CHUNK_SIZE_Z 32
@@ -37,7 +38,10 @@ struct Chunk
         vec3 world_position;
 
         bool border;
-        bool prepared;
+
+        // MULTITHREADING VARIABLES
+        bool remesh;
+        bool ready_for_render;
 };
 
 extern struct Chunk* chunk_init(struct Renderer* renderer, vec3 world_position, fnl_state* noise_state);

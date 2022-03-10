@@ -23,7 +23,8 @@ chunk_init(struct Renderer* renderer, vec3 world_position, fnl_state* noise_stat
         struct Chunk* chunk = malloc(sizeof *chunk);
         chunk->renderer     = renderer;
 
-        chunk->prepared = false;
+        chunk->remesh = false;
+        chunk->ready_for_render = false;
         chunk->border   = false;
 
         chunk->xn = NULL;
@@ -38,7 +39,7 @@ chunk_init(struct Renderer* renderer, vec3 world_position, fnl_state* noise_stat
         // chunk->heightmap.noise_state = noise_state;
 
         for (uint i = 0; i < CHUNK_BLOCK_COUNT; i++)
-                chunk->blocks[i] = 0;
+                chunk->blocks[i] &= 0x00000000;
 
         chunk_setup_map(chunk);
 
@@ -64,7 +65,7 @@ chunk_prepare_render(struct Chunk* chunk)
         FOR_EACH_BLOCK_XYZ(i, j, k)
         {
                 uint current_block = chunk->blocks[offset(i, j, k)];
-                if (current_block & BLOCK_MASK_ACTIVE)
+                if (current_block & 0x000000FF)
                 {
                         // ir cara por cara de cada bloque
                         for (uint d = 0; d < DIRECTION_COUNT; d++)
@@ -78,13 +79,12 @@ chunk_prepare_render(struct Chunk* chunk)
                                 {
                                         // pasarlo al mesh
                                         vec2 texture_coords;
-                                        BLOCKS[get_block_type(current_block)].get_texture_location(d, texture_coords);
+                                        BLOCKS[((uint)(current_block & 0x0000FF00) >> 8)].get_texture_location(d, texture_coords);
                                         mesh_add_face(&chunk->mesh, (vec3){i, j, k}, texture_coords, d);
                                 }
                         }
                 }
         }
-        mesh_prepare_render(&chunk->mesh);
 }
 
 void
@@ -126,9 +126,9 @@ chunk_setup_map(struct Chunk* chunk)
 {
         chunk->heightmap.noise_state              = fnlCreateState();
         chunk->heightmap.noise_state.noise_type   = FNL_NOISE_OPENSIMPLEX2;
-        chunk->heightmap.noise_state.octaves      = 16;
-        chunk->heightmap.noise_state.lacunarity   = 4.0;
-        chunk->heightmap.noise_state.frequency    = 0.01;
+        chunk->heightmap.noise_state.octaves      = 6;
+        chunk->heightmap.noise_state.lacunarity   = 2.0;
+        chunk->heightmap.noise_state.frequency    = 0.25;
         chunk->heightmap.noise_state.fractal_type = FNL_FRACTAL_FBM;
         chunk->heightmap.noise_state.seed = chunk->world_offset[0] + chunk->world_offset[1] + chunk->world_offset[2];
 
@@ -139,13 +139,14 @@ chunk_setup_map(struct Chunk* chunk)
                 {
                         double height                       = 32.0f * (double) chunk->heightmap.elevation[i][j];
                         uint* block = &chunk->blocks[offset(i, height, j)];
-                        *block      = *block | 0x01;
-                        *block      = (*block & BLOCK_MASK_TYPE) | (((uint) BLOCK_GRASS) << 8);
+                        *block = (*block & 0xFFFFFF00) | 0x01;
+                        *block = (*block & 0xFFFF00FF) | ((uint)BLOCK_GRASS << 8);
                         if (height != 0)
                                 for (uint k = height - 1; k > 0; k--)
                                 {
                                         uint* block = &chunk->blocks[offset(i, k, j)];
-                                        *block      = (*block & BLOCK_MASK_TYPE) | ((k % 2 == 0 ? BLOCK_GRASS : BLOCK_STONE) << 8);
+                                        *block = (*block & 0xFFFFFF00) | 0x01;
+                                        *block = (*block & 0xFFFF00FF) | ((uint)BLOCK_WATER << 8);
                                 }
                 }
 

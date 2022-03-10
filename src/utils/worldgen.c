@@ -17,6 +17,6 @@ heightmap_generate(struct Heightmap* heightmap)
                         double nx = (double) x / HEIGHTMAP_X - 0.5;
                         double nz = (double) z / HEIGHTMAP_Z - 0.5;
 
-                        heightmap->elevation[z][x] = noise(&heightmap->noise_state, nx, nz);
+                        heightmap->elevation[z][x] = round(noise(&heightmap->noise_state, nx, nz) * 18) / 18;
                 }
 }

@@ -7,6 +7,7 @@
 #include "FastNoiseLite.h"
 #include <cglm/cglm.h>
 #include <cglm/call.h>
+#include <pthread.h>
 #include <assert.h>
 #include <time.h>
 

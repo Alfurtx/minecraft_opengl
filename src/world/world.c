@@ -14,6 +14,10 @@ internal inline void get_chunkpos_from_position(vec3 position, vec3 dest);
 internal inline bool player_in_chunk_origin(struct World* world);
 internal inline void set_border_chunks(struct World* world);
 
+// t_ significa que esta pensada para mandarla a un thread
+// args tiene que ser struct World*, si en algun momento hay que pasar mas parametros hay que converir args en un puntero a una struct que guarde todos los argumentos que queramos
+internal void* t_world_prepare_render(void* args);
+
 /*
  * NOTE(fonsi): Recordar cambiar de orden el X y Z a la hora de pasar los valores a chunk_position
  * =>
@@ -23,20 +27,15 @@ internal inline void set_border_chunks(struct World* world);
 void
 world_init(struct World* world, struct Renderer* renderer)
 {
+        pthread_mutex_init(&lock, NULL);
+        world->meshing_thread_stop = false;
+
         world->renderer = renderer;
         world->chunks   = malloc(WORLD_CHUNK_COUNT * sizeof *world->chunks);
         get_chunkpos_from_position(world->renderer->current_camera->position, world->chunk_origin);
 
         uint index = 0;
         FOR_EACH_POSITION(i, j) { glm_vec3_copy((vec3){i, 0, j}, WORLD_CHUNK_SURROUNDINGS[index++]); }
-
-        // FastNoiseLite init
-        // world->noise_state = fnlCreateState();
-        // world->noise_state.noise_type       = FNL_NOISE_OPENSIMPLEX2;
-        // world->noise_state.octaves          = 16;
-        // world->noise_state.lacunarity       = 4.0;
-        // world->noise_state.frequency        = 0.01;
-        // world->noise_state.fractal_type     = FNL_FRACTAL_FBM;
 
         // ir inicializando cada chunk, basandose en la direccion desde el chunk_origin
         for (uint i = 0; i < WORLD_CHUNK_COUNT; i++)
@@ -50,11 +49,16 @@ world_init(struct World* world, struct Renderer* renderer)
                 world_set_neighbor_chunks(world->chunks[i], world);
 
         set_border_chunks(world);
+
+        pthread_create(&world->meshing_thread, NULL, t_world_prepare_render, world);
 }
 
 void
 world_destroy(struct World* world)
 {
+        world->meshing_thread_stop = true;
+        pthread_join(world->meshing_thread, NULL);
+
         for (uint i = 0; i < WORLD_CHUNK_COUNT; i++)
                 chunk_destroy(world->chunks[i]);
         free(world->chunks);
@@ -69,6 +73,9 @@ world_update(struct World* world)
         // comprobar si player esta en el chunk origin
         if (!player_in_chunk_origin(world))
         {
+                // lock meshing thread para setear las flags correspondientes
+                pthread_mutex_lock(&lock);
+
                 // actualizar el chunk origin al nuevo chunk
                 vec3 new_chunk_origin;
                 get_chunkpos_from_position(world->renderer->current_camera->position, new_chunk_origin);
@@ -129,12 +136,12 @@ world_update(struct World* world)
                             glm_vec3_min(aux) == -WORLD_CHUNK_RENDER_DISTANCE)
                         {
                                 world->chunks[k]->border   = true;
-                                world->chunks[k]->prepared = false;
+                                world->chunks[k]->remesh = true;
                         }
                         else if (was_border)
                         {
                                 world->chunks[k]->border   = false;
-                                world->chunks[k]->prepared = false;
+                                world->chunks[k]->remesh = true;
                         }
                         else
                                 world->chunks[k]->border = false;
@@ -143,6 +150,7 @@ world_update(struct World* world)
                                 world_set_neighbor_chunks(world->chunks[k], world);
                 }
 
+                pthread_mutex_unlock(&lock);
         }
 }
 
@@ -150,15 +158,11 @@ void
 world_render(struct World* world)
 {
         for (uint i = 0; i < WORLD_CHUNK_COUNT; i++)
-                if (!world->chunks[i]->prepared)
+                if (!world->chunks[i]->remesh && world->chunks[i]->ready_for_render)
                 {
-                        chunk_prepare_render(world->chunks[i]);
-                        world->chunks[i]->prepared = true;
-                }
-
-        for (uint i = 0; i < WORLD_CHUNK_COUNT; i++)
-                if (world->chunks[i]->prepared)
+                        mesh_prepare_render(&world->chunks[i]->mesh);
                         chunk_render(world->chunks[i]);
+                }
 }
 
 uint
@@ -330,4 +334,39 @@ set_border_chunks(struct World* world)
                                             : false;
                 }
         }
+}
+
+internal void*
+t_world_prepare_render(void* args)
+{
+        struct World* world = args;
+
+
+        bool finished = false;
+
+        while(!world->meshing_thread_stop)
+        {
+                pthread_mutex_lock(&lock);
+
+                finished = true;
+                for(uint i = 0; i < WORLD_CHUNK_COUNT; i++)
+                        if(world->chunks[i]->remesh)
+                                finished = false;
+
+                if(!finished)
+                {
+                        for(uint i = 0; i < WORLD_CHUNK_COUNT; i++)
+                                if(world->chunks[i]->remesh)
+                                {
+                                        chunk_prepare_render(world->chunks[i]);
+                                        world->chunks[i]->remesh = false;
+                                        world->chunks[i]->ready_for_render = true;
+                                }
+                }
+
+                pthread_mutex_unlock(&lock);
+        }
+
+        return NULL;
+
 }

@@ -20,6 +20,9 @@ vec3 WORLD_CHUNK_SURROUNDINGS[WORLD_CHUNK_SURROUNDINGS_COUNT];
         for (int i = -WORLD_CHUNK_RENDER_DISTANCE; i < WORLD_CHUNK_RENDER_DISTANCE + 1; i++) \
                 for (int j = -WORLD_CHUNK_RENDER_DISTANCE; j < WORLD_CHUNK_RENDER_DISTANCE + 1; j++)
 
+// TODO(fonsi): recordar iniciar el mutex en world_init
+pthread_mutex_t lock;
+
 struct World
 {
         struct Renderer* renderer;
@@ -27,6 +30,10 @@ struct World
         fnl_state        noise_state;
 
         vec3 chunk_origin; // el chunk donde se encuentra el personaje/camara
+
+        // MULTITHREADING VARIABLES
+        pthread_t meshing_thread;
+        bool meshing_thread_stop; // se marca como true al final de la ejecucion para detener el mesh thread
 };
 
 extern void world_init(struct World* world, struct Renderer* renderer);
