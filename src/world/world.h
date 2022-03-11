@@ -1,15 +1,15 @@
 #ifndef WORLD_H_
 #define WORLD_H_
 
+#include "../gfx/window.h"
 #include "../utils/types.h"
 #include "../utils/utils.h"
 #include "chunk.h"
 
 extern vec3 WORLD_CHUNK_SURROUNDINGS[];
 
-#define WORLD_CHUNK_RENDER_DISTANCE 2
+#define WORLD_CHUNK_RENDER_DISTANCE 4
 #define WORLD_CHUNK_SURROUNDINGS_COUNT ((WORLD_CHUNK_RENDER_DISTANCE * 2 + 1) * (WORLD_CHUNK_RENDER_DISTANCE * 2 + 1))
-vec3 WORLD_CHUNK_SURROUNDINGS[WORLD_CHUNK_SURROUNDINGS_COUNT];
 
 #define WORLD_CHUNK_SIDE_COUNT (WORLD_CHUNK_RENDER_DISTANCE * 2 + 1)
 #define WORLD_CHUNK_COUNT WORLD_CHUNK_SURROUNDINGS_COUNT
@@ -20,8 +20,7 @@ vec3 WORLD_CHUNK_SURROUNDINGS[WORLD_CHUNK_SURROUNDINGS_COUNT];
         for (int i = -WORLD_CHUNK_RENDER_DISTANCE; i < WORLD_CHUNK_RENDER_DISTANCE + 1; i++) \
                 for (int j = -WORLD_CHUNK_RENDER_DISTANCE; j < WORLD_CHUNK_RENDER_DISTANCE + 1; j++)
 
-// TODO(fonsi): recordar iniciar el mutex en world_init
-pthread_mutex_t lock;
+extern pthread_mutex_t lock;
 
 struct World
 {
@@ -33,7 +32,7 @@ struct World
 
         // MULTITHREADING VARIABLES
         pthread_t meshing_thread;
-        bool meshing_thread_stop; // se marca como true al final de la ejecucion para detener el mesh thread
+        bool      meshing_thread_stop; // se marca como true al final de la ejecucion para detener el mesh thread
 };
 
 extern void world_init(struct World* world, struct Renderer* renderer);
@@ -45,6 +44,6 @@ extern uint          world_get_block(struct World* world, vec3 chunk_world_posit
 extern struct Chunk* world_get_chunk(struct World* world, vec3 chunk_world_position);
 extern bool          world_block_exists(struct World* world, struct Chunk* chunk, vec3 chunk_block_position);
 
-extern void          world_set_neighbor_chunks(struct Chunk* chunk, struct World* world);
+extern void world_set_neighbor_chunks(struct Chunk* chunk, struct World* world);
 
 #endif // WORLD_H_

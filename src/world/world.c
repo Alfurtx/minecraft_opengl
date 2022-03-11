@@ -1,5 +1,9 @@
 #include "world.h"
 
+// GLOBAL VARIABLES
+pthread_mutex_t lock;
+vec3            WORLD_CHUNK_SURROUNDINGS[WORLD_CHUNK_SURROUNDINGS_COUNT];
+
 struct value_index
 {
         float value;
@@ -15,7 +19,8 @@ internal inline bool player_in_chunk_origin(struct World* world);
 internal inline void set_border_chunks(struct World* world);
 
 // t_ significa que esta pensada para mandarla a un thread
-// args tiene que ser struct World*, si en algun momento hay que pasar mas parametros hay que converir args en un puntero a una struct que guarde todos los argumentos que queramos
+// args tiene que ser struct World*, si en algun momento hay que pasar mas parametros hay que converir args en un
+// puntero a una struct que guarde todos los argumentos que queramos
 internal void* t_world_prepare_render(void* args);
 
 /*
@@ -135,18 +140,18 @@ world_update(struct World* world)
                         if (glm_vec3_max(aux) == WORLD_CHUNK_RENDER_DISTANCE ||
                             glm_vec3_min(aux) == -WORLD_CHUNK_RENDER_DISTANCE)
                         {
-                                world->chunks[k]->border   = true;
+                                world->chunks[k]->border = true;
                                 world->chunks[k]->remesh = true;
                         }
                         else if (was_border)
                         {
-                                world->chunks[k]->border   = false;
+                                world->chunks[k]->border = false;
                                 world->chunks[k]->remesh = true;
                         }
                         else
                                 world->chunks[k]->border = false;
 
-                        if(was_border != world->chunks[k]->border)
+                        if (was_border != world->chunks[k]->border)
                                 world_set_neighbor_chunks(world->chunks[k], world);
                 }
 
@@ -159,10 +164,11 @@ world_render(struct World* world)
 {
         for (uint i = 0; i < WORLD_CHUNK_COUNT; i++)
                 if (!world->chunks[i]->remesh && world->chunks[i]->ready_for_render)
-                {
                         mesh_prepare_render(&world->chunks[i]->mesh);
+
+        for (uint i = 0; i < WORLD_CHUNK_COUNT; i++)
+                if (!world->chunks[i]->remesh && world->chunks[i]->ready_for_render)
                         chunk_render(world->chunks[i]);
-                }
 }
 
 uint
@@ -221,7 +227,7 @@ bool
 world_block_exists(struct World* world, struct Chunk* chunk, vec3 chunk_block_position)
 {
         struct value_index pair = get_block_index_value_coord(chunk_block_position);
-        if(pair.index == -1)
+        if (pair.index == -1)
         {
                 return chunk->blocks[BLOCKOFFSET(chunk_block_position)] & BLOCK_MASK_ACTIVE;
         }
@@ -255,32 +261,48 @@ world_block_exists(struct World* world, struct Chunk* chunk, vec3 chunk_block_po
         //         }
         // }
 
-        return(false);
+        return (false);
 }
 
 void
 world_set_neighbor_chunks(struct Chunk* chunk, struct World* world)
 {
-        for(uint i = 0; i < WORLD_CHUNK_COUNT; i++)
+        for (uint i = 0; i < WORLD_CHUNK_COUNT; i++)
         {
                 struct Chunk* aux = world->chunks[i];
-                if(aux)
+                if (aux)
                 {
-                        if(glm_vec3_eqv(aux->world_position, (vec3){chunk->world_position[0] + 1, chunk->world_position[1], chunk->world_position[2]}))
+                        if (glm_vec3_eqv(aux->world_position,
+                                         (vec3){chunk->world_position[0] + 1,
+                                                chunk->world_position[1],
+                                                chunk->world_position[2]}))
                                 chunk->xp = aux;
-                        else chunk->xp = NULL;
+                        else
+                                chunk->xp = NULL;
 
-                        if(glm_vec3_eqv(aux->world_position, (vec3){chunk->world_position[0] - 1, chunk->world_position[1], chunk->world_position[2]}))
+                        if (glm_vec3_eqv(aux->world_position,
+                                         (vec3){chunk->world_position[0] - 1,
+                                                chunk->world_position[1],
+                                                chunk->world_position[2]}))
                                 chunk->xn = aux;
-                        else chunk->xn = NULL;
+                        else
+                                chunk->xn = NULL;
 
-                        if(glm_vec3_eqv(aux->world_position, (vec3){chunk->world_position[0], chunk->world_position[1], chunk->world_position[2] + 1}))
+                        if (glm_vec3_eqv(aux->world_position,
+                                         (vec3){chunk->world_position[0],
+                                                chunk->world_position[1],
+                                                chunk->world_position[2] + 1}))
                                 chunk->zp = aux;
-                        else chunk->zp = NULL;
+                        else
+                                chunk->zp = NULL;
 
-                        if(glm_vec3_eqv(aux->world_position, (vec3){chunk->world_position[0], chunk->world_position[1], chunk->world_position[2] - 1}))
+                        if (glm_vec3_eqv(aux->world_position,
+                                         (vec3){chunk->world_position[0],
+                                                chunk->world_position[1],
+                                                chunk->world_position[2] - 1}))
                                 chunk->zn = aux;
-                        else chunk->zn = NULL;
+                        else
+                                chunk->zn = NULL;
                 }
         }
 }
@@ -341,25 +363,24 @@ t_world_prepare_render(void* args)
 {
         struct World* world = args;
 
-
         bool finished = false;
 
-        while(!world->meshing_thread_stop)
+        while (!world->meshing_thread_stop)
         {
                 pthread_mutex_lock(&lock);
 
                 finished = true;
-                for(uint i = 0; i < WORLD_CHUNK_COUNT; i++)
-                        if(world->chunks[i]->remesh)
+                for (uint i = 0; i < WORLD_CHUNK_COUNT; i++)
+                        if (world->chunks[i]->remesh)
                                 finished = false;
 
-                if(!finished)
+                if (!finished)
                 {
-                        for(uint i = 0; i < WORLD_CHUNK_COUNT; i++)
-                                if(world->chunks[i]->remesh)
+                        for (uint i = 0; i < WORLD_CHUNK_COUNT; i++)
+                                if (world->chunks[i]->remesh)
                                 {
                                         chunk_prepare_render(world->chunks[i]);
-                                        world->chunks[i]->remesh = false;
+                                        world->chunks[i]->remesh           = false;
                                         world->chunks[i]->ready_for_render = true;
                                 }
                 }
@@ -368,5 +389,4 @@ t_world_prepare_render(void* args)
         }
 
         return NULL;
-
 }

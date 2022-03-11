@@ -2,7 +2,7 @@
 #include "camera.h"
 #include "gfx.h"
 
-const float CAMERA_RENDER_DISTANCE = 8.0f;
+const float CAMERA_RENDER_DISTANCE = 12.0f;
 const float CAMERA_YAW             = -90.0f;
 const float CAMERA_PITCH           = 0.0f;
 const float CAMERA_SPEED           = 2.5f;
