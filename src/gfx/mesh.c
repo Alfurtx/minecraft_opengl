@@ -25,37 +25,20 @@ static vec3 MESH_BLOCK_VERTICES[] = {
 
 internal void mesh_check_buffer_size(struct Mesh* mesh, uint amount);
 internal void get_real_texture_coords(vec2 face_text_position, enum Direction direction, uint vertex_index, vec2 dest);
-internal void get_texture_quad_coords(vec2 face_texture_position, enum Direction direction, vec2 dest[4]);
 
 void
 mesh_init(struct Mesh* mesh)
 {
-        mesh->vao        = vao_create();
-        mesh->vbo        = vbo_create(GL_ARRAY_BUFFER, true);
-        mesh->vertex_arr = NULL;
 }
 
 void
 mesh_destroy(struct Mesh* mesh)
 {
-        arrfree(mesh->vertex_arr);
-        vao_destroy(&mesh->vao);
-        vbo_destroy(&mesh->vbo);
 }
 
 void
 mesh_add_face(struct Mesh* mesh, vec3 chunk_block_pos, vec2 face_texture_coords, enum Direction direction)
 {
-        struct Vertex vert;
-        for (uint i = 0; i < 6; i++)
-        {
-                uint index = MESH_BLOCK_INDICES[direction][i];
-
-                get_real_texture_coords(face_texture_coords, direction, index, vert.texture_pos);
-                glm_vec3_add(chunk_block_pos, MESH_BLOCK_VERTICES[index], vert.pos);
-
-                arrput(mesh->vertex_arr, vert);
-        }
 }
 
 void
@@ -74,31 +57,6 @@ mesh_render(struct Mesh* mesh)
         vao_bind(&mesh->vao);
         glDrawArrays(GL_TRIANGLES, 0, arrlen(mesh->vertex_arr));
         glBindVertexArray(0);
-}
-
-void
-mesh_add_quad(struct Mesh*   mesh,
-              vec3           quad_positions[4],
-              vec2           texture_position,
-              enum BlockType block_type,
-              enum Direction face_direction)
-{
-        vec2 texture_coords[4];
-        get_texture_quad_coords(texture_position, face_direction, texture_coords);
-
-        struct Vertex vertices[4];
-        for(uint i = 0; i < 4; i++)
-        {
-                glm_vec3_copy(quad_positions[i], vertices[i].pos);
-                glm_vec2_copy(texture_coords[i], vertices[i].texture_pos);
-        }
-
-        arrput(mesh->vertex_arr, vertices[0]);
-        arrput(mesh->vertex_arr, vertices[1]);
-        arrput(mesh->vertex_arr, vertices[3]);
-        arrput(mesh->vertex_arr, vertices[1]);
-        arrput(mesh->vertex_arr, vertices[2]);
-        arrput(mesh->vertex_arr, vertices[3]);
 }
 
 // NOTE(fonsi): el cuadro de texturas es 32 x 15 bloques, tener esto en cuenta para cambiar 'scale'
@@ -196,32 +154,4 @@ get_real_texture_coords(vec2 face_text_position, enum Direction direction, uint 
                         glm_vec2_copy(tex_coords[3], dest);
                 break;
         };
-}
-
-internal void
-get_texture_quad_coords(vec2 face_texture_position, enum Direction direction, vec2 dest[4])
-{
-        float scaleX = 1.0f / 16.0f;
-        float scaleZ = 1.0f / 16.0f;
-
-        vec2 tex_coords[4];
-        for (uint i = 0; i < 4; i++)
-                glm_vec2_copy(face_texture_position, tex_coords[i]);
-
-        // 0, 0 (0)
-        tex_coords[0][0] *= scaleX;
-        tex_coords[0][1] *= scaleZ;
-        // 1, 0 (1)
-        tex_coords[1][0] += 1.0f;
-        tex_coords[1][0] *= scaleX;
-        tex_coords[1][1] *= scaleZ;
-        // 0, 1 (2)
-        tex_coords[2][0] += 1.0f;
-        tex_coords[2][1] += 1.0f;
-        tex_coords[2][0] *= scaleX;
-        tex_coords[2][1] *= scaleZ;
-        // 1, 1 (3)
-        tex_coords[3][1] += 1.0f;
-        tex_coords[3][0] *= scaleX;
-        tex_coords[3][1] *= scaleZ;
 }

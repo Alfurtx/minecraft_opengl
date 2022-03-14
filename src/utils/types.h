@@ -5,10 +5,11 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-typedef unsigned int uint;
-typedef uint64_t uint64;
-typedef uint8_t uint8;
-
 #define internal static
+
+typedef unsigned int uint;
+typedef uint32_t     uint32;
+typedef uint64_t     uint64;
+typedef uint8_t      uint8;
 
 #endif // TYPES_H

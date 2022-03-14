@@ -3,47 +3,26 @@
 #include "chunk.h"
 #include "world.h"
 
-// TODO(fonsi): implementar generacion de mundo apropiada
-internal void        chunk_setup_map(struct Chunk* chunk);
-internal inline uint offset(uint x, uint y, uint z);
-internal inline void offset3d(uint offset, vec3 dest);
-internal inline void set_block_active(uint* block, bool active);
-internal inline bool get_block_active(uint block);
-internal inline void set_block_type(uint* block, enum BlockType type);
-internal inline uint get_block_type(uint block);
+/*
+** TODO(fonsi): Lista de problemas a resolver ->
+** 1. Mejorar la generacion de mundo, multiples noise maps para hacer biomas y demás. Utilizar Perlin en vez del otro.
+** 2. Mejorar la generacion del mesh. Esto tendra que ver con utilizar buffers globales para almacenar los datos del
+*mesh.
+** 3. Mejorar la comprobacion de caras de los bloques para que se haga lo mas rapidamente posible.
+** 4. Implementar de alguna manera los INDEX buffer objects en todo este lio
+*/
 
-#define FOR_EACH_BLOCK_XYZ(i, j, k)                     \
-        for (uint i = 0; i < CHUNK_SIZE_X; i++)         \
-                for (uint j = 0; j < CHUNK_SIZE_Y; j++) \
-                        for (uint k = 0; k < CHUNK_SIZE_Z; k++)
+// NOTE(fonsi): NO hacer nada de multithreading, hay que resolver esto sin meter mas hilos, eso solo lo complica todo
+// mas de la cuenta.
 
-struct Chunk*
-chunk_init(struct Renderer* renderer, vec3 world_position, fnl_state* noise_state)
+#define CHUNK_FOREACH(x, y, z)                          \
+        for (uint x = 0; x < CHUNK_SIZE_X; x++)         \
+                for (uint y = 0; y < CHUNK_SIZE_Y; y++) \
+                        for (uint z = 0; z < CHUNK_SIZE_Z; z++)
+
+void
+chunk_init(struct Chunk* chunk, struct World* world, vec3 world_position)
 {
-        struct Chunk* chunk = malloc(sizeof *chunk);
-        chunk->renderer     = renderer;
-
-        chunk->remesh = false;
-        chunk->ready_for_render = false;
-        chunk->border   = false;
-
-        chunk->xn = NULL;
-        chunk->xp = NULL;
-        chunk->zn = NULL;
-        chunk->zp = NULL;
-
-        mesh_init(&chunk->mesh);
-        glm_vec3_copy(world_position, chunk->world_position);
-        glm_vec3_scale(world_position, CHUNK_SIZE_X, chunk->world_offset);
-
-        // chunk->heightmap.noise_state = noise_state;
-
-        for (uint i = 0; i < CHUNK_BLOCK_COUNT; i++)
-                chunk->blocks[i] &= 0x00000000;
-
-        chunk_setup_map(chunk);
-
-        return (chunk);
 }
 
 void
@@ -54,37 +33,11 @@ chunk_update(struct Chunk* chunk)
 void
 chunk_destroy(struct Chunk* chunk)
 {
-        mesh_destroy(&chunk->mesh);
-        free(chunk);
-        chunk = NULL;
 }
 
 void
 chunk_prepare_render(struct Chunk* chunk)
 {
-        FOR_EACH_BLOCK_XYZ(i, j, k)
-        {
-                uint current_block = chunk->blocks[offset(i, j, k)];
-                if (current_block & 0x000000FF)
-                {
-                        // ir cara por cara de cada bloque
-                        for (uint d = 0; d < DIRECTION_COUNT; d++)
-                        {
-                                // conseguir el bloque vecino
-                                vec3 aux;
-                                glm_vec3_add((vec3){i, j, k}, DIRECTION_VEC[d], aux);
-
-                                // comprobar que si bloque adyacente no esta activo
-                                if (!world_block_exists(&state.world, chunk, aux))
-                                {
-                                        // pasarlo al mesh
-                                        vec2 texture_coords;
-                                        BLOCKS[((uint)(current_block & 0x0000FF00) >> 8)].get_texture_location(d, texture_coords);
-                                        mesh_add_face(&chunk->mesh, (vec3){i, j, k}, texture_coords, d);
-                                }
-                        }
-                }
-        }
 }
 
 void
@@ -103,84 +56,4 @@ chunk_render(struct Chunk* chunk)
         shader_set_uniform_mat4(chunk->renderer->current_shader, "view", 1, GL_FALSE, view[0]);
         shader_set_uniform_mat4(chunk->renderer->current_shader, "model", 1, GL_FALSE, model[0]);
         mesh_render(&chunk->mesh);
-}
-
-
-internal inline uint
-offset(uint x, uint y, uint z)
-{
-        return (x + CHUNK_SIZE_X * y + CHUNK_SIZE_X * CHUNK_SIZE_Y * z);
-}
-
-internal inline void
-offset3d(uint offset, vec3 dest)
-{
-        dest[2] = offset / (CHUNK_SIZE_X * CHUNK_SIZE_Y);
-        offset -= (dest[2] * CHUNK_SIZE_X * CHUNK_SIZE_Y);
-        dest[1] = offset / CHUNK_SIZE_X;
-        dest[0] = offset % CHUNK_SIZE_X;
-}
-
-internal void
-chunk_setup_map(struct Chunk* chunk)
-{
-        chunk->heightmap.noise_state              = fnlCreateState();
-        chunk->heightmap.noise_state.noise_type   = FNL_NOISE_OPENSIMPLEX2;
-        chunk->heightmap.noise_state.octaves      = 6;
-        chunk->heightmap.noise_state.lacunarity   = 2.0;
-        chunk->heightmap.noise_state.frequency    = 0.25;
-        chunk->heightmap.noise_state.fractal_type = FNL_FRACTAL_FBM;
-        chunk->heightmap.noise_state.seed = chunk->world_offset[0] + chunk->world_offset[1] + chunk->world_offset[2];
-
-        heightmap_generate(&chunk->heightmap);
-
-        for (uint i = 0; i < HEIGHTMAP_X; i++)
-                for (uint j = 0; j < HEIGHTMAP_Z; j++)
-                {
-                        double height                       = 32.0f * (double) chunk->heightmap.elevation[i][j];
-                        uint* block = &chunk->blocks[offset(i, height, j)];
-                        *block = (*block & 0xFFFFFF00) | 0x01;
-                        *block = (*block & 0xFFFF00FF) | ((uint)BLOCK_GRASS << 8);
-                        if (height != 0)
-                                for (uint k = height - 1; k > 0; k--)
-                                {
-                                        uint* block = &chunk->blocks[offset(i, k, j)];
-                                        *block = (*block & 0xFFFFFF00) | 0x01;
-                                        *block = (*block & 0xFFFF00FF) | ((uint)BLOCK_WATER << 8);
-                                }
-                }
-
-        // for (uint i = 0; i < CHUNK_SIZE_X; i++)
-        //         for (uint j = 0; j < CHUNK_SIZE_Y; j++)
-        //                 for (uint k = 0; k < CHUNK_SIZE_Z; k++)
-        //                 {
-        //                         uint* block = &chunk->blocks[offset(i, j, k)];
-        //                         *block      = *block | 0x01;
-        //                         *block      = (*block & BLOCK_MASK_TYPE) | (((uint) BLOCK_STONE) << 8);
-        //                 }
-}
-
-internal inline void
-set_block_active(uint* block, bool active)
-{
-        *block = active ? *block | 0x01 : *block & BLOCK_MASK_ACTIVE;
-}
-
-internal inline bool
-get_block_active(uint block)
-{
-        return block & 0x000000ff;
-}
-
-internal inline void
-set_block_type(uint* block, enum BlockType type)
-{
-        uint aux = type;
-        *block   = (*block & BLOCK_MASK_TYPE) | (aux << 8);
-}
-
-internal inline uint
-get_block_type(uint block)
-{
-        return (block & 0x0000ff00) >> 8;
 }

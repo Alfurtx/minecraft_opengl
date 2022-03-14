@@ -13,16 +13,14 @@
 #define CHUNK_SIZE_Z 32
 #define CHUNK_BLOCK_COUNT (CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z)
 
-#define BLOCK_MASK_ACTIVE 0xffffff00
-#define BLOCK_MASK_TYPE 0xffff00ff
+#define BLOCK_MASK_ACTIVE 0x000000FF
+#define BLOCK_MASK_TYPE 0x0000FF00
 
 struct Chunk
 {
+        struct World*    world;
         struct Mesh      mesh;
         struct Renderer* renderer;
-
-        // Estos son los chunks vecinos al 'self'
-        struct Chunk* xp, *xn, *zp, *zn;
 
         /*
         ** BYTE FIELDS
@@ -30,24 +28,18 @@ struct Chunk
         ** byte 0 -> active
         ** byte 1 -> type
         */
-        uint blocks[CHUNK_BLOCK_COUNT];
+        uint* blocks;
 
-        struct Heightmap heightmap;
-
-        vec3 world_offset;
-        vec3 world_position;
-
-        bool border;
-
-        // MULTITHREADING VARIABLES
-        bool remesh;
-        bool ready_for_render;
+        struct
+        {
+                bool remesh : 1;
+        } flags;
 };
 
-extern struct Chunk* chunk_init(struct Renderer* renderer, vec3 world_position, fnl_state* noise_state);
-extern void          chunk_update(struct Chunk* chunk);
-extern void          chunk_destroy(struct Chunk* chunk);
-extern void          chunk_prepare_render(struct Chunk* chunk);
-extern void          chunk_render(struct Chunk* chunk);
+extern void chunk_init(struct Chunk* chunk, struct World* world, vec3 world_position);
+extern void chunk_update(struct Chunk* chunk);
+extern void chunk_destroy(struct Chunk* chunk);
+extern void chunk_prepare_render(struct Chunk* chunk);
+extern void chunk_render(struct Chunk* chunk);
 
 #endif // CHUNK_H_
