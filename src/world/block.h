@@ -6,7 +6,8 @@
 
 enum BlockType
 {
-        BLOCK_GRASS = 0,
+        BLOCK_AIR = 0,
+        BLOCK_GRASS,
         BLOCK_STONE,
         BLOCK_SAND,
         BLOCK_GLASS,

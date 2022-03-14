@@ -18,17 +18,12 @@
 
 struct Chunk
 {
-        struct World*    world;
-        struct Mesh      mesh;
-        struct Renderer* renderer;
+        struct Mesh mesh;
+        struct World* world;
 
-        /*
-        ** BYTE FIELDS
-        ** -----------
-        ** byte 0 -> active
-        ** byte 1 -> type
-        */
-        uint* blocks;
+        vec3        position;
+        vec3        offset;
+        uint*       blocks;
 
         struct
         {
@@ -39,7 +34,8 @@ struct Chunk
 extern void chunk_init(struct Chunk* chunk, struct World* world, vec3 world_position);
 extern void chunk_update(struct Chunk* chunk);
 extern void chunk_destroy(struct Chunk* chunk);
-extern void chunk_prepare_render(struct Chunk* chunk);
+extern void chunk_generate_mesh(struct Chunk* chunk);
 extern void chunk_render(struct Chunk* chunk);
+extern uint chunk_get_block(struct Chunk* chunk, vec3 position);
 
 #endif // CHUNK_H_

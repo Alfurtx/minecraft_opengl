@@ -1,157 +1,118 @@
 #include "mesh.h"
 #include <stdlib.h>
 
-const uint MESH_BUFFER_SIZE_BASE = 393216;
-
-const uint MESH_BLOCK_INDICES[][6] = {
-    {0, 1, 3, 1, 2, 3}, // north(-z)
-    {7, 5, 4, 7, 6, 5}, // south(+z)
-    {1, 5, 2, 5, 6, 2}, // east(+x)
-    {3, 4, 0, 3, 7, 4}, // west(-x)
-    {4, 5, 0, 5, 1, 0}, // top(+y)
-    {3, 6, 7, 3, 2, 6}, // bottom(-y)
+// clang-format off
+const uint MESH_FACE_INDICES[] = {1, 0, 3, 1, 3, 2};
+const uint MESH_UNIQUE_INDICES[] = {1, 0, 5, 2};
+const uint MESH_INDICES[] = {
+    1, 0, 3, 1, 3, 2, // north (-z)
+    4, 5, 6, 4, 6, 7, // south (+z)
+    5, 1, 2, 5, 2, 6, // east (+x)
+    0, 4, 7, 0, 7, 3, // west (-x)
+    2, 3, 7, 2, 7, 6, // top (+y)
+    5, 4, 0, 5, 0, 1, // bottom (-y)
 };
 
-static vec3 MESH_BLOCK_VERTICES[] = {
-    {-0.5f,  0.5f,  0.5f}, // 0
-    { 0.5f,  0.5f,  0.5f}, // 1
-    { 0.5f, -0.5f,  0.5f}, // 2
-    {-0.5f, -0.5f,  0.5f}, // 3
-    {-0.5f,  0.5f, -0.5f}, // 4
-    { 0.5f,  0.5f, -0.5f}, // 5
-    { 0.5f, -0.5f, -0.5f}, // 6
-    {-0.5f, -0.5f, -0.5f}, // 7
+const float MESH_VERTICES[] = {
+    0, 0, 0,
+    1, 0, 0,
+    1, 1, 0,
+    0, 1, 0,
+
+    0, 0, 1,
+    1, 0, 1,
+    1, 1, 1,
+    0, 1, 1
 };
 
-internal void mesh_check_buffer_size(struct Mesh* mesh, uint amount);
-internal void get_real_texture_coords(vec2 face_text_position, enum Direction direction, uint vertex_index, vec2 dest);
+const float MESH_TEXTURE_COORDS[] = {
+    1, 0,
+    0, 0,
+    0, 1,
+    1, 1
+};
+// clang-format on
+
+#define BUFFER_DATA_SIZE ((32 * 32 * 32) * 8 * 5 * sizeof(float))
+#define BUFFER_INDICES_SIZE ((32 * 32 * 32) * 36 * sizeof(uint))
+
+struct
+{
+        float data[BUFFER_DATA_SIZE];
+        uint  indices[BUFFER_INDICES_SIZE];
+} GLOBAL_BUFFERS;
 
 void
 mesh_init(struct Mesh* mesh)
 {
+        memset(mesh, 0, sizeof(struct Mesh));
+        mesh->vao              = vao_create();
+        mesh->vbo              = vbo_create(GL_ARRAY_BUFFER, false);
+        mesh->ibo              = vbo_create(GL_ELEMENT_ARRAY_BUFFER, false);
+        mesh->data.capacity    = BUFFER_DATA_SIZE;
+        mesh->indices.capacity = BUFFER_INDICES_SIZE;
 }
 
 void
 mesh_destroy(struct Mesh* mesh)
 {
+        vao_destroy(&mesh->vao);
+        vbo_destroy(&mesh->vbo);
+        vbo_destroy(&mesh->ibo);
 }
 
 void
-mesh_add_face(struct Mesh* mesh, vec3 chunk_block_pos, vec2 face_texture_coords, enum Direction direction)
+mesh_add_face(struct Mesh* mesh, vec3 position, vec2 texture_offset, vec2 texture_position, enum Direction direction)
 {
+        for (uint i = 0; i < 4; i++)
+        {
+                const float* aux = &MESH_VERTICES[MESH_INDICES[direction * 6 + MESH_UNIQUE_INDICES[i]] * 3];
+
+                ((float*) mesh->data.data)[mesh->data.index++] = position[0] + aux[0];
+                ((float*) mesh->data.data)[mesh->data.index++] = position[1] + aux[1];
+                ((float*) mesh->data.data)[mesh->data.index++] = position[2] + aux[2];
+                ((float*) mesh->data.data)[mesh->data.index++] =
+                    texture_offset[0] + (texture_position[0] * MESH_TEXTURE_COORDS[i * 2 + 0]);
+                ((float*) mesh->data.data)[mesh->data.index++] =
+                    texture_offset[1] + (texture_position[1] * MESH_TEXTURE_COORDS[i * 2 + 1]);
+        }
+
+        for (uint i = 0; i < 6; i++)
+                ((uint*) mesh->indices.data)[mesh->indices.index++] = mesh->vertex_count + MESH_FACE_INDICES[i];
+
+        mesh->vertex_count += 4;
 }
 
 void
-mesh_prepare_render(struct Mesh* mesh)
+mesh_finalize(struct Mesh* mesh)
 {
-        vao_bind(&mesh->vao);
-        vbo_bind(&mesh->vbo);
-        vbo_buffer(&mesh->vbo, mesh->vertex_arr, arrlen(mesh->vertex_arr) * sizeof(struct Vertex));
-        vao_attr(&mesh->vao, 0, 3, GL_FLOAT, GL_FALSE, sizeof(struct Vertex), 0);
-        vao_attr(&mesh->vao, 1, 2, GL_FLOAT, GL_FALSE, sizeof(struct Vertex), (void*) (3 * sizeof(float)));
+        mesh->data.count    = mesh->data.index;
+        mesh->data.index    = 0;
+        mesh->indices.count = mesh->indices.index;
+        mesh->indices.index = 0;
+
+        vbo_buffer(&mesh->vbo, mesh->data.data, mesh->data.count * sizeof(float));
+        vbo_buffer(&mesh->ibo, mesh->indices.data, mesh->indices.count * sizeof(uint));
+}
+
+void
+mesh_prepare(struct Mesh* mesh)
+{
+        mesh->vertex_count = 0;
+        mesh->data.data    = GLOBAL_BUFFERS.data;
+        mesh->indices.data = GLOBAL_BUFFERS.indices;
 }
 
 void
 mesh_render(struct Mesh* mesh)
 {
         vao_bind(&mesh->vao);
-        glDrawArrays(GL_TRIANGLES, 0, arrlen(mesh->vertex_arr));
-        glBindVertexArray(0);
-}
+        vbo_bind(&mesh->vbo);
+        vao_attr(&mesh->vao, 0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*) 0);
+        vao_attr(&mesh->vao, 1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*) (3 * sizeof(float)));
 
-// NOTE(fonsi): el cuadro de texturas es 32 x 15 bloques, tener esto en cuenta para cambiar 'scale'
-internal void
-get_real_texture_coords(vec2 face_text_position, enum Direction direction, uint vertex_index, vec2 dest)
-{
-        float scaleX = 1.0f / 16.0f;
-        float scaleZ = 1.0f / 16.0f;
-
-        vec2 tex_coords[4];
-        for (uint i = 0; i < 4; i++)
-                glm_vec2_copy(face_text_position, tex_coords[i]);
-
-        // 0, 0 (0)
-        tex_coords[0][0] *= scaleX;
-        tex_coords[0][1] *= scaleZ;
-        // 1, 0 (1)
-        tex_coords[1][0] += 1.0f;
-        tex_coords[1][0] *= scaleX;
-        tex_coords[1][1] *= scaleZ;
-        // 0, 1 (2)
-        tex_coords[2][0] += 1.0f;
-        tex_coords[2][1] += 1.0f;
-        tex_coords[2][0] *= scaleX;
-        tex_coords[2][1] *= scaleZ;
-        // 1, 1 (3)
-        tex_coords[3][1] += 1.0f;
-        tex_coords[3][0] *= scaleX;
-        tex_coords[3][1] *= scaleZ;
-
-        switch (vertex_index)
-        {
-        case 0:
-                if (direction == UP)
-                        glm_vec2_copy(tex_coords[3], dest);
-                if (direction == NORTH)
-                        glm_vec2_copy(tex_coords[0], dest);
-                if (direction == WEST)
-                        glm_vec2_copy(tex_coords[1], dest);
-                break;
-        case 1:
-                if (direction == UP)
-                        glm_vec2_copy(tex_coords[2], dest);
-                if (direction == NORTH)
-                        glm_vec2_copy(tex_coords[1], dest);
-                if (direction == EAST)
-                        glm_vec2_copy(tex_coords[0], dest);
-                break;
-        case 2:
-                if (direction == DOWN)
-                        glm_vec2_copy(tex_coords[3], dest);
-                if (direction == NORTH)
-                        glm_vec2_copy(tex_coords[2], dest);
-                if (direction == EAST)
-                        glm_vec2_copy(tex_coords[3], dest);
-                break;
-        case 3:
-                if (direction == DOWN)
-                        glm_vec2_copy(tex_coords[2], dest);
-                if (direction == NORTH)
-                        glm_vec2_copy(tex_coords[3], dest);
-                if (direction == WEST)
-                        glm_vec2_copy(tex_coords[2], dest);
-                break;
-        case 4:
-                if (direction == UP)
-                        glm_vec2_copy(tex_coords[0], dest);
-                if (direction == SOUTH)
-                        glm_vec2_copy(tex_coords[1], dest);
-                if (direction == WEST)
-                        glm_vec2_copy(tex_coords[0], dest);
-                break;
-        case 5:
-                if (direction == UP)
-                        glm_vec2_copy(tex_coords[1], dest);
-                if (direction == SOUTH)
-                        glm_vec2_copy(tex_coords[0], dest);
-                if (direction == EAST)
-                        glm_vec2_copy(tex_coords[1], dest);
-                break;
-        case 6:
-                if (direction == DOWN)
-                        glm_vec2_copy(tex_coords[0], dest);
-                if (direction == SOUTH)
-                        glm_vec2_copy(tex_coords[3], dest);
-                if (direction == EAST)
-                        glm_vec2_copy(tex_coords[2], dest);
-                break;
-        case 7:
-                if (direction == DOWN)
-                        glm_vec2_copy(tex_coords[1], dest);
-                if (direction == SOUTH)
-                        glm_vec2_copy(tex_coords[2], dest);
-                if (direction == WEST)
-                        glm_vec2_copy(tex_coords[3], dest);
-                break;
-        };
+        vao_bind(&mesh->vao);
+        vbo_bind(&mesh->ibo);
+        glDrawElements(GL_TRIANGLES, mesh->indices.count, GL_UNSIGNED_INT, NULL);
+        vao_bind(0);
 }

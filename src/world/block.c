@@ -199,6 +199,13 @@ stone_init()
         BLOCKS[BLOCK_STONE].get_texture_location = stone_get_texture_location;
 }
 
+internal void
+air_init()
+{
+        BLOCKS[BLOCK_AIR].active = false;
+        BLOCKS[BLOCK_AIR].type   = BLOCK_AIR;
+}
+
 void
 block_list_init()
 {
@@ -210,8 +217,9 @@ block_list_init()
         clay_init();
         gravel_init();
         dirt_init();
+        air_init();
 
-        BLOCK_DEFAULT = BLOCKS[BLOCK_STONE];
+        BLOCK_DEFAULT        = BLOCKS[BLOCK_STONE];
         BLOCK_DEFAULT.active = false;
 }
 

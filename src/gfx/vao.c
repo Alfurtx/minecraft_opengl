@@ -19,7 +19,10 @@ vao_destroy(struct VAO* vao)
 void
 vao_bind(struct VAO* vao)
 {
-        glBindVertexArray(vao->handle);
+        if (vao)
+                glBindVertexArray(vao->handle);
+        else
+                glBindVertexArray(0);
 }
 
 void
