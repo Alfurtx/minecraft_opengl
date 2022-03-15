@@ -33,10 +33,19 @@ render()
         world_render(&state.world);
 }
 
+internal void
+tick()
+{
+        world_tick(&state.world);
+        vec3 aux;
+        world_pos_to_block(state.renderer.current_camera->position, aux);
+        world_set_center(&state.world, aux);
+}
+
 int
 main(void)
 {
-        window_init(init, destroy, update, render);
+        window_init(init, destroy, update, render, tick);
         window_loop();
         return (0);
 }

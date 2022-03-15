@@ -31,7 +31,7 @@ struct Mesh
 
 extern void mesh_init(struct Mesh* mesh);
 extern void mesh_destroy(struct Mesh* mesh);
-extern void mesh_add_face(struct Mesh* mesh, vec3 position, vec2 texture_offset, vec2 texture_position, enum Direction direction);
+extern void mesh_add_face(struct Mesh* mesh, vec3 position, vec2 texture_position, enum Direction direction);
 extern void mesh_prepare(struct Mesh* mesh);
 extern void mesh_finalize(struct Mesh* mesh);
 extern void mesh_render(struct Mesh* mesh);

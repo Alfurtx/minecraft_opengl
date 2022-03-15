@@ -10,7 +10,6 @@
 // NOTE(fonsi): global window
 struct Window window;
 
-
 internal void          _size_callback(GLFWwindow* window_handle, int width, int height);
 internal void          _cursor_callback(GLFWwindow* window_handle, double x_pos, double y_pos);
 internal void          _key_callback(GLFWwindow* window_handle, int key, int scancode, int action, int mods);
@@ -25,18 +24,33 @@ internal void APIENTRY messsage_callback(GLenum        source,
 
 internal void proccess_input(GLFWwindow* window_handle);
 
+internal void
+_tick()
+{
+        window.ticks++;
+        window.tick();
+}
+
+internal void
+_render()
+{
+        window.frames++;
+        window.render();
+}
+
 void
-window_init(window_func init, window_func destroy, window_func update, window_func render)
+window_init(window_func init, window_func destroy, window_func update, window_func render, window_func tick)
 {
         window.init    = init;
         window.destroy = destroy;
         window.update  = update;
         window.render  = render;
+        window.tick    = tick;
 
         window.deltatime = 0.0f;
         window.lastframe = 0.0f;
 
-        window.wireframe = false;
+        window.wireframe   = false;
         window.speed_boost = false;
 
         glfwInit();
@@ -92,27 +106,32 @@ window_loop()
 {
         window.init();
 
-        // NOTE(fonsi): tmp frame counter variables
-        double lastTime = glfwGetTime();
-        int nbFrames = 0;
-
         while (!glfwWindowShouldClose(window.handle))
         {
-                // NOTE(fonsi): tmp counter 'function' - begin
-                double currentTime = glfwGetTime();
-                nbFrames++;
+                const uint now = NOW();
 
-                if ( currentTime - lastTime >= 1.0 ){ // If last prinf() was more than 1 sec ago
-                        // printf and reset timer
-                        printf("%f ms/frame\n", 1000.0/(double)nbFrames);
-                        nbFrames = 0;
-                        lastTime += 1.0;
+                window.deltatime = now - window.lastframe;
+                window.lastframe = now;
+
+                if (now - window.last_second > NS_PER_SECOND)
+                {
+                        window.fps         = window.frames;
+                        window.tps         = window.ticks;
+                        window.frames      = 0;
+                        window.ticks       = 0;
+                        window.last_second = now;
+
+                        printf("FPS: %u | TPS: %u\n", window.fps, window.tps);
                 }
-                // NOTE(fonsi): tmp counter 'function' - end
-
-                window.currentframe = glfwGetTime();
-                window.deltatime    = window.currentframe - window.lastframe;
-                window.lastframe    = window.currentframe;
+                // tick processing
+                const uint NS_PER_TICK = (NS_PER_SECOND / 60);
+                uint       tick_time   = window.deltatime + window.tick_remainder;
+                while (tick_time > NS_PER_TICK)
+                {
+                        _tick();
+                        tick_time -= NS_PER_TICK;
+                }
+                window.tick_remainder = max(tick_time, 0);
 
                 window.update();
 
@@ -121,7 +140,7 @@ window_loop()
                 glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-                window.render();
+                _render();
 
                 glfwSwapBuffers(window.handle);
                 glfwPollEvents();
@@ -155,9 +174,9 @@ _key_callback(GLFWwindow* window_handle, int key, int scancode, int action, int 
                 window.wireframe = !window.wireframe;
         }
 
-        if(GLFW_KEY_LEFT_SHIFT == key && action == GLFW_PRESS)
+        if (GLFW_KEY_LEFT_SHIFT == key && action == GLFW_PRESS)
         {
-                if(window.speed_boost)
+                if (window.speed_boost)
                         state.renderer.current_camera->speed /= 10;
                 else
                         state.renderer.current_camera->speed *= 10;

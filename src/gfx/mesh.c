@@ -62,8 +62,10 @@ mesh_destroy(struct Mesh* mesh)
 }
 
 void
-mesh_add_face(struct Mesh* mesh, vec3 position, vec2 texture_offset, vec2 texture_position, enum Direction direction)
+mesh_add_face(struct Mesh* mesh, vec3 position, vec2 texture_position, enum Direction direction)
 {
+        float texture_scale = 1.0f / 16.0f;
+
         for (uint i = 0; i < 4; i++)
         {
                 const float* aux = &MESH_VERTICES[MESH_INDICES[direction * 6 + MESH_UNIQUE_INDICES[i]] * 3];
@@ -72,9 +74,9 @@ mesh_add_face(struct Mesh* mesh, vec3 position, vec2 texture_offset, vec2 textur
                 ((float*) mesh->data.data)[mesh->data.index++] = position[1] + aux[1];
                 ((float*) mesh->data.data)[mesh->data.index++] = position[2] + aux[2];
                 ((float*) mesh->data.data)[mesh->data.index++] =
-                    texture_offset[0] + (texture_position[0] * MESH_TEXTURE_COORDS[i * 2 + 0]);
+                    texture_position[0] * texture_scale + (texture_scale * MESH_TEXTURE_COORDS[i * 2 + 0]);
                 ((float*) mesh->data.data)[mesh->data.index++] =
-                    texture_offset[1] + (texture_position[1] * MESH_TEXTURE_COORDS[i * 2 + 1]);
+                    texture_position[1] * texture_scale + (texture_scale * MESH_TEXTURE_COORDS[i * 2 + 1]);
         }
 
         for (uint i = 0; i < 6; i++)
