@@ -36,5 +36,5 @@ mesh_render(struct Mesh* mesh)
 
         vao_bind(&mesh->vao);
         vbo_bind(&mesh->ibo);
-        glDrawElements(GL_TRIANGLES, mesh->indices.count, GL_UNSIGNED_INT, NULL);
+        // glDrawElements(GL_TRIANGLES, mesh->indices.count, GL_UNSIGNED_INT, NULL);
 }
