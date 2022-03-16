@@ -13,26 +13,17 @@
 // 1. 3 floats (posicion)
 // 2. 2 floats (texturas)
 
-struct MeshBuffer
-{
-        void* data;
-        uint  count, capacity, index;
-};
-
 struct Mesh
 {
         struct VAO vao;
         struct VBO vbo;
         struct VBO ibo;
-
-        struct MeshBuffer data, indices;
-        uint              vertex_count;
 };
 
 extern void mesh_init(struct Mesh* mesh);
 extern void mesh_destroy(struct Mesh* mesh);
-extern void mesh_add_face(struct Mesh* mesh, vec3 position, vec2 texture_position, enum Direction direction);
 extern void mesh_prepare(struct Mesh* mesh);
+extern void mesh_add_face(struct Mesh* mesh, vec3 position, vec2 texture_position, enum Direction direction);
 extern void mesh_finalize(struct Mesh* mesh);
 extern void mesh_render(struct Mesh* mesh);
 

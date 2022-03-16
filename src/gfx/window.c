@@ -84,7 +84,7 @@ window_init(window_func init, window_func destroy, window_func update, window_fu
 
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_CULL_FACE);
-        glCullFace(GL_FRONT);
+        glCullFace(GL_BACK);
 
         if (GLAD_GL_ARB_debug_output)
         {

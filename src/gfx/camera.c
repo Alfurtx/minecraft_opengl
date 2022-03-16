@@ -14,7 +14,7 @@ internal void camera_update_vectors(struct Camera* camera);
 void
 camera_init(struct Camera* camera)
 {
-        glm_vec3_copy((vec3){-1.0f, 9.0f, 1.0f}, camera->position);
+        glm_vec3_copy((vec3){0.0f, 40.0f, 0.0f}, camera->position);
         glm_vec3_copy((vec3){0.0f, 1.0f, 0.0f}, camera->world_up);
         glm_vec3_copy((vec3){-0.7f, -0.1f, 0.67f}, camera->front);
         camera->yaw         = CAMERA_YAW;

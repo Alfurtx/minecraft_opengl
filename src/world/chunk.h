@@ -7,28 +7,8 @@
 #include "../utils/worldgen.h"
 #include "block.h"
 
-#define CHUNK_SIZE 32
-#define CHUNK_SIZE_X 32
-#define CHUNK_SIZE_Y 32
-#define CHUNK_SIZE_Z 32
-#define CHUNK_BLOCK_COUNT (CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z)
-
-#define BLOCK_MASK_ACTIVE 0x000000FF
-#define BLOCK_MASK_TYPE 0x0000FF00
-
 struct Chunk
 {
-        struct Mesh mesh;
-        struct World* world;
-
-        vec3        position;
-        vec3        offset;
-        uint*       blocks;
-
-        struct
-        {
-                bool remesh : 1;
-        } flags;
 };
 
 extern void chunk_init(struct Chunk* chunk, struct World* world, vec3 world_position);
