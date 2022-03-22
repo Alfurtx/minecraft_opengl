@@ -18,6 +18,18 @@ struct Mesh
         struct VAO vao;
         struct VBO vbo;
         struct VBO ibo;
+
+        float* data;
+        uint   data_count;
+        uint   data_capacity;
+        uint   data_index;
+
+        uint* indices;
+        uint  indices_count;
+        uint  indices_capacity;
+        uint  indices_index;
+
+        uint vertex_count;
 };
 
 extern void mesh_init(struct Mesh* mesh);
