@@ -31,3 +31,14 @@ extern bool chunk_contains_block(struct Chunk* chunk, vec3 position);
 extern void chunk_create_map(struct Chunk* chunk);
 
 #endif // CHUNK_H_
+
+/*
+* Proceso de Creación, Uso y Destruccion de un CHUNK
+*
+* chunk_init()
+* chunk_create_map()
+* chunk_generate_mesh()
+* chunk_render()
+* chunk_destroy()
+*
+*/

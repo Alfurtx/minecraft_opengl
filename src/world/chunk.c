@@ -1,7 +1,8 @@
+#include "chunk.h"
 #include "../state.h"
 #include "../utils/utils.h"
-#include "chunk.h"
 #include "world.h"
+#include <string.h>
 
 #define offset(pos) ((uint) (pos[0] + pos[1] * CHUNK_SIZE + pos[2] * CHUNK_SIZE * CHUNK_SIZE))
 #define foreach_block(_i, _j, _k)                        \
@@ -9,7 +10,7 @@
                 for (uint _j = 0; _j < CHUNK_SIZE; _j++) \
                         for (uint _k = 0; _k < CHUNK_SIZE; _k++)
 
-internal void        get_neighbor_chunks(struct Chunk* chunk, vec3 position, struct Chunk* dest[2]);
+internal void get_neighbor_chunks(struct Chunk* chunk, vec3 position, struct Chunk* dest[2]);
 internal inline bool block_on_border(struct Chunk* chunk, vec3 position);
 
 void
@@ -139,8 +140,8 @@ chunk_set_block(struct Chunk* chunk, vec3 position, enum BlockType type)
 bool
 chunk_contains_block(struct Chunk* chunk, vec3 position)
 {
-        return position[0] >= 0 && position[1] >= 0 && position[2] >= 0 && position[0] < CHUNK_SIZE &&
-               position[1] < CHUNK_SIZE && position[2] < CHUNK_SIZE;
+        return position[0] >= 0 && position[1] >= 0 && position[2] >= 0 && position[0] < CHUNK_SIZE && position[1] < CHUNK_SIZE &&
+               position[2] < CHUNK_SIZE;
 }
 
 internal void

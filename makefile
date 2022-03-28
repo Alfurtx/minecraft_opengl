@@ -30,7 +30,7 @@ BIN = bin
 
 .PHONY: all clean
 
-all: dirs libs app
+all: update_ctags dirs libs app
 
 run:
 	$(BIN)/app
@@ -59,3 +59,6 @@ debug:
 
 leak:
 	valgrind --leak-check=full --show-leak-kinds=all ./$(BIN)/app
+
+update_ctags:
+	ctags -R --exclude=.git

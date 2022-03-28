@@ -8,8 +8,10 @@
 
 struct World
 {
-        uint             chunks_size;
-        struct Chunk**    chunks;
+        struct Chunk** chunks;
+        uint chunks_size;
+        uint chunks_count;
+
         struct Renderer* renderer;
 
         vec3 chunks_origin, chunks_offset;
@@ -27,8 +29,9 @@ extern void world_update(struct World* world);
 extern void world_render(struct World* world);
 extern void world_tick(struct World* world);
 
-// NOTE(fonsi): el offset es el chunk con su posicion ya escalada a CHUNK_SIZE
 extern struct Chunk* world_get_chunk(struct World* world, vec3 offset);
-extern uint          world_get_block(struct World* world, vec3 offset);
+extern uint world_get_block(struct World* world, vec3 offset);
+extern void world_pos_to_block(vec3 pos, vec3 dest);
+extern void world_set_center(struct World* world, vec3 center);
 
 #endif // WORLD_H_
