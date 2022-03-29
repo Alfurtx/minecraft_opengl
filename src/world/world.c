@@ -1,4 +1,6 @@
 #include "world.h"
+#include "chunk.h"
+#include <math.h>
 
 #define foreach_chunk(_w) for (uint i = 0; i < (_w)->chunks_count; i++)
 #define block_index(pos) ((uint) (pos[0] + pos[1] * CHUNK_SIZE + pos[2] * CHUNK_SIZE * CHUNK_SIZE))
@@ -9,6 +11,9 @@ internal inline void get_chunk_offset(vec3 offset, vec3 dest);
 internal inline void load_chunk(struct World* world, vec3 offset);
 internal void load_empty_chunks(struct World* world);
 internal inline void chunk_offset(struct World* world, uint i, vec3 dest);
+
+internal inline void position_to_block(vec3 pos, vec3 dest);
+internal inline void position_to_chunk(vec3 pos, vec3 dest);
 
 void
 world_init(struct World* world, struct Renderer* renderer)
@@ -169,4 +174,18 @@ world_get_block(struct World* world, vec3 offset)
         struct Chunk* c = world_get_chunk(world, coff);
 
         return c != NULL ? c->blocks[block_index(boff)] : 0;
+}
+
+internal inline void
+position_to_block(vec3 pos, vec3 dest)
+{
+        dest[0] = floorf(pos[0] / CHUNK_SIZE);
+        dest[1] = floorf(pos[1] / CHUNK_SIZE);
+        dest[2] = floorf(pos[2] / CHUNK_SIZE);
+}
+
+internal inline void
+position_to_chunk(vec3 pos, vec3 dest)
+{
+        // TODO
 }
