@@ -9,7 +9,7 @@
 #include "vao.h"
 #include "vbo.h"
 
-// NOTE(fonsi): recordar que el orden de los datos tiene que ser ->
+// NOTE(fonsi): vertex data order ->
 // 1. 3 floats (posicion)
 // 2. 2 floats (texturas)
 
@@ -19,15 +19,10 @@ struct Mesh
         struct VBO vbo;
         struct VBO ibo;
 
-        float* data;
-        uint   data_count;
-        uint   data_capacity;
-        uint   data_index;
-
-        uint* indices;
-        uint  indices_count;
-        uint  indices_capacity;
-        uint  indices_index;
+        struct {
+                void* data;
+                uint count, capacity, index;
+        } data, indices;
 
         uint vertex_count;
 };

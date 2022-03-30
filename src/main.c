@@ -38,7 +38,7 @@ tick()
 {
         world_tick(&state.world);
         vec3 aux;
-        world_pos_to_block(state.renderer.current_camera->position, aux);
+        world_position_to_block(state.renderer.current_camera->position, aux);
         world_set_center(&state.world, aux);
 }
 

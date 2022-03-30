@@ -1,8 +1,8 @@
+#include "window.h"
 #include "../state.h"
 #include "../utils/types.h"
 #include "camera.h"
 #include "gfx.h"
-#include "window.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,17 +10,13 @@
 // NOTE(fonsi): global window
 struct Window window;
 
-internal void          _size_callback(GLFWwindow* window_handle, int width, int height);
-internal void          _cursor_callback(GLFWwindow* window_handle, double x_pos, double y_pos);
-internal void          _key_callback(GLFWwindow* window_handle, int key, int scancode, int action, int mods);
-internal void          _mouse_callback(GLFWwindow* window_handle, int button, int action, int mods);
-internal void APIENTRY messsage_callback(GLenum        source,
-                                         GLenum        type,
-                                         GLuint        id,
-                                         GLenum        severity,
-                                         GLsizei       length,
-                                         const GLchar* message,
-                                         const void*   userParam);
+internal void _size_callback(GLFWwindow* window_handle, int width, int height);
+internal void _cursor_callback(GLFWwindow* window_handle, double x_pos, double y_pos);
+internal void _key_callback(GLFWwindow* window_handle, int key, int scancode, int action, int mods);
+internal void _mouse_callback(GLFWwindow* window_handle, int button, int action, int mods);
+internal void APIENTRY messsage_callback(GLenum source, GLenum type, GLuint id, GLenum severity,
+                                         GLsizei length, const GLchar* message,
+                                         const void* userParam);
 
 internal void proccess_input(GLFWwindow* window_handle);
 
@@ -39,7 +35,8 @@ _render()
 }
 
 void
-window_init(window_func init, window_func destroy, window_func update, window_func render, window_func tick)
+window_init(window_func init, window_func destroy, window_func update, window_func render,
+            window_func tick)
 {
         window.init    = init;
         window.destroy = destroy;
@@ -62,9 +59,9 @@ window_init(window_func init, window_func destroy, window_func update, window_fu
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-        window.handle = glfwCreateWindow(WINDOW_SCREEN_WIDTH, WINDOW_SCREEN_HEIGHT, "Minecraft OpenGL", NULL, NULL);
-        if (!window.handle)
-        {
+        window.handle = glfwCreateWindow(WINDOW_SCREEN_WIDTH, WINDOW_SCREEN_HEIGHT,
+                                         "Minecraft OpenGL", NULL, NULL);
+        if (!window.handle) {
                 fprintf(stderr, "\nFailed to create window\n");
                 glfwTerminate();
                 exit(-1);
@@ -76,26 +73,25 @@ window_init(window_func init, window_func destroy, window_func update, window_fu
         glfwSetKeyCallback(window.handle, _key_callback);
         glfwSetCursorPosCallback(window.handle, _cursor_callback);
 
-        if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
-        {
+        if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
                 fprintf(stderr, "Failed to inititialize GLAD\n");
                 exit(-1);
         }
 
-        glEnable(GL_DEPTH_TEST);
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
+        // TODO(fonsi): enable after testing
+        // glEnable(GL_DEPTH_TEST);
+        // glEnable(GL_CULL_FACE);
+        // glCullFace(GL_BACK);
 
-        if (GLAD_GL_ARB_debug_output)
-        {
+        if (GLAD_GL_ARB_debug_output) {
                 int flags;
                 glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
-                if (flags & GL_CONTEXT_FLAG_DEBUG_BIT)
-                {
+                if (flags & GL_CONTEXT_FLAG_DEBUG_BIT) {
                         glEnable(GL_DEBUG_OUTPUT);
                         glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
                         glDebugMessageCallback(messsage_callback, 0);
-                        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
+                        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL,
+                                              GL_TRUE);
                 }
         }
         glfwSwapInterval(1);
@@ -106,15 +102,13 @@ window_loop()
 {
         window.init();
 
-        while (!glfwWindowShouldClose(window.handle))
-        {
+        while (!glfwWindowShouldClose(window.handle)) {
                 const uint now = NOW();
 
                 window.deltatime = now - window.lastframe;
                 window.lastframe = now;
 
-                if (now - window.last_second > NS_PER_SECOND)
-                {
+                if (now - window.last_second > NS_PER_SECOND) {
                         window.fps         = window.frames;
                         window.tps         = window.ticks;
                         window.frames      = 0;
@@ -126,8 +120,7 @@ window_loop()
                 // tick processing
                 const uint NS_PER_TICK = (NS_PER_SECOND / 60);
                 uint       tick_time   = window.deltatime + window.tick_remainder;
-                while (tick_time > NS_PER_TICK)
-                {
+                while (tick_time > NS_PER_TICK) {
                         _tick();
                         tick_time -= NS_PER_TICK;
                 }
@@ -168,14 +161,12 @@ _key_callback(GLFWwindow* window_handle, int key, int scancode, int action, int 
         if (GLFW_KEY_ESCAPE == key && GLFW_PRESS == action)
                 glfwSetWindowShouldClose(window.handle, GLFW_TRUE);
 
-        if (key == GLFW_KEY_TAB && action == GLFW_PRESS)
-        {
+        if (key == GLFW_KEY_TAB && action == GLFW_PRESS) {
                 glPolygonMode(GL_FRONT_AND_BACK, window.wireframe ? GL_FILL : GL_LINE);
                 window.wireframe = !window.wireframe;
         }
 
-        if (GLFW_KEY_LEFT_SHIFT == key && action == GLFW_PRESS)
-        {
+        if (GLFW_KEY_LEFT_SHIFT == key && action == GLFW_PRESS) {
                 if (window.speed_boost)
                         state.renderer.current_camera->speed /= 10;
                 else
@@ -192,13 +183,8 @@ _mouse_callback(GLFWwindow* window_handle, int button, int action, int mods)
 }
 
 internal void APIENTRY
-messsage_callback(GLenum        source,
-                  GLenum        type,
-                  GLuint        id,
-                  GLenum        severity,
-                  GLsizei       length,
-                  const GLchar* message,
-                  const void*   userParam)
+messsage_callback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length,
+                  const GLchar* message, const void* userParam)
 {
         if (id == 131169 || id == 131185 || id == 131218 || id == 131204)
                 return;
@@ -248,20 +234,26 @@ internal void
 proccess_input(GLFWwindow* window_handle)
 {
         if (glfwGetKey(window_handle, GLFW_KEY_W) == GLFW_PRESS)
-                camera_proccess_keyboard(state.renderer.current_camera, CAM_MOVE_FORWARD, window.deltatime);
+                camera_proccess_keyboard(state.renderer.current_camera, CAM_MOVE_FORWARD,
+                                         window.deltatime);
 
         if (glfwGetKey(window_handle, GLFW_KEY_S) == GLFW_PRESS)
-                camera_proccess_keyboard(state.renderer.current_camera, CAM_MOVE_BACKWARD, window.deltatime);
+                camera_proccess_keyboard(state.renderer.current_camera, CAM_MOVE_BACKWARD,
+                                         window.deltatime);
 
         if (glfwGetKey(window_handle, GLFW_KEY_A) == GLFW_PRESS)
-                camera_proccess_keyboard(state.renderer.current_camera, CAM_MOVE_LEFT, window.deltatime);
+                camera_proccess_keyboard(state.renderer.current_camera, CAM_MOVE_LEFT,
+                                         window.deltatime);
 
         if (glfwGetKey(window_handle, GLFW_KEY_D) == GLFW_PRESS)
-                camera_proccess_keyboard(state.renderer.current_camera, CAM_MOVE_RIGHT, window.deltatime);
+                camera_proccess_keyboard(state.renderer.current_camera, CAM_MOVE_RIGHT,
+                                         window.deltatime);
 
         if (glfwGetKey(window_handle, GLFW_KEY_SPACE) == GLFW_PRESS)
-                camera_proccess_keyboard(state.renderer.current_camera, CAM_MOVE_UP, window.deltatime);
+                camera_proccess_keyboard(state.renderer.current_camera, CAM_MOVE_UP,
+                                         window.deltatime);
 
         if (glfwGetKey(window_handle, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
-                camera_proccess_keyboard(state.renderer.current_camera, CAM_MOVE_DOWN, window.deltatime);
+                camera_proccess_keyboard(state.renderer.current_camera, CAM_MOVE_DOWN,
+                                         window.deltatime);
 }

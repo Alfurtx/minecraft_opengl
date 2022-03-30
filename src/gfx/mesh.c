@@ -32,8 +32,7 @@ const uint TEXTURES[] = {
 };
 // clang-format on
 
-struct
-{
+struct {
         float data[DATA_BUFFER_SIZE];
         uint  indices[INDICES_BUFFER_SIZE];
 } GLOBAL_BUFFERS;
@@ -42,23 +41,22 @@ void
 mesh_init(struct Mesh* mesh)
 {
         memset(mesh, 0, sizeof(struct Mesh));
-        mesh->vao = vao_create();
-        mesh->vbo = vbo_create(GL_ARRAY_BUFFER, false);
-        mesh->ibo = vbo_create(GL_ELEMENT_ARRAY_BUFFER, false);
+        mesh->vao              = vao_create();
+        mesh->vbo              = vbo_create(GL_ARRAY_BUFFER, false);
+        mesh->ibo              = vbo_create(GL_ELEMENT_ARRAY_BUFFER, false);
+        mesh->data.capacity    = DATA_BUFFER_SIZE;
+        mesh->indices.capacity = INDICES_BUFFER_SIZE;
 }
 
 void
 mesh_prepare(struct Mesh* mesh)
 {
-        mesh->data             = GLOBAL_BUFFERS.data;
-        mesh->indices          = GLOBAL_BUFFERS.indices;
-        mesh->data_capacity    = DATA_BUFFER_SIZE;
-        mesh->indices_capacity = INDICES_BUFFER_SIZE;
-        mesh->data_count       = 0;
-        mesh->indices_count    = 0;
-        mesh->data_index       = 0;
-        mesh->indices_index    = 0;
-        mesh->vertex_count     = 0;
+        mesh->data.data     = GLOBAL_BUFFERS.data;
+        mesh->indices.data  = GLOBAL_BUFFERS.indices;
+        mesh->data.index    = 0;
+        mesh->indices.index = 0;
+        mesh->data.count    = 0;
+        mesh->indices.count = 0;
 }
 
 void
@@ -66,22 +64,22 @@ mesh_add_face(struct Mesh* mesh, vec3 position, vec2 texture_position, enum Dire
 {
         mesh_prepare(mesh);
 
-        float scale = 1 / 16;
+        float scale = (float) 1 / 16;
 
-        // TODO(fonsi): encontrar la manera de transformar los datos de position y texture_position en
-        // coordenadas reales, tanto para los vertices como para los indices
-        for (uint i = 0; i < 4; i++)
-        {
-                const float* vertices          = &VERTICES[INDICES[direction * 6 + UNIQUE[i]]];
-                mesh->data[mesh->data_index++] = position[0] + vertices[0];
-                mesh->data[mesh->data_index++] = position[1] + vertices[1];
-                mesh->data[mesh->data_index++] = position[2] + vertices[2];
-                mesh->data[mesh->data_index++] = (texture_position[0] + TEXTURES[i]) * scale;
-                mesh->data[mesh->data_index++] = (texture_position[1] + TEXTURES[i + 1]) * scale;
+        float* data    = mesh->data.data;
+        uint*  indices = mesh->indices.data;
+
+        for (uint i = 0; i < 4; i++) {
+                const float* vertices    = &VERTICES[INDICES[direction * 6 + UNIQUE[i]]];
+                data[mesh->data.index++] = position[0] + vertices[0];
+                data[mesh->data.index++] = position[1] + vertices[1];
+                data[mesh->data.index++] = position[2] + vertices[2];
+                data[mesh->data.index++] = (texture_position[0] + TEXTURES[i]) * scale;
+                data[mesh->data.index++] = (texture_position[1] + TEXTURES[i + 1]) * scale;
         }
 
         for (uint i = 0; i < 6; i++)
-                mesh->indices[mesh->indices_index++] = mesh->vertex_count + INDICES[direction * 6 + i];
+                indices[mesh->indices.index++] = mesh->vertex_count + INDICES[direction * 6 + i];
 
         mesh->vertex_count += 4;
 
@@ -91,28 +89,26 @@ mesh_add_face(struct Mesh* mesh, vec3 position, vec2 texture_position, enum Dire
 void
 mesh_finalize(struct Mesh* mesh)
 {
-        mesh->data_count    = mesh->data_index;
-        mesh->indices_count = mesh->indices_index;
-        mesh->data_index    = 0;
-        mesh->indices_index = 0;
+        mesh->data.count    = mesh->data.index;
+        mesh->indices.count = mesh->indices.index;
+        mesh->data.index    = 0;
+        mesh->indices.index = 0;
 
-        vbo_bind(&mesh->vbo);
-        vbo_buffer(&mesh->vbo, mesh->data, mesh->data_count * sizeof(float));
+        vao_bind(&mesh->vao);
         vbo_bind(&mesh->ibo);
-        vbo_buffer(&mesh->ibo, mesh->indices, mesh->indices_count * sizeof(uint));
+        vbo_buffer(&mesh->ibo, mesh->indices.data, mesh->indices.count * sizeof(uint));
+        vbo_bind(&mesh->vbo);
+        vbo_buffer(&mesh->vbo, mesh->data.data, mesh->data.count * sizeof(float));
+        vao_attr(&mesh->vao, 0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*) 0);
+        vao_attr(&mesh->vao, 1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
+                 (void*) (3 * sizeof(float)));
 }
 
 void
 mesh_render(struct Mesh* mesh)
 {
         vao_bind(&mesh->vao);
-        vbo_bind(&mesh->vbo);
-        vao_attr(&mesh->vao, 0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*) 0);
-        vao_attr(&mesh->vao, 1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*) (3 * sizeof(float)));
-
-        vao_bind(&mesh->vao);
-        vbo_bind(&mesh->ibo);
-        glDrawElements(GL_TRIANGLES, mesh->indices_count, GL_UNSIGNED_INT, NULL);
+        glDrawElements(GL_TRIANGLES, mesh->indices.count, GL_UNSIGNED_INT, 0);
 }
 
 void
