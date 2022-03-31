@@ -54,7 +54,7 @@ CHUNK_H_	src/world/chunk.h	/^#define CHUNK_H_$/;"	d
 CHUNK_SIZE	src/world/chunk.h	/^#define CHUNK_SIZE /;"	d
 Camera	src/gfx/camera.h	/^struct Camera$/;"	s
 CameraMovement	src/gfx/camera.h	/^enum CameraMovement$/;"	g
-Chunk	src/world/chunk.h	/^struct Chunk$/;"	s
+Chunk	src/world/chunk.h	/^struct Chunk {$/;"	s
 DATA_BUFFER_SIZE	src/gfx/mesh.c	/^#define DATA_BUFFER_SIZE /;"	d	file:
 DESCRIPCIÓN	README.md	/^### DESCRIPCIÓN$/;"	S	chapter:MINECRAFT OPENGL
 DIRECTION_COUNT	src/utils/direction.h	/^        DIRECTION_COUNT$/;"	e	enum:Direction
@@ -10184,7 +10184,7 @@ UNAME_S	makefile	/^UNAME_S = $(shell uname -s)$/;"	m
 UNIQUE	src/gfx/mesh.c	/^const uint UNIQUE[] = {1, 0, 5, 2};$/;"	v	typeref:typename:const uint[]
 UP	src/utils/direction.h	/^        UP,$/;"	e	enum:Direction
 UTILS_H_	src/utils/utils.h	/^#define UTILS_H_$/;"	d
-VAO	src/gfx/vao.h	/^struct VAO$/;"	s
+VAO	src/gfx/vao.h	/^struct VAO {$/;"	s
 VAO_H_	src/gfx/vao.h	/^#define VAO_H_$/;"	d
 VBO	src/gfx/vbo.h	/^struct VBO$/;"	s
 VBO_H_	src/gfx/vbo.h	/^#define VBO_H_$/;"	d
@@ -10200,7 +10200,8 @@ World	src/world/world.h	/^struct World$/;"	s
 YCbCr_to_RGB_kernel	src/utils/stb_image.h	/^   void (*YCbCr_to_RGB_kernel)(stbi_uc *out, const stbi_uc *y, const stbi_uc *pcb, const stbi_uc/;"	m	struct:__anona731fb5d0808	typeref:typename:void (*)(stbi_uc * out,const stbi_uc * y,const stbi_uc * pcb,const stbi_uc * pcr,int count,int step)
 _CRT_SECURE_NO_WARNINGS	src/utils/stb_ds.h	/^#define _CRT_SECURE_NO_WARNINGS$/;"	d
 _GLAD_IS_SOME_NEW_VERSION	libs/glad/src/glad.c	/^#define _GLAD_IS_SOME_NEW_VERSION /;"	d	file:
-__anon5cfd9f4e0108	src/gfx/mesh.c	/^{$/;"	s	file:
+__anon5cfd9f4e0108	src/gfx/mesh.c	/^struct {$/;"	s	file:
+__anon5cfd9f530108	src/gfx/mesh.h	/^        struct {$/;"	s	struct:Mesh
 __anona2c0546c0103	libs/glad/include/KHR/khrplatform.h	/^typedef enum {$/;"	g
 __anona731fb5d0103	src/utils/stb_image.h	/^{$/;"	g
 __anona731fb5d0208	src/utils/stb_image.h	/^{$/;"	s
@@ -10306,6 +10307,7 @@ _mouse_callback	src/gfx/window.c	/^_mouse_callback(GLFWwindow* window_handle, in
 _render	src/gfx/window.c	/^_render()$/;"	f	typeref:typename:internal void
 _size_callback	src/gfx/window.c	/^_size_callback(GLFWwindow* window_handle, int width, int height)$/;"	f	typeref:typename:internal void
 _tick	src/gfx/window.c	/^_tick()$/;"	f	typeref:typename:internal void
+abs_vec3	src/world/chunk.c	/^#define abs_vec3(/;"	d	file:
 active	src/world/block.h	/^        bool           active;$/;"	m	struct:Block	typeref:typename:bool
 air_init	src/world/block.c	/^air_init()$/;"	f	typeref:typename:internal void
 all	makefile	/^all: update_ctags dirs libs app$/;"	t
@@ -10360,6 +10362,7 @@ camera_proccess_keyboard	src/gfx/camera.c	/^camera_proccess_keyboard(struct Came
 camera_proccess_mouse	src/gfx/camera.c	/^camera_proccess_mouse(struct Camera* camera, float xoff, float yoff)$/;"	f	typeref:typename:void
 camera_update_vectors	src/gfx/camera.c	/^camera_update_vectors(struct Camera* camera)$/;"	f	typeref:typename:internal void
 cameras	src/gfx/renderer.h	/^        struct Camera  cameras[RENDERER_TYPE_COUNT];$/;"	m	struct:Renderer	typeref:struct:Camera[]
+capacity	src/gfx/mesh.h	/^                uint count, capacity, index;$/;"	m	struct:Mesh::__anon5cfd9f530108	typeref:typename:uint
 capacity	src/utils/stb_ds.h	/^  size_t      capacity;$/;"	m	struct:__anoneeba07b10108	typeref:typename:size_t
 cellular_distance_func	src/utils/FastNoiseLite.h	/^    fnl_cellular_distance_func cellular_distance_func;$/;"	m	struct:fnl_state	typeref:typename:fnl_cellular_distance_func
 cellular_jitter_mod	src/utils/FastNoiseLite.h	/^    float cellular_jitter_mod;$/;"	m	struct:fnl_state	typeref:typename:float
@@ -10378,10 +10381,10 @@ chunk_render	src/world/chunk.c	/^chunk_render(struct Chunk* chunk)$/;"	f	typeref
 chunk_set_block	src/world/chunk.c	/^chunk_set_block(struct Chunk* chunk, vec3 position, enum BlockType type)$/;"	f	typeref:typename:void
 chunk_update	src/world/chunk.c	/^chunk_update(struct Chunk* chunk)$/;"	f	typeref:typename:void
 chunks	src/world/world.h	/^        struct Chunk** chunks;$/;"	m	struct:World	typeref:struct:Chunk **
-chunks_count	src/world/world.h	/^        uint chunks_count;$/;"	m	struct:World	typeref:typename:uint
+chunks_count	src/world/world.h	/^        uint           chunks_count;$/;"	m	struct:World	typeref:typename:uint
 chunks_offset	src/world/world.h	/^        vec3 chunks_origin, chunks_offset;$/;"	m	struct:World	typeref:typename:vec3
 chunks_origin	src/world/world.h	/^        vec3 chunks_origin, chunks_offset;$/;"	m	struct:World	typeref:typename:vec3
-chunks_size	src/world/world.h	/^        uint chunks_size;$/;"	m	struct:World	typeref:typename:uint
+chunks_size	src/world/world.h	/^        uint           chunks_size;$/;"	m	struct:World	typeref:typename:uint
 clamp	src/utils/utils.h	/^#define clamp(/;"	d
 clay_get_texture_location	src/world/block.c	/^clay_get_texture_location(enum Direction direction, vec2 dest)$/;"	f	typeref:typename:internal void
 clay_init	src/world/block.c	/^clay_init()$/;"	f	typeref:typename:internal void
@@ -10396,8 +10399,8 @@ coeff	src/utils/stb_image.h	/^      short   *coeff;   \/\/ progressive only$/;"	
 coeff_h	src/utils/stb_image.h	/^      int      coeff_w, coeff_h; \/\/ number of 8x8 coefficient blocks$/;"	m	struct:__anona731fb5d0808::__anona731fb5d0908	typeref:typename:int
 coeff_w	src/utils/stb_image.h	/^      int      coeff_w, coeff_h; \/\/ number of 8x8 coefficient blocks$/;"	m	struct:__anona731fb5d0808::__anona731fb5d0908	typeref:typename:int
 color_table	src/utils/stb_image.h	/^   stbi_uc *color_table;$/;"	m	struct:__anona731fb5d1308	typeref:typename:stbi_uc *
-command	.vscode/tasks.json	/^                        "command": "make -j6",$/;"	s	object:tasks.0
-configurations	.vscode/launch.json	/^        "configurations": [$/;"	a
+configurations	.vscode/launch.json	/^    "configurations": [$/;"	a
+count	src/gfx/mesh.h	/^                uint count, capacity, index;$/;"	m	struct:Mesh::__anon5cfd9f530108	typeref:typename:uint
 count	src/world/world.h	/^                uint count;$/;"	m	struct:World::__anoncede8ab10108	typeref:typename:uint
 cur_x	src/utils/stb_image.h	/^   int cur_x, cur_y;$/;"	m	struct:__anona731fb5d1308	typeref:typename:int
 cur_y	src/utils/stb_image.h	/^   int cur_x, cur_y;$/;"	m	struct:__anona731fb5d1308	typeref:typename:int
@@ -10410,11 +10413,9 @@ cwd	.vscode/settings.json	/^                        "cwd": "\/Users\/alfonso\/De
 d	src/utils/stb_ds.h	/^typedef struct { int key,b,c,d; } stbds_struct;$/;"	m	struct:__anoneeba07b10508	typeref:typename:int
 d	src/utils/stb_ds.h	/^typedef struct { int key[2],b,c,d; } stbds_struct2;$/;"	m	struct:__anoneeba07b10608	typeref:typename:int
 data	src/gfx/mesh.c	/^        float data[DATA_BUFFER_SIZE];$/;"	m	struct:__anon5cfd9f4e0108	typeref:typename:float[]	file:
-data	src/gfx/mesh.h	/^        float* data;$/;"	m	struct:Mesh	typeref:typename:float *
+data	src/gfx/mesh.h	/^                void* data;$/;"	m	struct:Mesh::__anon5cfd9f530108	typeref:typename:void *
+data	src/gfx/mesh.h	/^        } data, indices;$/;"	m	struct:Mesh	typeref:struct:Mesh::__anon5cfd9f530108
 data	src/utils/stb_image.h	/^      stbi_uc *data;$/;"	m	struct:__anona731fb5d0808::__anona731fb5d0908	typeref:typename:stbi_uc *
-data_capacity	src/gfx/mesh.h	/^        uint   data_capacity;$/;"	m	struct:Mesh	typeref:typename:uint
-data_count	src/gfx/mesh.h	/^        uint   data_count;$/;"	m	struct:Mesh	typeref:typename:uint
-data_index	src/gfx/mesh.h	/^        uint   data_index;$/;"	m	struct:Mesh	typeref:typename:uint
 dc_pred	src/utils/stb_image.h	/^      int dc_pred;$/;"	m	struct:__anona731fb5d0808::__anona731fb5d0908	typeref:typename:int
 dct_bfly32o	src/utils/stb_image.h	/^   #define dct_bfly32o(/;"	d
 dct_bfly32o	src/utils/stb_image.h	/^#define dct_bfly32o(/;"	d
@@ -10501,7 +10502,6 @@ free_exts	libs/glad/src/glad.c	/^static void free_exts(void) {$/;"	f	typeref:typ
 frequency	src/utils/FastNoiseLite.h	/^    float frequency;$/;"	m	struct:fnl_state	typeref:typename:float
 front	src/gfx/camera.h	/^        vec3 front;$/;"	m	struct:Camera	typeref:typename:vec3
 gain	src/utils/FastNoiseLite.h	/^    float gain;$/;"	m	struct:fnl_state	typeref:typename:float
-get_chunk_offset	src/world/world.c	/^get_chunk_offset(vec3 offset, vec3 dest)$/;"	f	typeref:typename:internal void
 get_exts	libs/glad/src/glad.c	/^static int get_exts(void) {$/;"	f	typeref:typename:int	file:
 get_neighbor_chunks	src/world/chunk.c	/^get_neighbor_chunks(struct Chunk* chunk, vec3 position, struct Chunk* dest[2])$/;"	f	typeref:typename:internal void
 get_proc	libs/glad/src/glad.c	/^void* get_proc(const char *namez) {$/;"	f	typeref:typename:void *	file:
@@ -19508,13 +19508,11 @@ img_out_n	src/utils/stb_image.h	/^   int img_n, img_out_n;$/;"	m	struct:__anona7
 img_v_max	src/utils/stb_image.h	/^   int img_h_max, img_v_max;$/;"	m	struct:__anona731fb5d0808	typeref:typename:int
 img_x	src/utils/stb_image.h	/^   stbi__uint32 img_x, img_y;$/;"	m	struct:__anona731fb5d0308	typeref:typename:stbi__uint32
 img_y	src/utils/stb_image.h	/^   stbi__uint32 img_x, img_y;$/;"	m	struct:__anona731fb5d0308	typeref:typename:stbi__uint32
+index	src/gfx/mesh.h	/^                uint count, capacity, index;$/;"	m	struct:Mesh::__anon5cfd9f530108	typeref:typename:uint
 index	src/utils/stb_ds.h	/^   ptrdiff_t index[STBDS_BUCKET_LENGTH];$/;"	m	struct:__anoneeba07b10308	typeref:typename:ptrdiff_t[]
 index_to_offset	src/world/world.c	/^index_to_offset(struct World* world, uint i, vec3 dest)$/;"	f	typeref:typename:internal void
 indices	src/gfx/mesh.c	/^        uint  indices[INDICES_BUFFER_SIZE];$/;"	m	struct:__anon5cfd9f4e0108	typeref:typename:uint[]	file:
-indices	src/gfx/mesh.h	/^        uint* indices;$/;"	m	struct:Mesh	typeref:typename:uint *
-indices_capacity	src/gfx/mesh.h	/^        uint  indices_capacity;$/;"	m	struct:Mesh	typeref:typename:uint
-indices_count	src/gfx/mesh.h	/^        uint  indices_count;$/;"	m	struct:Mesh	typeref:typename:uint
-indices_index	src/gfx/mesh.h	/^        uint  indices_index;$/;"	m	struct:Mesh	typeref:typename:uint
+indices	src/gfx/mesh.h	/^        } data, indices;$/;"	m	struct:Mesh	typeref:struct:Mesh::__anon5cfd9f530108
 init	src/gfx/window.h	/^        window_func init;$/;"	m	struct:Window	typeref:typename:window_func
 init	src/main.c	/^init()$/;"	f	typeref:typename:internal void
 internal	src/utils/types.h	/^#define internal /;"	d
@@ -19921,7 +19919,7 @@ mesh_init	src/gfx/mesh.c	/^mesh_init(struct Mesh* mesh)$/;"	f	typeref:typename:v
 mesh_prepare	src/gfx/mesh.c	/^mesh_prepare(struct Mesh* mesh)$/;"	f	typeref:typename:void
 mesh_queue	src/world/world.h	/^        } mesh_queue, load_queue;$/;"	m	struct:World	typeref:struct:World::__anoncede8ab10108
 mesh_render	src/gfx/mesh.c	/^mesh_render(struct Mesh* mesh)$/;"	f	typeref:typename:void
-messsage_callback	src/gfx/window.c	/^messsage_callback(GLenum        source,$/;"	f	typeref:typename:internal void APIENTRY
+messsage_callback	src/gfx/window.c	/^messsage_callback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length,$/;"	f	typeref:typename:internal void APIENTRY
 mg	src/utils/stb_image.h	/^   unsigned int mr,mg,mb,ma, all_a;$/;"	m	struct:__anona731fb5d1008	typeref:typename:unsigned int
 min	src/utils/utils.h	/^#define min(/;"	d
 minor	libs/glad/include/glad/glad.h	/^    int minor;$/;"	m	struct:gladGLversionStruct	typeref:typename:int
@@ -19941,6 +19939,7 @@ octaves	src/utils/FastNoiseLite.h	/^    int octaves;$/;"	m	struct:fnl_state	type
 offset	src/utils/stb_image.h	/^   int bpp, offset, hsz;$/;"	m	struct:__anona731fb5d1008	typeref:typename:int
 offset	src/world/chunk.c	/^#define offset(/;"	d	file:
 offset	src/world/chunk.h	/^        vec3          offset;$/;"	m	struct:Chunk	typeref:typename:vec3
+offset_to_index	src/world/world.c	/^offset_to_index(struct World* world, vec3 offset)$/;"	f	typeref:typename:internal uint
 open_gl	libs/glad/src/glad.c	/^int open_gl(void) {$/;"	f	typeref:typename:int	file:
 order	src/utils/stb_image.h	/^   int scan_n, order[4];$/;"	m	struct:__anona731fb5d0808	typeref:typename:int[4]
 out	src/utils/stb_image.h	/^   stbi_uc *idata, *expanded, *out;$/;"	m	struct:__anona731fb5d0e08	typeref:typename:stbi_uc *
@@ -19952,6 +19951,8 @@ pitch	src/gfx/camera.h	/^        float pitch;$/;"	m	struct:Camera	typeref:typena
 position	src/gfx/camera.h	/^        vec3 position;$/;"	m	struct:Camera	typeref:typename:vec3
 position	src/gfx/window.h	/^        vec2          position;$/;"	m	struct:Mouse	typeref:typename:vec2
 position	src/world/chunk.h	/^        vec3          position;$/;"	m	struct:Chunk	typeref:typename:vec3
+position_to_block	src/world/world.c	/^position_to_block(vec3 pos, vec3 dest)$/;"	f	typeref:typename:internal void
+position_to_chunk	src/world/world.c	/^position_to_chunk(vec3 pos, vec3 dest)$/;"	f	typeref:typename:internal void
 prefix	src/utils/stb_image.h	/^   stbi__int16 prefix;$/;"	m	struct:__anona731fb5d1208	typeref:typename:stbi__int16
 pressed	src/gfx/window.h	/^        bool down, last, pressed;$/;"	m	struct:Button	typeref:typename:bool
 problemMatcher	.vscode/tasks.json	/^                        "problemMatcher": [$/;"	a	object:tasks.0
@@ -20503,7 +20504,7 @@ water_init	src/world/block.c	/^water_init()$/;"	f	typeref:typename:internal void
 weighted_strength	src/utils/FastNoiseLite.h	/^    float weighted_strength;$/;"	m	struct:fnl_state	typeref:typename:float
 window	src/gfx/window.c	/^struct Window window;$/;"	v	typeref:struct:Window
 window_func	src/gfx/window.h	/^typedef void (*window_func)();$/;"	t	typeref:typename:void (*)()
-window_init	src/gfx/window.c	/^window_init(window_func init, window_func destroy, window_func update, window_func render, windo/;"	f	typeref:typename:void
+window_init	src/gfx/window.c	/^window_init(window_func init, window_func destroy, window_func update, window_func render,$/;"	f	typeref:typename:void
 window_loop	src/gfx/window.c	/^window_loop()$/;"	f	typeref:typename:void
 wireframe	src/gfx/window.h	/^        bool wireframe;$/;"	m	struct:Window	typeref:typename:bool
 world	src/state.h	/^        struct World world;$/;"	m	struct:State	typeref:struct:World
@@ -20513,7 +20514,6 @@ world_get_block	src/world/world.c	/^world_get_block(struct World* world, vec3 of
 world_get_chunk	src/world/world.c	/^world_get_chunk(struct World* world, vec3 offset)$/;"	f	typeref:struct:Chunk *
 world_init	src/world/world.c	/^world_init(struct World* world, struct Renderer* renderer)$/;"	f	typeref:typename:void
 world_position_to_block	src/world/world.c	/^world_position_to_block(vec3 pos, vec3 dest)$/;"	f	typeref:typename:void
-world_position_to_chunk	src/world/world.c	/^world_position_to_chunk(vec3 pos, vec3 dest)$/;"	f	typeref:typename:void
 world_render	src/world/world.c	/^world_render(struct World* world)$/;"	f	typeref:typename:void
 world_set_center	src/world/world.c	/^world_set_center(struct World* world, vec3 center)$/;"	f	typeref:typename:void
 world_tick	src/world/world.c	/^world_tick(struct World* world)$/;"	f	typeref:typename:void

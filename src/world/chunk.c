@@ -10,7 +10,7 @@
                 for (uint _j = 0; _j < CHUNK_SIZE; _j++) \
                         for (uint _k = 0; _k < CHUNK_SIZE; _k++)
 
-internal void get_neighbor_chunks(struct Chunk* chunk, vec3 position, struct Chunk* dest[2]);
+internal void        get_neighbor_chunks(struct Chunk* chunk, vec3 position, struct Chunk* dest[2]);
 internal inline bool block_on_border(struct Chunk* chunk, vec3 position);
 
 void
@@ -50,31 +50,34 @@ chunk_generate_mesh(struct Chunk* chunk)
 
                 uint block = chunk->blocks[offset(block_pos)];
 
-                if (block != 0)
-                {
+                if (block != 0) {
                         struct Block current, neighbor;
 
                         current = BLOCKS[block];
 
-                        for (enum Direction direction = 0; direction < 6; direction++)
-                        {
+                        for (enum Direction direction = 0; direction < 6; direction++) {
                                 vec3 dirvec;
                                 glm_vec3_copy(DIRECTION_VEC[direction], dirvec);
 
                                 vec3 localvec, worldvec;
+
+                                // localvec[0] = fabs(localvec[0]);
+                                // localvec[1] = fabs(localvec[1]);
+                                // localvec[2] = fabs(localvec[2]);
+
                                 glm_vec3_add(block_pos, dirvec, localvec);
                                 glm_vec3_add(world_pos, dirvec, worldvec);
 
-                                if (block_on_border(chunk, localvec))
+                                if (chunk_contains_block(chunk, localvec))
                                         neighbor = BLOCKS[chunk->blocks[offset(localvec)]];
                                 else
                                         neighbor = BLOCKS[world_get_block(chunk->world, worldvec)];
 
-                                if (!neighbor.active)
-                                {
+                                if (!neighbor.active) {
                                         vec2 texture_location;
                                         current.get_texture_location(direction, texture_location);
-                                        mesh_add_face(&chunk->mesh, localvec, texture_location, direction);
+                                        mesh_add_face(&chunk->mesh, localvec, texture_location,
+                                                      direction);
                                 }
                         }
                 }
@@ -86,8 +89,7 @@ chunk_generate_mesh(struct Chunk* chunk)
 void
 chunk_render(struct Chunk* chunk)
 {
-        if (chunk->remesh && chunk->world->mesh_queue.count < chunk->world->mesh_queue.max)
-        {
+        if (chunk->remesh && chunk->world->mesh_queue.count < chunk->world->mesh_queue.max) {
                 chunk_generate_mesh(chunk);
                 chunk->remesh = false;
                 chunk->world->mesh_queue.count++;
@@ -100,7 +102,8 @@ chunk_render(struct Chunk* chunk)
         glm_translate(model, chunk->offset);
         camera_get_view(state.renderer.current_camera, view);
         camera_get_projection(state.renderer.current_camera, projection);
-        shader_set_uniform_mat4(state.renderer.current_shader, "projection", 1, GL_FALSE, projection[0]);
+        shader_set_uniform_mat4(state.renderer.current_shader, "projection", 1, GL_FALSE,
+                                projection[0]);
         shader_set_uniform_mat4(state.renderer.current_shader, "view", 1, GL_FALSE, view[0]);
         shader_set_uniform_mat4(state.renderer.current_shader, "model", 1, GL_FALSE, model[0]);
         mesh_render(&chunk->mesh);
@@ -109,7 +112,10 @@ chunk_render(struct Chunk* chunk)
 void
 chunk_create_map(struct Chunk* chunk)
 {
-        foreach_block(i, j, k) { chunk_set_block(chunk, (vec3){i, j, k}, BLOCK_GRASS); }
+        foreach_block(i, j, k)
+        {
+                chunk_set_block(chunk, (vec3){i, j, k}, BLOCK_GRASS);
+        }
 }
 
 uint
@@ -121,14 +127,12 @@ chunk_get_block(struct Chunk* chunk, vec3 position)
 void
 chunk_set_block(struct Chunk* chunk, vec3 position, enum BlockType type)
 {
-        if (chunk_contains_block(chunk, position))
-        {
+        if (chunk_contains_block(chunk, position)) {
                 struct Chunk* neighbors[2]      = {0};
                 chunk->blocks[offset(position)] = type;
                 chunk->remesh                   = true;
 
-                if (block_on_border(chunk, position))
-                {
+                if (block_on_border(chunk, position)) {
                         get_neighbor_chunks(chunk, position, neighbors);
                         for (uint i = 0; i < 2; i++)
                                 if (neighbors[i])
@@ -140,8 +144,8 @@ chunk_set_block(struct Chunk* chunk, vec3 position, enum BlockType type)
 bool
 chunk_contains_block(struct Chunk* chunk, vec3 position)
 {
-        return position[0] >= 0 && position[1] >= 0 && position[2] >= 0 && position[0] < CHUNK_SIZE && position[1] < CHUNK_SIZE &&
-               position[2] < CHUNK_SIZE;
+        return position[0] >= 0 && position[1] >= 0 && position[2] >= 0 &&
+               position[0] < CHUNK_SIZE && position[1] < CHUNK_SIZE && position[2] < CHUNK_SIZE;
 }
 
 internal void
@@ -150,26 +154,22 @@ get_neighbor_chunks(struct Chunk* chunk, vec3 position, struct Chunk* dest[2])
         uint i = 0;
         vec3 aux;
 
-        if (position[0] == 0)
-        {
+        if (position[0] == 0) {
                 glm_vec3_add(chunk->offset, (vec3){-1, 0, 0}, aux);
                 dest[i++] = world_get_chunk(chunk->world, aux);
         }
 
-        if (position[2] == 0)
-        {
+        if (position[2] == 0) {
                 glm_vec3_add(chunk->offset, (vec3){0, 0, -1}, aux);
                 dest[i++] = world_get_chunk(chunk->world, aux);
         }
 
-        if (position[0] == CHUNK_SIZE - 1)
-        {
+        if (position[0] == CHUNK_SIZE - 1) {
                 glm_vec3_add(chunk->offset, (vec3){1, 0, 0}, aux);
                 dest[i++] = world_get_chunk(chunk->world, aux);
         }
 
-        if (position[2] == CHUNK_SIZE - 1)
-        {
+        if (position[2] == CHUNK_SIZE - 1) {
                 glm_vec3_add(chunk->offset, (vec3){0, 0, 1}, aux);
                 dest[i++] = world_get_chunk(chunk->world, aux);
         }
@@ -178,5 +178,6 @@ get_neighbor_chunks(struct Chunk* chunk, vec3 position, struct Chunk* dest[2])
 internal inline bool
 block_on_border(struct Chunk* chunk, vec3 position)
 {
-        return position[0] == 0 || position[2] == 0 || position[0] == CHUNK_SIZE - 1 || position[2] == CHUNK_SIZE - 1;
+        return position[0] == 0 || position[2] == 0 || position[0] == CHUNK_SIZE - 1 ||
+               position[2] == CHUNK_SIZE - 1;
 }

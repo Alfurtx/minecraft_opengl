@@ -10,8 +10,7 @@
 #define CHUNK_SIZE 32
 #define BLOCK_COUNT (CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE)
 
-struct Chunk
-{
+struct Chunk {
         struct World* world;
         struct Mesh   mesh;
         uint*         blocks;
@@ -33,12 +32,12 @@ extern void chunk_create_map(struct Chunk* chunk);
 #endif // CHUNK_H_
 
 /*
-* Proceso de Creación, Uso y Destruccion de un CHUNK
-*
-* chunk_init()
-* chunk_create_map()
-* chunk_generate_mesh()
-* chunk_render()
-* chunk_destroy()
-*
-*/
+ * NOTE(fonsi): Proceso de Creación, Uso y Destruccion de un CHUNK
+ *
+ * chunk_init()
+ * chunk_create_map()
+ * chunk_generate_mesh()
+ * chunk_render()
+ * chunk_destroy()
+ *
+ */
