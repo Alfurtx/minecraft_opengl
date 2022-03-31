@@ -13,7 +13,8 @@
 internal void        get_neighbor_chunks(struct Chunk* chunk, vec3 position, struct Chunk* dest[2]);
 internal inline bool block_on_border(struct Chunk* chunk, vec3 position);
 
-// NOTE(fonsi): world_position será la coordenada sin el offset, y contendrá valores negativos en la coordenada
+// NOTE(fonsi): world_position será la coordenada sin el offset, y contendrá valores negativos en la
+// coordenada
 void
 chunk_init(struct Chunk* chunk, struct World* world, vec3 world_position)
 {
@@ -73,7 +74,7 @@ chunk_generate_mesh(struct Chunk* chunk)
                                 if (!neighbor.active) {
                                         vec2 texture_location;
                                         current.get_texture_location(direction, texture_location);
-                                        mesh_add_face(&chunk->mesh, localvec, texture_location,
+                                        mesh_add_face(&chunk->mesh, block_pos, texture_location,
                                                       direction);
                                 }
                         }
@@ -113,6 +114,8 @@ chunk_create_map(struct Chunk* chunk)
         {
                 chunk_set_block(chunk, (vec3){i, j, k}, BLOCK_GRASS);
         }
+
+        // chunk_set_block(chunk, GLM_VEC3_ZERO, BLOCK_GRASS);
 }
 
 uint

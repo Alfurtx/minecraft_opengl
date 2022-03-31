@@ -78,10 +78,9 @@ window_init(window_func init, window_func destroy, window_func update, window_fu
                 exit(-1);
         }
 
-        // TODO(fonsi): enable after testing
-        // glEnable(GL_DEPTH_TEST);
-        // glEnable(GL_CULL_FACE);
-        // glCullFace(GL_BACK);
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
 
         if (GLAD_GL_ARB_debug_output) {
                 int flags;
@@ -125,6 +124,8 @@ window_loop()
                         tick_time -= NS_PER_TICK;
                 }
                 window.tick_remainder = max(tick_time, 0);
+
+                // window.tick();
 
                 window.update();
 

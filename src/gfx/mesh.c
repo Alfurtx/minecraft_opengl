@@ -5,7 +5,9 @@
 #define INDICES_BUFFER_SIZE ((32 * 32 * 32) * 6 * 6 * sizeof(uint))
 
 // clang-format off
+const uint FACE_INDICES[] = {1, 0, 3, 1, 3, 2};
 const uint UNIQUE[] = {1, 0, 5, 2};
+
 const float VERTICES[] = {
     0, 0, 0, // 0
     1, 0, 0, // 1
@@ -16,6 +18,7 @@ const float VERTICES[] = {
     1, 1, 1, // 6
     0, 1, 1  // 7
 };
+
 const uint INDICES[] = {
     1, 0, 3, 1, 3, 2, // north (-z)
     4, 5, 6, 4, 6, 7, // south (+z)
@@ -62,15 +65,13 @@ mesh_prepare(struct Mesh* mesh)
 void
 mesh_add_face(struct Mesh* mesh, vec3 position, vec2 texture_position, enum Direction direction)
 {
-        mesh_prepare(mesh);
-
         float scale = (float) 1 / 16;
 
         float* data    = mesh->data.data;
         uint*  indices = mesh->indices.data;
 
         for (uint i = 0; i < 4; i++) {
-                const float* vertices    = &VERTICES[INDICES[direction * 6 + UNIQUE[i]]];
+                const float* vertices    = &VERTICES[INDICES[(direction * 6) + UNIQUE[i]] * 3];
                 data[mesh->data.index++] = position[0] + vertices[0];
                 data[mesh->data.index++] = position[1] + vertices[1];
                 data[mesh->data.index++] = position[2] + vertices[2];
@@ -79,11 +80,9 @@ mesh_add_face(struct Mesh* mesh, vec3 position, vec2 texture_position, enum Dire
         }
 
         for (uint i = 0; i < 6; i++)
-                indices[mesh->indices.index++] = mesh->vertex_count + INDICES[direction * 6 + i];
+                indices[mesh->indices.index++] = mesh->vertex_count + FACE_INDICES[i];
 
         mesh->vertex_count += 4;
-
-        mesh_finalize(mesh);
 }
 
 void

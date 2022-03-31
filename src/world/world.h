@@ -14,8 +14,7 @@
 // position (-5, 0, -4)
 // offset (-160, 0, -128)
 
-struct World
-{
+struct World {
         struct Chunk** chunks;
         uint           chunks_size;
         uint           chunks_count;
@@ -24,8 +23,7 @@ struct World
 
         vec3 chunks_origin, chunks_offset;
 
-        struct
-        {
+        struct {
                 uint count, max;
         } mesh_queue, load_queue;
 };

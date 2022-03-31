@@ -1,6 +1,7 @@
 #include "world.h"
 
-// IMPORTANT(fonsi): Recordar que las coordenadas con las que trabaja world son siempre globales, es decir, tienen valores negativos en sus coordenadas
+// IMPORTANT(fonsi): Recordar que las coordenadas con las que trabaja world son siempre globales, es
+// decir, tienen valores negativos en sus coordenadas
 
 #define foreach_chunk(_w) for (uint i = 0; i < (_w)->chunks_count; i++)
 #define block_index(pos) ((uint) (pos[0] + pos[1] * CHUNK_SIZE + pos[2] * CHUNK_SIZE * CHUNK_SIZE))
@@ -13,19 +14,31 @@ internal inline void load_chunk(struct World* world, vec3 offset);
 internal void        load_empty_chunks(struct World* world);
 
 // world position -> block coordinates in some chunk
-internal inline void position_to_block(vec3 pos, vec3 dest);
 
 // world position -> chunk position
-internal inline void position_to_chunk(vec3 pos, vec3 dest);
-
-// chunk offset -> chunk array index
-internal inline uint offset_to_index(struct World* world, vec3 offset);
 
 // chunk array index -> chunk offset
-internal inline void index_to_offset(struct World* world, uint i, vec3 dest);
 
-// world position -> block array index in chunk
-internal inline uint block_index(struct World* world, vec3 block_world_position);
+// TODO(fonsi): Hacer funciones mas claras para poder hacer las siguientes operaciones:
+// 1. chunk offset -> world chunks array index
+// 2. chunk position -> world chunks array index
+// 3. global position -> block position
+// 4. global position -> chunk offset
+// 5. global position -> chunk position
+// 6. world chunks array index -> chunk position
+//
+// TENIENDO EN CUENTA QUE
+// chunk offset = (eg. (-32, 0, 64))
+// chunk position = (eg. (-1, 0, 2))
+// global position = (eg. (167, 42, 29))
+// block position = (eg, ({0...31}, {0...31}, {0...31}))
+
+internal inline uint offset_to_index(struct World* world, vec3 offset);
+internal inline uint position_to_index(struct World* world, vec3 position);
+internal inline void position_to_block(vec3 pos, vec3 dest);
+internal inline void position_to_offset(vec3 pos, vec3 dest);
+internal inline void position_to_chunk_position(vec3 pos, vec3 dest);
+internal inline void index_to_position(struct World* world, uint i, vec3 dest);
 
 void
 world_init(struct World* world, struct Renderer* renderer)
@@ -91,9 +104,9 @@ void
 world_set_center(struct World* world, vec3 center)
 {
         vec3 new_offset;
-        position_to_chunk(center, new_offset);
+        position_to_chunk_position(center, new_offset);
 
-        if (glm_vec3_eq(world->chunk_offset, new_offset))
+        if (glm_vec3_eqv(world->chunks_offset, new_offset))
                 return;
 
         glm_vec3_sub(new_offset,
@@ -109,11 +122,12 @@ world_set_center(struct World* world, vec3 center)
                 struct Chunk* c = old[i];
                 if (c == NULL)
                         continue;
-                else if (chunk_exists(world, c->offset))
-                        world->chunks[chunk_index(world, c->offset)] = c;
+                else if (chunk_exists(world, c->position))
+                        world->chunks[position_to_index(world, c->position)] = c;
                 else {
                         chunk_destroy(c);
                         free(c);
+                        c = NULL;
                 }
         }
 
@@ -129,7 +143,7 @@ world_position_to_block(vec3 pos, vec3 dest)
 struct Chunk*
 world_get_chunk(struct World* world, vec3 offset)
 {
-        return chunk_exists(world, offset) ? world->chunks[chunk_index(world, offset)] : NULL;
+        return chunk_exists(world, offset) ? world->chunks[offset_to_index(world, offset)] : NULL;
 }
 
 uint
@@ -139,7 +153,7 @@ world_get_block(struct World* world, vec3 offset)
         vec3 boff;
 
         world_position_to_block(offset, boff);
-        position_to_chunk(offset, coff);
+        position_to_offset(offset, coff);
         struct Chunk* c = world_get_chunk(world, coff);
 
         return c != NULL ? c->blocks[block_index(boff)] : 0;
@@ -151,44 +165,13 @@ load_empty_chunks(struct World* world)
         foreach_chunk(world)
         {
                 struct Chunk* c = world->chunks[i];
-                if (!c && world->load_queue.count < world->load_queue.max) {
+                if (c == NULL && world->load_queue.count < world->load_queue.max) {
                         vec3 coffset;
-                        index_to_offset(world, i, coffset);
+                        index_to_position(world, i, coffset);
                         load_chunk(world, coffset);
                         world->load_queue.count++;
                 }
         }
-}
-
-internal inline void
-position_to_block(vec3 pos, vec3 dest)
-{
-        if(pos[1] < 0 || pos[1] >= CHUNK_SIZE) pos[1] = CHUNK_SIZE - 1;
-        vec3 chunk_position, chunk_offset, block_chunk_position;
-        position_to_chunk(pos, chunk_position);
-        glm_vec3_scale(chunk_position, CHUNK_SIZE, chunk_offset);
-        glm_vec3_sub(pos, chunk_offset, dest);
-}
-
-internal inline void
-position_to_chunk(vec3 pos, vec3 dest)
-{
-        dest[0] = floorf(pos[0] / CHUNK_SIZE);
-        dest[1] = 0;
-        dest[2] = floorf(pos[2] / CHUNK_SIZE);
-}
-
-internal inline uint
-offset_to_index(struct World* world, vec3 offset)
-{
-        return ((offset[0] - CHUNK_SIZE) * world->chunks_size + (offset[2] - CHUNK_SIZE));
-}
-
-internal inline void
-index_to_offset(struct World* world, uint i, vec3 dest)
-{
-        glm_vec3_add(world->chunks_origin,
-                     (vec3){i % world->chunks_size, 0, (float) i / world->chunks_size}, dest);
 }
 
 internal inline bool
@@ -203,16 +186,67 @@ chunk_exists(struct World* world, vec3 offset)
 internal inline void
 load_chunk(struct World* world, vec3 offset)
 {
-        struct Chunk* chunk = malloc(sizeof(*chunk));
+        struct Chunk* chunk = malloc(sizeof(struct Chunk));
         chunk_init(chunk, world, offset);
         chunk_create_map(chunk);
         world->chunks[chunk_index(world, offset)] = chunk;
 }
 
 internal inline uint
-block_index(struct World* world, vec3 block_world_position)
+offset_to_index(struct World* world, vec3 offset)
 {
-        vec3 result;
-        position_to_block(block_world_position, result);
-        return block_index(result);
+        vec3 pos;
+        pos[0] = (int) offset[0] / CHUNK_SIZE;
+        pos[2] = (int) offset[2] / CHUNK_SIZE;
+        return ((pos[2] - world->chunks_origin[2]) * world->chunks_size +
+                (pos[0] - world->chunks_origin[0]));
+}
+
+internal inline uint
+position_to_index(struct World* world, vec3 position)
+{
+        return ((position[2] - world->chunks_origin[2]) * world->chunks_size +
+                (position[0] - world->chunks_origin[0]));
+}
+
+internal inline void
+position_to_block(vec3 pos, vec3 dest)
+{
+        if (pos[1] < 0 || pos[1] > CHUNK_SIZE)
+                dest[1] = CHUNK_SIZE - 1;
+
+        vec3 offset;
+        offset[0] = (int) pos[0] / CHUNK_SIZE;
+        offset[1] = (int) pos[1] / CHUNK_SIZE;
+        offset[2] = (int) pos[2] / CHUNK_SIZE;
+        glm_vec3_scale(offset, CHUNK_SIZE, offset);
+        glm_vec3_sub(pos, offset, dest);
+
+        for (uint i = 0; i < 3; i++)
+                dest[i] = fabsf(dest[i]);
+}
+
+internal inline void
+position_to_offset(vec3 pos, vec3 dest)
+{
+        vec3 offset;
+        offset[0] = (int) pos[0] / CHUNK_SIZE;
+        offset[1] = 0;
+        offset[2] = (int) pos[2] / CHUNK_SIZE;
+        glm_vec3_scale(offset, CHUNK_SIZE, dest);
+}
+
+internal inline void
+index_to_position(struct World* world, uint i, vec3 dest)
+{
+        glm_vec3_add(world->chunks_origin,
+                     (vec3){i % world->chunks_size, 0, i / world->chunks_size}, dest);
+}
+
+internal inline void
+position_to_chunk_position(vec3 pos, vec3 dest)
+{
+        dest[0] = (int) pos[0] / CHUNK_SIZE;
+        dest[1] = 0;
+        dest[2] = (int) pos[2] / CHUNK_SIZE;
 }

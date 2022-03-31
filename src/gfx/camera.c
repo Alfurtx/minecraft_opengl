@@ -1,8 +1,8 @@
-#include "../utils/types.h"
 #include "camera.h"
+#include "../utils/types.h"
 #include "gfx.h"
 
-const float CAMERA_RENDER_DISTANCE = 12.0f;
+const float CAMERA_RENDER_DISTANCE = 20.0f;
 const float CAMERA_YAW             = -90.0f;
 const float CAMERA_PITCH           = 0.0f;
 const float CAMERA_SPEED           = 2.5f;
@@ -38,12 +38,8 @@ camera_get_view(struct Camera* camera, mat4 dest)
 void
 camera_get_projection(struct Camera* camera, mat4 dest)
 {
-        glm_perspective(glm_rad(CAMERA_FOV),
-                        WINDOW_SCREEN_WIDTH / WINDOW_SCREEN_HEIGHT,
-                        0.1f,
-                        CAMERA_RENDER_DISTANCE *
-                            32.0f, // render distance = number of chunks and 16 is the side of one chunk
-                        dest);
+        glm_perspective(glm_rad(CAMERA_FOV), WINDOW_SCREEN_WIDTH / WINDOW_SCREEN_HEIGHT, 0.1f,
+                        CAMERA_RENDER_DISTANCE * 32.0f, dest);
 }
 
 void
@@ -54,8 +50,7 @@ camera_proccess_keyboard(struct Camera* camera, enum CameraMovement direction, f
 
         speed *= 10;
 
-        switch (direction)
-        {
+        switch (direction) {
         case CAM_MOVE_FORWARD:
                 glm_vec3_muladds(camera->front, speed, camera->position);
                 break;
@@ -83,8 +78,7 @@ camera_proccess_keyboard(struct Camera* camera, enum CameraMovement direction, f
 void
 camera_proccess_mouse(struct Camera* camera, float xoff, float yoff)
 {
-        if (camera->firstmouse)
-        {
+        if (camera->firstmouse) {
                 camera->lastx      = xoff;
                 camera->lasty      = yoff;
                 camera->firstmouse = false;

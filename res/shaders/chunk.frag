@@ -12,5 +12,5 @@ void main()
     if(aux.a < 0.1)
         discard;
     // color = aux;
-    color = vec4(1.0, 0.2, 0.5, 1.0);
+    color = vec4(0.4, 0.2, 0.5, 1.0);
 }
