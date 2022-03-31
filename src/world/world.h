@@ -28,10 +28,10 @@ extern void world_destroy(struct World* world);
 extern void world_update(struct World* world);
 extern void world_render(struct World* world);
 extern void world_tick(struct World* world);
-
 extern struct Chunk* world_get_chunk(struct World* world, vec3 offset);
 extern uint world_get_block(struct World* world, vec3 offset);
-extern void world_pos_to_block(vec3 pos, vec3 dest);
 extern void world_set_center(struct World* world, vec3 center);
+extern inline void world_position_to_block(vec3 pos, vec3 dest);
+extern inline void world_position_to_chunk(vec3 pos, vec3 dest);
 
 #endif // WORLD_H_

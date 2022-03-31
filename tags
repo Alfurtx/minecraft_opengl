@@ -4,15 +4,16 @@
 !_TAG_OUTPUT_FILESEP	slash	/slash or backslash/
 !_TAG_OUTPUT_MODE	u-ctags	/u-ctags or e-ctags/
 !_TAG_PATTERN_LENGTH_LIMIT	96	/0 for no limit/
-!_TAG_PROC_CWD	/home/fonsi/proyectos/minecraft_opengl/	//
+!_TAG_PROC_CWD	/Users/alfonso/Desktop/Proyectos Personales/minecraft_opengl/	//
 !_TAG_PROGRAM_AUTHOR	Universal Ctags Team	//
 !_TAG_PROGRAM_NAME	Universal Ctags	/Derived from Exuberant Ctags/
 !_TAG_PROGRAM_URL	https://ctags.io/	/official site/
-!_TAG_PROGRAM_VERSION	5.9.0	/p5.9.20210905.0/
+!_TAG_PROGRAM_VERSION	5.9.0	/b5cc9e0d/
 %.o	makefile	/^%.o: %.c$/;"	t
-0	.vscode/launch.json	/^                {$/;"	o	array:configurations.0.setupCommands
-0	.vscode/launch.json	/^        {$/;"	o	array:configurations
-0	.vscode/settings.json	/^        {$/;"	o	array:makefile.launchConfigurations
+0	.vscode/launch.json	/^                {$/;"	o	array:configurations
+0	.vscode/settings.json	/^                {$/;"	o	array:makefile.launchConfigurations
+0	.vscode/tasks.json	/^                                "$gcc"$/;"	s	array:tasks.0.problemMatcher
+0	.vscode/tasks.json	/^                {$/;"	o	array:tasks
 APIENTRY	libs/glad/include/glad/glad.h	/^#define APIENTRY /;"	d
 APIENTRY	libs/glad/include/glad/glad.h	/^#define APIENTRY$/;"	d
 APIENTRYP	libs/glad/include/glad/glad.h	/^#define APIENTRYP /;"	d
@@ -51,7 +52,6 @@ CC	makefile	/^CC = clang$/;"	m
 CFLAGS	makefile	/^CFLAGS = -std=c11 -g -Wall -Wextra -Wpedantic -Wstrict-aliasing$/;"	m
 CHUNK_H_	src/world/chunk.h	/^#define CHUNK_H_$/;"	d
 CHUNK_SIZE	src/world/chunk.h	/^#define CHUNK_SIZE /;"	d
-C_Cpp.default.configurationProvider	.vscode/settings.json	/^    "C_Cpp.default.configurationProvider": "ms-vscode.makefile-tools",$/;"	s
 Camera	src/gfx/camera.h	/^struct Camera$/;"	s
 CameraMovement	src/gfx/camera.h	/^enum CameraMovement$/;"	g
 Chunk	src/world/chunk.h	/^struct Chunk$/;"	s
@@ -7071,8 +7071,7 @@ KHRONOS_USE_INTPTR_T	libs/glad/include/KHR/khrplatform.h	/^#define KHRONOS_USE_I
 Keyboard	src/gfx/window.h	/^struct Keyboard$/;"	s
 LDFLAGS	makefile	/^LDFLAGS = -lm -lglfw libs\/glad\/src\/glad.o -lpthread$/;"	m
 MESH_H_	src/gfx/mesh.h	/^#define MESH_H_$/;"	d
-MIMode	.vscode/launch.json	/^            "MIMode": "gdb",$/;"	s	object:configurations.0
-MIMode	.vscode/settings.json	/^            "MIMode": "gdb",$/;"	s	object:makefile.launchConfigurations.0
+MIMode	.vscode/launch.json	/^                        "MIMode": "lldb"$/;"	s	object:configurations.0
 MINECRAFT OPENGL	README.md	/^# MINECRAFT OPENGL$/;"	c
 Mesh	src/gfx/mesh.h	/^struct Mesh$/;"	s
 Mouse	src/gfx/window.h	/^struct Mouse$/;"	s
@@ -10313,6 +10312,7 @@ all	makefile	/^all: update_ctags dirs libs app$/;"	t
 all_a	src/utils/stb_image.h	/^   unsigned int mr,mg,mb,ma, all_a;$/;"	m	struct:__anona731fb5d1008	typeref:typename:unsigned int
 app	makefile	/^app: $(OBJ)$/;"	t
 app14_color_transform	src/utils/stb_image.h	/^   int            app14_color_transform; \/\/ Adobe APP14 tag$/;"	m	struct:__anona731fb5d0808	typeref:typename:int
+args	.vscode/launch.json	/^                        "args": [],$/;"	a	object:configurations.0
 arraddn	src/utils/stb_ds.h	/^#define arraddn /;"	d
 arraddnindex	src/utils/stb_ds.h	/^#define arraddnindex /;"	d
 arraddnptr	src/utils/stb_ds.h	/^#define arraddnptr /;"	d
@@ -10335,8 +10335,8 @@ b	src/utils/stb_ds.h	/^typedef struct { int key,b,c,d; } stbds_struct;$/;"	m	str
 b	src/utils/stb_ds.h	/^typedef struct { int key[2],b,c,d; } stbds_struct2;$/;"	m	struct:__anoneeba07b10608	typeref:typename:int
 background	src/utils/stb_image.h	/^   stbi_uc *background;          \/\/ The current "background" as far as a gif is concerned$/;"	m	struct:__anona731fb5d1308	typeref:typename:stbi_uc *
 bgindex	src/utils/stb_image.h	/^   int flags, bgindex, ratio, transparent, eflags;$/;"	m	struct:__anona731fb5d1308	typeref:typename:int
-binaryArgs	.vscode/settings.json	/^            "binaryArgs": [],$/;"	a	object:makefile.launchConfigurations.0
-binaryPath	.vscode/settings.json	/^            "binaryPath": "\/home\/fonsi\/proyectos\/minecraft_opengl\/bin\/app",$/;"	s	object:makefile.launchConfigurations.0
+binaryArgs	.vscode/settings.json	/^                        "binaryArgs": []$/;"	a	object:makefile.launchConfigurations.0
+binaryPath	.vscode/settings.json	/^                        "binaryPath": "\/Users\/alfonso\/Desktop\/Proyectos Personales\/minecraf/;"	s	object:makefile.launchConfigurations.0
 bits_per_channel	src/utils/stb_image.h	/^   int bits_per_channel;$/;"	m	struct:__anona731fb5d0508	typeref:typename:int
 block	src/utils/stb_ds.h	/^  unsigned char block;$/;"	m	struct:stbds_string_arena	typeref:typename:unsigned char
 block_index	src/world/world.c	/^#define block_index(/;"	d	file:
@@ -10374,7 +10374,6 @@ chunk_generate_mesh	src/world/chunk.c	/^chunk_generate_mesh(struct Chunk* chunk)
 chunk_get_block	src/world/chunk.c	/^chunk_get_block(struct Chunk* chunk, vec3 position)$/;"	f	typeref:typename:uint
 chunk_index	src/world/world.c	/^#define chunk_index(/;"	d	file:
 chunk_init	src/world/chunk.c	/^chunk_init(struct Chunk* chunk, struct World* world, vec3 world_position)$/;"	f	typeref:typename:void
-chunk_offset	src/world/world.c	/^chunk_offset(struct World* world, uint i, vec3 dest)$/;"	f	typeref:typename:internal void
 chunk_render	src/world/chunk.c	/^chunk_render(struct Chunk* chunk)$/;"	f	typeref:typename:void
 chunk_set_block	src/world/chunk.c	/^chunk_set_block(struct Chunk* chunk, vec3 position, enum BlockType type)$/;"	f	typeref:typename:void
 chunk_update	src/world/chunk.c	/^chunk_update(struct Chunk* chunk)$/;"	f	typeref:typename:void
@@ -10397,7 +10396,8 @@ coeff	src/utils/stb_image.h	/^      short   *coeff;   \/\/ progressive only$/;"	
 coeff_h	src/utils/stb_image.h	/^      int      coeff_w, coeff_h; \/\/ number of 8x8 coefficient blocks$/;"	m	struct:__anona731fb5d0808::__anona731fb5d0908	typeref:typename:int
 coeff_w	src/utils/stb_image.h	/^      int      coeff_w, coeff_h; \/\/ number of 8x8 coefficient blocks$/;"	m	struct:__anona731fb5d0808::__anona731fb5d0908	typeref:typename:int
 color_table	src/utils/stb_image.h	/^   stbi_uc *color_table;$/;"	m	struct:__anona731fb5d1308	typeref:typename:stbi_uc *
-configurations	.vscode/launch.json	/^    "configurations": [$/;"	a
+command	.vscode/tasks.json	/^                        "command": "make -j6",$/;"	s	object:tasks.0
+configurations	.vscode/launch.json	/^        "configurations": [$/;"	a
 count	src/world/world.h	/^                uint count;$/;"	m	struct:World::__anoncede8ab10108	typeref:typename:uint
 cur_x	src/utils/stb_image.h	/^   int cur_x, cur_y;$/;"	m	struct:__anona731fb5d1308	typeref:typename:int
 cur_y	src/utils/stb_image.h	/^   int cur_x, cur_y;$/;"	m	struct:__anona731fb5d1308	typeref:typename:int
@@ -10405,8 +10405,8 @@ current_camera	src/gfx/renderer.h	/^        struct Camera*  current_camera;$/;"	
 current_shader	src/gfx/renderer.h	/^        struct Shader*  current_shader;$/;"	m	struct:Renderer	typeref:struct:Shader *
 current_texture	src/gfx/renderer.h	/^        struct Texture* current_texture;$/;"	m	struct:Renderer	typeref:struct:Texture *
 currentframe	src/gfx/window.h	/^        float currentframe;$/;"	m	struct:Window	typeref:typename:float
-cwd	.vscode/launch.json	/^            "cwd": "${workspaceFolder}",$/;"	s	object:configurations.0
-cwd	.vscode/settings.json	/^            "cwd": "\/home\/fonsi\/proyectos\/minecraft_opengl\/bin",$/;"	s	object:makefile.launchConfigurations.0
+cwd	.vscode/launch.json	/^                        "cwd": "${workspaceFolder}",$/;"	s	object:configurations.0
+cwd	.vscode/settings.json	/^                        "cwd": "\/Users\/alfonso\/Desktop\/Proyectos Personales\/minecraft_openg/;"	s	object:makefile.launchConfigurations.0
 d	src/utils/stb_ds.h	/^typedef struct { int key,b,c,d; } stbds_struct;$/;"	m	struct:__anoneeba07b10508	typeref:typename:int
 d	src/utils/stb_ds.h	/^typedef struct { int key[2],b,c,d; } stbds_struct2;$/;"	m	struct:__anoneeba07b10608	typeref:typename:int
 data	src/gfx/mesh.c	/^        float data[DATA_BUFFER_SIZE];$/;"	m	struct:__anon5cfd9f4e0108	typeref:typename:float[]	file:
@@ -10445,7 +10445,6 @@ delta	src/utils/stb_image.h	/^   int    delta[17];   \/\/ old 'firstsymbol' - ol
 deltatime	src/gfx/window.h	/^        float deltatime;$/;"	m	struct:Window	typeref:typename:float
 depth	src/utils/stb_image.h	/^   int depth;$/;"	m	struct:__anona731fb5d0e08	typeref:typename:int
 dequant	src/utils/stb_image.h	/^   stbi__uint16 dequant[4][64];$/;"	m	struct:__anona731fb5d0808	typeref:typename:stbi__uint16[4][64]
-description	.vscode/launch.json	/^                    "description": "Habilitar la impresión con sangría para gdb",$/;"	s	object:configurations.0.setupCommands.0
 destroy	src/gfx/window.h	/^        window_func destroy;$/;"	m	struct:Window	typeref:typename:window_func
 destroy	src/main.c	/^destroy()$/;"	f	typeref:typename:internal void
 direction_init	src/utils/direction.c	/^direction_init()$/;"	f	typeref:typename:void
@@ -10458,11 +10457,11 @@ down	src/gfx/window.h	/^        bool down, last, pressed;$/;"	m	struct:Button	ty
 dynamic	src/gfx/vbo.h	/^        bool dynamic;$/;"	m	struct:VBO	typeref:typename:bool
 eflags	src/utils/stb_image.h	/^   int flags, bgindex, ratio, transparent, eflags;$/;"	m	struct:__anona731fb5d1308	typeref:typename:int
 elevation	src/utils/worldgen.h	/^        float elevation[HEIGHTMAP_Z][HEIGHTMAP_X];$/;"	m	struct:Heightmap	typeref:typename:float[][]
+environment	.vscode/launch.json	/^                        "environment": [],$/;"	a	object:configurations.0
 eob_run	src/utils/stb_image.h	/^   int            eob_run;$/;"	m	struct:__anona731fb5d0808	typeref:typename:int
 eof	src/utils/stb_image.h	/^   int      (*eof)   (void *user);                       \/\/ returns nonzero if we are at end o/;"	m	struct:__anona731fb5d0208	typeref:typename:int (*)(void * user)
 expanded	src/utils/stb_image.h	/^   stbi_uc *idata, *expanded, *out;$/;"	m	struct:__anona731fb5d0e08	typeref:typename:stbi_uc *
-externalConsole	.vscode/launch.json	/^            "externalConsole": false,$/;"	b	object:configurations.0
-externalConsole	.vscode/settings.json	/^            "externalConsole": false,$/;"	b	object:makefile.launchConfigurations.0
+externalConsole	.vscode/launch.json	/^                        "externalConsole": false,$/;"	b	object:configurations.0
 extra_read	src/utils/stb_image.h	/^   int extra_read;$/;"	m	struct:__anona731fb5d1008	typeref:typename:int
 exts	libs/glad/src/glad.c	/^static const char *exts = NULL;$/;"	v	typeref:typename:const char *	file:
 exts_i	libs/glad/src/glad.c	/^static char **exts_i = NULL;$/;"	v	typeref:typename:char **	file:
@@ -10471,7 +10470,7 @@ f	src/utils/FastNoiseLite.h	/^        float f;$/;"	m	union:_fnlCasti32Tof32::__a
 fast	src/utils/stb_image.h	/^   stbi__uint16 fast[1 << STBI__ZFAST_BITS];$/;"	m	struct:__anona731fb5d0b08	typeref:typename:stbi__uint16[]
 fast	src/utils/stb_image.h	/^   stbi_uc  fast[1 << FAST_BITS];$/;"	m	struct:__anona731fb5d0708	typeref:typename:stbi_uc[]
 fast_ac	src/utils/stb_image.h	/^   stbi__int16 fast_ac[4][1 << FAST_BITS];$/;"	m	struct:__anona731fb5d0808	typeref:typename:stbi__int16[4][]
-files.associations	.vscode/settings.json	/^    "files.associations": {$/;"	o
+files.associations	.vscode/settings.json	/^        "files.associations": {$/;"	o
 find_coreGL	libs/glad/src/glad.c	/^static void find_coreGL(void) {$/;"	f	typeref:typename:void	file:
 find_extensionsGL	libs/glad/src/glad.c	/^static int find_extensionsGL(void) {$/;"	f	typeref:typename:int	file:
 first	src/utils/stb_image.h	/^   stbi_uc first;$/;"	m	struct:__anona731fb5d1208	typeref:typename:stbi_uc
@@ -19494,7 +19493,6 @@ ibo	src/gfx/mesh.h	/^        struct VBO ibo;$/;"	m	struct:Mesh	typeref:struct:VB
 id	src/utils/stb_image.h	/^      int id;$/;"	m	struct:__anona731fb5d0808::__anona731fb5d0908	typeref:typename:int
 idata	src/utils/stb_image.h	/^   stbi_uc *idata, *expanded, *out;$/;"	m	struct:__anona731fb5d0e08	typeref:typename:stbi_uc *
 idct_block_kernel	src/utils/stb_image.h	/^   void (*idct_block_kernel)(stbi_uc *out, int out_stride, short data[64]);$/;"	m	struct:__anona731fb5d0808	typeref:typename:void (*)(stbi_uc * out,int out_stride,short data[64])
-ignoreFailures	.vscode/launch.json	/^                    "ignoreFailures": true$/;"	b	object:configurations.0.setupCommands.0
 img_buffer	src/utils/stb_image.h	/^   stbi_uc *img_buffer, *img_buffer_end;$/;"	m	struct:__anona731fb5d0308	typeref:typename:stbi_uc *
 img_buffer_end	src/utils/stb_image.h	/^   stbi_uc *img_buffer, *img_buffer_end;$/;"	m	struct:__anona731fb5d0308	typeref:typename:stbi_uc *
 img_buffer_original	src/utils/stb_image.h	/^   stbi_uc *img_buffer_original, *img_buffer_original_end;$/;"	m	struct:__anona731fb5d0308	typeref:typename:stbi_uc *
@@ -19511,6 +19509,7 @@ img_v_max	src/utils/stb_image.h	/^   int img_h_max, img_v_max;$/;"	m	struct:__an
 img_x	src/utils/stb_image.h	/^   stbi__uint32 img_x, img_y;$/;"	m	struct:__anona731fb5d0308	typeref:typename:stbi__uint32
 img_y	src/utils/stb_image.h	/^   stbi__uint32 img_x, img_y;$/;"	m	struct:__anona731fb5d0308	typeref:typename:stbi__uint32
 index	src/utils/stb_ds.h	/^   ptrdiff_t index[STBDS_BUCKET_LENGTH];$/;"	m	struct:__anoneeba07b10308	typeref:typename:ptrdiff_t[]
+index_to_offset	src/world/world.c	/^index_to_offset(struct World* world, uint i, vec3 dest)$/;"	f	typeref:typename:internal void
 indices	src/gfx/mesh.c	/^        uint  indices[INDICES_BUFFER_SIZE];$/;"	m	struct:__anon5cfd9f4e0108	typeref:typename:uint[]	file:
 indices	src/gfx/mesh.h	/^        uint* indices;$/;"	m	struct:Mesh	typeref:typename:uint *
 indices_capacity	src/gfx/mesh.h	/^        uint  indices_capacity;$/;"	m	struct:Mesh	typeref:typename:uint
@@ -19558,6 +19557,7 @@ khronos_uintptr_t	libs/glad/include/KHR/khrplatform.h	/^typedef unsigned long lo
 khronos_usize_t	libs/glad/include/KHR/khrplatform.h	/^typedef unsigned long  int     khronos_usize_t;$/;"	t	typeref:typename:unsigned long int
 khronos_usize_t	libs/glad/include/KHR/khrplatform.h	/^typedef unsigned long long int khronos_usize_t;$/;"	t	typeref:typename:unsigned long long int
 khronos_utime_nanoseconds_t	libs/glad/include/KHR/khrplatform.h	/^typedef khronos_uint64_t       khronos_utime_nanoseconds_t;$/;"	t	typeref:typename:khronos_uint64_t
+label	.vscode/tasks.json	/^                        "label": "MAKE: all",$/;"	s	object:tasks.0
 lacunarity	src/utils/FastNoiseLite.h	/^    float lacunarity;$/;"	m	struct:fnl_state	typeref:typename:float
 last	src/gfx/window.h	/^        bool down, last, pressed;$/;"	m	struct:Button	typeref:typename:bool
 last_second	src/gfx/window.h	/^        uint last_second;$/;"	m	struct:Window	typeref:typename:uint
@@ -19902,7 +19902,7 @@ lpal	src/utils/stb_image.h	/^   stbi_uc lpal[256][4];$/;"	m	struct:__anona731fb5
 ma	src/utils/stb_image.h	/^   unsigned int mr,mg,mb,ma, all_a;$/;"	m	struct:__anona731fb5d1008	typeref:typename:unsigned int
 main	src/main.c	/^main(void)$/;"	f	typeref:typename:int
 major	libs/glad/include/glad/glad.h	/^    int major;$/;"	m	struct:gladGLversionStruct	typeref:typename:int
-makefile.launchConfigurations	.vscode/settings.json	/^    "makefile.launchConfigurations": [$/;"	a
+makefile.launchConfigurations	.vscode/settings.json	/^        "makefile.launchConfigurations": [$/;"	a
 marker	src/utils/stb_image.h	/^   unsigned char  marker;      \/\/ marker seen while filling entropy buffer$/;"	m	struct:__anona731fb5d0808	typeref:typename:unsigned char
 max	src/utils/utils.h	/^#define max(/;"	d
 max	src/world/world.h	/^                uint max;$/;"	m	struct:World::__anoncede8ab10108	typeref:typename:uint
@@ -19923,13 +19923,12 @@ mesh_queue	src/world/world.h	/^        } mesh_queue, load_queue;$/;"	m	struct:Wo
 mesh_render	src/gfx/mesh.c	/^mesh_render(struct Mesh* mesh)$/;"	f	typeref:typename:void
 messsage_callback	src/gfx/window.c	/^messsage_callback(GLenum        source,$/;"	f	typeref:typename:internal void APIENTRY
 mg	src/utils/stb_image.h	/^   unsigned int mr,mg,mb,ma, all_a;$/;"	m	struct:__anona731fb5d1008	typeref:typename:unsigned int
-miDebuggerPath	.vscode/launch.json	/^            "miDebuggerPath": "\/usr\/bin\/gdb",$/;"	s	object:configurations.0
 min	src/utils/utils.h	/^#define min(/;"	d
 minor	libs/glad/include/glad/glad.h	/^    int minor;$/;"	m	struct:gladGLversionStruct	typeref:typename:int
 mode	src/utils/stb_ds.h	/^  unsigned char mode;  \/\/ this isn't used by the string arena itself$/;"	m	struct:stbds_string_arena	typeref:typename:unsigned char
 mouse	src/gfx/window.h	/^        struct Mouse    mouse;$/;"	m	struct:Window	typeref:struct:Mouse
 mr	src/utils/stb_image.h	/^   unsigned int mr,mg,mb,ma, all_a;$/;"	m	struct:__anona731fb5d1008	typeref:typename:unsigned int
-name	.vscode/launch.json	/^            "name": "(gdb) Iniciar",$/;"	s	object:configurations.0
+name	.vscode/launch.json	/^                        "name": "(lldb) Iniciar MACOS debug",$/;"	s	object:configurations.0
 next	src/utils/stb_ds.h	/^  struct stbds_string_block *next;$/;"	m	struct:stbds_string_block	typeref:struct:stbds_string_block *
 noise	src/utils/worldgen.c	/^noise(fnl_state* state, float x, float y)$/;"	f	typeref:typename:internal float
 noise_state	src/utils/worldgen.h	/^        fnl_state noise_state;$/;"	m	struct:Heightmap	typeref:typename:fnl_state
@@ -19955,9 +19954,10 @@ position	src/gfx/window.h	/^        vec2          position;$/;"	m	struct:Mouse	t
 position	src/world/chunk.h	/^        vec3          position;$/;"	m	struct:Chunk	typeref:typename:vec3
 prefix	src/utils/stb_image.h	/^   stbi__int16 prefix;$/;"	m	struct:__anona731fb5d1208	typeref:typename:stbi__int16
 pressed	src/gfx/window.h	/^        bool down, last, pressed;$/;"	m	struct:Button	typeref:typename:bool
+problemMatcher	.vscode/tasks.json	/^                        "problemMatcher": [$/;"	a	object:tasks.0
 proccess_input	src/gfx/window.c	/^proccess_input(GLFWwindow* window_handle)$/;"	f	typeref:typename:internal void
 profile	makefile	/^profile:$/;"	t
-program	.vscode/launch.json	/^            "program": "${workspaceFolder}\/bin\/app",$/;"	s	object:configurations.0
+program	.vscode/launch.json	/^                        "program": "${workspaceFolder}\/bin\/app",$/;"	s	object:configurations.0
 progressive	src/utils/stb_image.h	/^   int            progressive;$/;"	m	struct:__anona731fb5d0808	typeref:typename:int
 ratio	src/utils/stb_image.h	/^   int flags, bgindex, ratio, transparent, eflags;$/;"	m	struct:__anona731fb5d1308	typeref:typename:int
 raw_coeff	src/utils/stb_image.h	/^      void *raw_data, *raw_coeff;$/;"	m	struct:__anona731fb5d0808::__anona731fb5d0908	typeref:typename:void *
@@ -19970,11 +19970,10 @@ render	src/gfx/window.h	/^        window_func render;$/;"	m	struct:Window	typere
 render	src/main.c	/^render()$/;"	f	typeref:typename:internal void
 renderer	src/state.h	/^        struct Renderer renderer;$/;"	m	struct:State	typeref:struct:Renderer
 renderer	src/world/world.h	/^        struct Renderer* renderer;$/;"	m	struct:World	typeref:struct:Renderer *
-renderer.h	.vscode/settings.json	/^        "renderer.h": "c",$/;"	s	object:files.associations
 renderer_destroy	src/gfx/renderer.c	/^renderer_destroy(struct Renderer* renderer)$/;"	f	typeref:typename:void
 renderer_init	src/gfx/renderer.c	/^renderer_init(struct Renderer* renderer)$/;"	f	typeref:typename:void
 renderer_set_type	src/gfx/renderer.c	/^renderer_set_type(struct Renderer* renderer, enum RendererType type)$/;"	f	typeref:typename:void
-request	.vscode/launch.json	/^            "request": "launch",$/;"	s	object:configurations.0
+request	.vscode/launch.json	/^                        "request": "launch",$/;"	s	object:configurations.0
 resample	src/utils/stb_image.h	/^   resample_row_func resample;$/;"	m	struct:__anona731fb5d0a08	typeref:typename:resample_row_func
 resample_row_1	src/utils/stb_image.h	/^static stbi_uc *resample_row_1(stbi_uc *out, stbi_uc *in_near, stbi_uc *in_far, int w, int hs)$/;"	f	typeref:typename:stbi_uc *
 resample_row_func	src/utils/stb_image.h	/^typedef stbi_uc *(*resample_row_func)(stbi_uc *out, stbi_uc *in0, stbi_uc *in1,$/;"	t	typeref:typename:stbi_uc * (*)(stbi_uc * out,stbi_uc * in0,stbi_uc * in1,int w,int hs)
@@ -19992,7 +19991,6 @@ scan_n	src/utils/stb_image.h	/^   int scan_n, order[4];$/;"	m	struct:__anona731f
 seed	src/utils/FastNoiseLite.h	/^    int seed;$/;"	m	struct:fnl_state	typeref:typename:int
 seed	src/utils/stb_ds.h	/^  size_t seed;$/;"	m	struct:__anoneeba07b10408	typeref:typename:size_t
 sensitivity	src/gfx/camera.h	/^        float sensitivity;$/;"	m	struct:Camera	typeref:typename:float
-setupCommands	.vscode/launch.json	/^            "setupCommands": [$/;"	a	object:configurations.0
 sh_new_arena	src/utils/stb_ds.h	/^#define sh_new_arena /;"	d
 sh_new_strdup	src/utils/stb_ds.h	/^#define sh_new_strdup /;"	d
 shader_create	src/gfx/shader.c	/^shader_create(const char* vertex_file_path, const char* fragment_file_path)$/;"	f	typeref:struct:Shader
@@ -20032,6 +20030,7 @@ speed_boost	src/gfx/window.h	/^        bool speed_boost;$/;"	m	struct:Window	typ
 start_x	src/utils/stb_image.h	/^   int start_x, start_y;$/;"	m	struct:__anona731fb5d1308	typeref:typename:int
 start_y	src/utils/stb_image.h	/^   int start_x, start_y;$/;"	m	struct:__anona731fb5d1308	typeref:typename:int
 state	src/main.c	/^struct State state;$/;"	v	typeref:struct:State
+state.h	.vscode/settings.json	/^                "state.h": "c"$/;"	s	object:files.associations
 stbds_arraddn	src/utils/stb_ds.h	/^#define stbds_arraddn(/;"	d
 stbds_arraddnindex	src/utils/stb_ds.h	/^#define stbds_arraddnindex(/;"	d
 stbds_arraddnoff	src/utils/stb_ds.h	/^#define stbds_arraddnoff /;"	d
@@ -20434,7 +20433,7 @@ stbi_zlib_decode_noheader_malloc	src/utils/stb_image.h	/^STBIDEF char *stbi_zlib
 step	src/utils/stb_image.h	/^   int parse, step;$/;"	m	struct:__anona731fb5d1308	typeref:typename:int
 stone_get_texture_location	src/world/block.c	/^stone_get_texture_location(enum Direction direction, vec2 dest)$/;"	f	typeref:typename:internal void
 stone_init	src/world/block.c	/^stone_init()$/;"	f	typeref:typename:internal void
-stopAtEntry	.vscode/launch.json	/^            "stopAtEntry": false,$/;"	b	object:configurations.0
+stopAtEntry	.vscode/launch.json	/^                        "stopAtEntry": false,$/;"	b	object:configurations.0
 storage	src/utils/stb_ds.h	/^  char storage[8];$/;"	m	struct:stbds_string_block	typeref:typename:char[8]
 storage	src/utils/stb_ds.h	/^  stbds_hash_bucket *storage; \/\/ not a separate allocation, just 64-byte aligned storage after/;"	m	struct:__anoneeba07b10408	typeref:typename:stbds_hash_bucket *
 storage	src/utils/stb_ds.h	/^  stbds_string_block *storage;$/;"	m	struct:stbds_string_arena	typeref:typename:stbds_string_block *
@@ -20445,9 +20444,9 @@ strreset	src/utils/stb_ds.h	/^#define strreset /;"	d
 succ_high	src/utils/stb_image.h	/^   int            succ_high;$/;"	m	struct:__anona731fb5d0808	typeref:typename:int
 succ_low	src/utils/stb_image.h	/^   int            succ_low;$/;"	m	struct:__anona731fb5d0808	typeref:typename:int
 suffix	src/utils/stb_image.h	/^   stbi_uc suffix;$/;"	m	struct:__anona731fb5d1208	typeref:typename:stbi_uc
+tasks	.vscode/tasks.json	/^        "tasks": [$/;"	a
 temp	src/utils/stb_ds.h	/^  ptrdiff_t   temp;$/;"	m	struct:__anoneeba07b10108	typeref:typename:ptrdiff_t
 temp_key	src/utils/stb_ds.h	/^  char * temp_key; \/\/ this MUST be the first field of the hash table$/;"	m	struct:__anoneeba07b10408	typeref:typename:char *
-text	.vscode/launch.json	/^                    "text": "-enable-pretty-printing",$/;"	s	object:configurations.0.setupCommands.0
 texture_bind	src/gfx/texture.c	/^texture_bind(struct Texture* texture)$/;"	f	typeref:typename:void
 texture_create	src/gfx/texture.c	/^texture_create(const char* texture_file_path)$/;"	f	typeref:struct:Texture
 texture_destroy	src/gfx/texture.c	/^texture_destroy(struct Texture* texture)$/;"	f	typeref:typename:void
@@ -20463,11 +20462,11 @@ tombstone_count_threshold	src/utils/stb_ds.h	/^  size_t tombstone_count_threshol
 tps	src/gfx/window.h	/^        uint fps, ticks, tps, tick_remainder;$/;"	m	struct:Window	typeref:typename:uint
 tq	src/utils/stb_image.h	/^      int tq;$/;"	m	struct:__anona731fb5d0808::__anona731fb5d0908	typeref:typename:int
 transparent	src/utils/stb_image.h	/^   int flags, bgindex, ratio, transparent, eflags;$/;"	m	struct:__anona731fb5d1308	typeref:typename:int
-type	.vscode/launch.json	/^            "type": "cppdbg",$/;"	s	object:configurations.0
+type	.vscode/launch.json	/^                        "type": "cppdbg",$/;"	s	object:configurations.0
+type	.vscode/tasks.json	/^                        "type": "shell",$/;"	s	object:tasks.0
 type	src/utils/stb_image.h	/^   stbi__uint32 type;$/;"	m	struct:__anona731fb5d0d08	typeref:typename:stbi__uint32
 type	src/utils/stb_image.h	/^   stbi_uc size,type,channel;$/;"	m	struct:__anona731fb5d1108	typeref:typename:stbi_uc
 type	src/world/block.h	/^        enum BlockType type;$/;"	m	struct:Block	typeref:enum:BlockType
-types.h	.vscode/settings.json	/^        "types.h": "c"$/;"	s	object:files.associations
 uint	src/utils/types.h	/^typedef unsigned int uint;$/;"	t	typeref:typename:unsigned int
 uint32	src/utils/types.h	/^typedef uint32_t     uint32;$/;"	t	typeref:typename:uint32_t
 uint64	src/utils/types.h	/^typedef uint64_t     uint64;$/;"	t	typeref:typename:uint64_t
@@ -20479,7 +20478,7 @@ update_ctags	makefile	/^update_ctags:$/;"	t
 used_count	src/utils/stb_ds.h	/^  size_t used_count;$/;"	m	struct:__anoneeba07b10408	typeref:typename:size_t
 used_count_shrink_threshold	src/utils/stb_ds.h	/^  size_t used_count_shrink_threshold;$/;"	m	struct:__anoneeba07b10408	typeref:typename:size_t
 used_count_threshold	src/utils/stb_ds.h	/^  size_t used_count_threshold;$/;"	m	struct:__anoneeba07b10408	typeref:typename:size_t
-utils.h	.vscode/settings.json	/^        "utils.h": "c",$/;"	s	object:files.associations
+utils.h	.vscode/settings.json	/^                "utils.h": "c",$/;"	s	object:files.associations
 v	src/utils/stb_image.h	/^      int h,v;$/;"	m	struct:__anona731fb5d0808::__anona731fb5d0908	typeref:typename:int
 validate_uint32	src/utils/stb_image.h	/^typedef unsigned char validate_uint32[sizeof(stbi__uint32)==4 ? 1 : -1];$/;"	t	typeref:typename:unsigned char[sizeof (stbi__uint32)==4?1:-1]
 value	src/utils/stb_image.h	/^   stbi__uint16 value[STBI__ZNSYMS];$/;"	m	struct:__anona731fb5d0b08	typeref:typename:stbi__uint16[]
@@ -20509,12 +20508,12 @@ window_loop	src/gfx/window.c	/^window_loop()$/;"	f	typeref:typename:void
 wireframe	src/gfx/window.h	/^        bool wireframe;$/;"	m	struct:Window	typeref:typename:bool
 world	src/state.h	/^        struct World world;$/;"	m	struct:State	typeref:struct:World
 world	src/world/chunk.h	/^        struct World* world;$/;"	m	struct:Chunk	typeref:struct:World *
-world.h	.vscode/settings.json	/^        "world.h": "c",$/;"	s	object:files.associations
 world_destroy	src/world/world.c	/^world_destroy(struct World* world)$/;"	f	typeref:typename:void
 world_get_block	src/world/world.c	/^world_get_block(struct World* world, vec3 offset)$/;"	f	typeref:typename:uint
 world_get_chunk	src/world/world.c	/^world_get_chunk(struct World* world, vec3 offset)$/;"	f	typeref:struct:Chunk *
 world_init	src/world/world.c	/^world_init(struct World* world, struct Renderer* renderer)$/;"	f	typeref:typename:void
-world_pos_to_block	src/world/world.c	/^world_pos_to_block(vec3 pos, vec3 dest)$/;"	f	typeref:typename:void
+world_position_to_block	src/world/world.c	/^world_position_to_block(vec3 pos, vec3 dest)$/;"	f	typeref:typename:void
+world_position_to_chunk	src/world/world.c	/^world_position_to_chunk(vec3 pos, vec3 dest)$/;"	f	typeref:typename:void
 world_render	src/world/world.c	/^world_render(struct World* world)$/;"	f	typeref:typename:void
 world_set_center	src/world/world.c	/^world_set_center(struct World* world, vec3 center)$/;"	f	typeref:typename:void
 world_tick	src/world/world.c	/^world_tick(struct World* world)$/;"	f	typeref:typename:void
