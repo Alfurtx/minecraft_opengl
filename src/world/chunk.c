@@ -5,23 +5,24 @@
 #include <string.h>
 
 #define offset(pos) ((uint) (pos[0] + pos[1] * CHUNK_SIZE + pos[2] * CHUNK_SIZE * CHUNK_SIZE))
-#define foreach_block(_i, _j, _k)                        \
-        for (uint _i = 0; _i < CHUNK_SIZE; _i++)         \
-                for (uint _j = 0; _j < CHUNK_SIZE; _j++) \
-                        for (uint _k = 0; _k < CHUNK_SIZE; _k++)
+#define foreach_block(x, y, z)                        \
+        for (uint x = 0; x < CHUNK_SIZE; x++)         \
+                for (uint y = 0; y < CHUNK_SIZE; y++) \
+                        for (uint z = 0; z < CHUNK_SIZE; z++)
 
 internal void        get_neighbor_chunks(struct Chunk* chunk, vec3 position, struct Chunk* dest[2]);
 internal inline bool block_on_border(struct Chunk* chunk, vec3 position);
 
+// NOTE(fonsi): world_position será la coordenada sin el offset, y contendrá valores negativos en la coordenada
 void
 chunk_init(struct Chunk* chunk, struct World* world, vec3 world_position)
 {
         memset(chunk, 0, sizeof(struct Chunk));
+        chunk->remesh = true;
         chunk->world  = world;
         chunk->blocks = calloc(BLOCK_COUNT, sizeof(uint));
         glm_vec3_copy(world_position, chunk->position);
         glm_vec3_scale(world_position, CHUNK_SIZE, chunk->offset);
-        chunk->remesh = true;
         mesh_init(&chunk->mesh);
 }
 
@@ -60,10 +61,6 @@ chunk_generate_mesh(struct Chunk* chunk)
                                 glm_vec3_copy(DIRECTION_VEC[direction], dirvec);
 
                                 vec3 localvec, worldvec;
-
-                                // localvec[0] = fabs(localvec[0]);
-                                // localvec[1] = fabs(localvec[1]);
-                                // localvec[2] = fabs(localvec[2]);
 
                                 glm_vec3_add(block_pos, dirvec, localvec);
                                 glm_vec3_add(world_pos, dirvec, worldvec);

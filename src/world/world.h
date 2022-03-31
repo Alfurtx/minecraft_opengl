@@ -6,6 +6,14 @@
 #include "../utils/utils.h"
 #include "chunk.h"
 
+// IMPORTANT(fonsi):
+// POSITION -> WORLD POSITION
+// OFFSET -> WORLD POSITION * CHUNK SIZE
+//
+// eg.
+// position (-5, 0, -4)
+// offset (-160, 0, -128)
+
 struct World
 {
         struct Chunk** chunks;
@@ -18,8 +26,7 @@ struct World
 
         struct
         {
-                uint count;
-                uint max;
+                uint count, max;
         } mesh_queue, load_queue;
 };
 
