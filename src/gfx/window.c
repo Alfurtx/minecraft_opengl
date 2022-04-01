@@ -79,8 +79,10 @@ window_init(window_func init, window_func destroy, window_func update, window_fu
         }
 
         glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LESS);
         glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
+        glEnable(GL_BLEND);
 
         if (GLAD_GL_ARB_debug_output) {
                 int flags;
@@ -93,6 +95,7 @@ window_init(window_func init, window_func destroy, window_func update, window_fu
                                               GL_TRUE);
                 }
         }
+
         glfwSwapInterval(1);
 }
 
@@ -101,32 +104,28 @@ window_loop()
 {
         window.init();
 
+        // NOTE(fonsi): tmp frame counter variables
+        double lastTime = glfwGetTime();
+        int nbFrames = 0;
+
         while (!glfwWindowShouldClose(window.handle)) {
-                const uint now = NOW();
+                // NOTE(fonsi): tmp counter 'function' - begin
+                double currentTime = glfwGetTime();
+                nbFrames++;
 
-                window.deltatime = now - window.lastframe;
-                window.lastframe = now;
-
-                if (now - window.last_second > NS_PER_SECOND) {
-                        window.fps         = window.frames;
-                        window.tps         = window.ticks;
-                        window.frames      = 0;
-                        window.ticks       = 0;
-                        window.last_second = now;
-
-                        printf("FPS: %u | TPS: %u\n", window.fps, window.tps);
+                if ( currentTime - lastTime >= 1.0 ){ // If last prinf() was more than 1 sec ago
+                        // printf and reset timer
+                        printf("%f ms/frame\n", 1000.0/(double)nbFrames);
+                        nbFrames = 0;
+                        lastTime += 1.0;
                 }
-                // tick processing
-                const uint NS_PER_TICK = (NS_PER_SECOND / 60);
-                uint       tick_time   = window.deltatime + window.tick_remainder;
-                while (tick_time > NS_PER_TICK) {
-                        _tick();
-                        tick_time -= NS_PER_TICK;
-                }
-                window.tick_remainder = max(tick_time, 0);
+                // NOTE(fonsi): tmp counter 'function' - end
 
-                // window.tick();
+                window.currentframe = glfwGetTime();
+                window.deltatime    = window.currentframe - window.lastframe;
+                window.lastframe    = window.currentframe;
 
+                window.tick();
                 window.update();
 
                 proccess_input(window.handle);
@@ -135,6 +134,7 @@ window_loop()
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
                 _render();
+
 
                 glfwSwapBuffers(window.handle);
                 glfwPollEvents();

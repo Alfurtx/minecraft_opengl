@@ -2,6 +2,7 @@
 #define VAO_H_
 
 #include "../utils/types.h"
+#include "vbo.h"
 
 struct VAO {
         uint handle;
@@ -10,7 +11,7 @@ struct VAO {
 extern struct VAO vao_create();
 extern void       vao_destroy(struct VAO* vao);
 extern void       vao_bind(struct VAO* vao);
-extern void       vao_attr(struct VAO* vao, uint index, uint size, uint type, bool normalized,
+extern void       vao_attr(struct VAO* vao, struct VBO* vbo, uint index, uint size, uint type, bool normalized,
                            uint stride, const void* offset);
 
 #endif // VAO_H_

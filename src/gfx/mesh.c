@@ -93,20 +93,20 @@ mesh_finalize(struct Mesh* mesh)
         mesh->data.index    = 0;
         mesh->indices.index = 0;
 
-        vao_bind(&mesh->vao);
-        vbo_bind(&mesh->ibo);
-        vbo_buffer(&mesh->ibo, mesh->indices.data, mesh->indices.count * sizeof(uint));
         vbo_bind(&mesh->vbo);
         vbo_buffer(&mesh->vbo, mesh->data.data, mesh->data.count * sizeof(float));
-        vao_attr(&mesh->vao, 0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*) 0);
-        vao_attr(&mesh->vao, 1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
-                 (void*) (3 * sizeof(float)));
+        vbo_bind(&mesh->ibo);
+        vbo_buffer(&mesh->ibo, mesh->indices.data, mesh->indices.count * sizeof(unsigned int));
 }
 
 void
 mesh_render(struct Mesh* mesh)
 {
+        vao_attr(&mesh->vao, &mesh->vbo, 0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*) 0);
+        vao_attr(&mesh->vao, &mesh->vbo, 1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
+                 (void*) (3 * sizeof(float)));
         vao_bind(&mesh->vao);
+        vbo_bind(&mesh->ibo);
         glDrawElements(GL_TRIANGLES, mesh->indices.count, GL_UNSIGNED_INT, 0);
 }
 

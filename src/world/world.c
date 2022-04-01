@@ -50,14 +50,12 @@ world_init(struct World* world, struct Renderer* renderer)
         world->chunks       = calloc(world->chunks_count, sizeof(struct Chunk*));
         glm_vec3_zero(world->chunks_offset);
         glm_vec3_sub(world->chunks_offset,
-                     (vec3){(float) world->chunks_size / 2, 0, (float) world->chunks_size / 2},
+                     (vec3){(float) world->chunks_size / 2 - 1, 0, (float) world->chunks_size / 2 - 1},
                      world->chunks_origin);
 
         world->renderer = renderer;
 
-        world->mesh_queue.count = 0;
         world->mesh_queue.max   = 2;
-        world->load_queue.count = 0;
         world->load_queue.max   = 2;
 
         world_set_center(world, GLM_VEC3_ZERO);
@@ -110,7 +108,7 @@ world_set_center(struct World* world, vec3 center)
                 return;
 
         glm_vec3_sub(new_offset,
-                     (vec3){(float) world->chunks_size / 2, 0, (float) world->chunks_size / 2},
+                     (vec3){world->chunks_size / 2 , 0, world->chunks_size / 2 },
                      world->chunks_origin);
 
         struct Chunk* old[world->chunks_count];

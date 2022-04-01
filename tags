@@ -20489,7 +20489,7 @@ validate_uint32	src/utils/stb_image.h	/^typedef unsigned char validate_uint32[si
 value	src/utils/stb_image.h	/^   stbi__uint16 value[STBI__ZNSYMS];$/;"	m	struct:__anona731fb5d0b08	typeref:typename:stbi__uint16[]
 values	src/utils/stb_image.h	/^   stbi_uc  values[256];$/;"	m	struct:__anona731fb5d0708	typeref:typename:stbi_uc[256]
 vao	src/gfx/mesh.h	/^        struct VAO vao;$/;"	m	struct:Mesh	typeref:struct:VAO
-vao_attr	src/gfx/vao.c	/^vao_attr(struct VAO* vao, uint index, uint size, uint type, bool normalized, uint stride, const /;"	f	typeref:typename:void
+vao_attr	src/gfx/vao.c	/^vao_attr(struct VAO* vao, struct VBO* vbo, uint index, uint size, uint type, bool normalized, ui/;"	f	typeref:typename:void
 vao_bind	src/gfx/vao.c	/^vao_bind(struct VAO* vao)$/;"	f	typeref:typename:void
 vao_create	src/gfx/vao.c	/^vao_create()$/;"	f	typeref:struct:VAO
 vao_destroy	src/gfx/vao.c	/^vao_destroy(struct VAO* vao)$/;"	f	typeref:typename:void

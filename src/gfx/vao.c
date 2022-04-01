@@ -26,9 +26,10 @@ vao_bind(struct VAO* vao)
 }
 
 void
-vao_attr(struct VAO* vao, uint index, uint size, uint type, bool normalized, uint stride, const void* offset)
+vao_attr(struct VAO* vao, struct VBO* vbo, uint index, uint size, uint type, bool normalized, uint stride, const void* offset)
 {
         vao_bind(vao);
-        glEnableVertexAttribArray(index);
+        vbo_bind(vbo);
         glVertexAttribPointer(index, size, type, normalized, stride, offset);
+        glEnableVertexAttribArray(index);
 }

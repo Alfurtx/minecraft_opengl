@@ -32,13 +32,14 @@ camera_get_view(struct Camera* camera, mat4 dest)
 {
         vec3 tmp;
         glm_vec3_add(camera->position, camera->front, tmp);
-        glm_lookat(camera->position, tmp, camera->up, dest);
+        // glm_lookat(camera->position, tmp, camera->up, dest);
+        glm_look(camera->position, camera->front, camera->up, dest);
 }
 
 void
 camera_get_projection(struct Camera* camera, mat4 dest)
 {
-        glm_perspective(glm_rad(CAMERA_FOV), WINDOW_SCREEN_WIDTH / WINDOW_SCREEN_HEIGHT, 0.1f,
+        glm_perspective(glm_rad(CAMERA_FOV), WINDOW_SCREEN_WIDTH / WINDOW_SCREEN_HEIGHT, 0.01f,
                         CAMERA_RENDER_DISTANCE * 32.0f, dest);
 }
 
@@ -106,13 +107,11 @@ camera_proccess_mouse(struct Camera* camera, float xoff, float yoff)
 internal void
 camera_update_vectors(struct Camera* camera)
 {
-        vec3  aux;
         float x = cos(glm_rad(camera->yaw)) * cos(glm_rad(camera->pitch));
         float y = sin(glm_rad(camera->pitch));
         float z = sin(glm_rad(camera->yaw)) * cos(glm_rad(camera->pitch));
 
-        glm_vec3_copy((vec3){x, y, z}, aux);
-        glm_normalize_to(aux, camera->front);
+        glm_normalize_to((vec3){x, y, z}, camera->front);
 
         glm_vec3_crossn(camera->front, camera->world_up, camera->right);
         glm_vec3_crossn(camera->right, camera->front, camera->up);
