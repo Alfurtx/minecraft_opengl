@@ -11,16 +11,17 @@ UNAME_S = $(shell uname -s)
 # NOTE(fonsi): definido CGLM_ALL_UNALIGNED porque habia ciertos problemas con el alineamiento en MACOS
 
 CC = clang
-CFLAGS = -std=c11 -g -Wall -Wextra -Wpedantic -Wstrict-aliasing -DCGLM_ALL_UNALIGNED
+CFLAGS = -std=c11 -g -Wall -Wextra -Wpedantic -Wstrict-aliasing
 CFLAGS += -Wno-unused-parameter -Wno-switch -Wno-unused-function
-LDFLAGS = -lm -lglfw libs/glad/src/glad.o
+LDFLAGS = -lm -lglfw libs/glad/src/glad.o -lpthread
 
 ifeq ($(UNAME_S), Darwin)
 	LDFLAGS += -framework OpenGL -framework IOKit -framework CoreVideo -framework Cocoa
 endif
 
 ifeq ($(UNAME_S), Linux)
-	LDFLAGS += -ldl -lpthread -lGL -lX11 -lXrandr -lXi
+	CFLAGS += -pg -DCGLM_ALL_UNALIGNED
+	LDFLAGS += -ldl -lpthread -lGL -lX11 -lXrandr -lXi -pg
 endif
 
 SRC = $(wildcard src/*.c) $(wildcard src/**/*.c) $(wildcard src/**/**/*.c) $(wildcard src/**/**/**/*.c)
@@ -29,7 +30,7 @@ BIN = bin
 
 .PHONY: all clean
 
-all: dirs libs app
+all: update_ctags dirs libs app
 
 run:
 	$(BIN)/app
@@ -50,8 +51,14 @@ dirs:
 clean:
 	rm -rf $(OBJ) $(TARGET)
 
+profile:
+	gprof $(BIN)/app > profiling_data
+
 debug:
 	gdb --tui -q $(BIN)/app
 
 leak:
 	valgrind --leak-check=full --show-leak-kinds=all ./$(BIN)/app
+
+update_ctags:
+	ctags -R --exclude=.git

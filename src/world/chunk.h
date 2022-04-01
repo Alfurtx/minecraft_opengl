@@ -5,32 +5,38 @@
 #include "../utils/types.h"
 #include "../utils/utils.h"
 #include "block.h"
-#include "../utils/worldgen.h"
 
-#define CHUNK_SIZE_X 16
-#define CHUNK_SIZE_Y 256
-#define CHUNK_SIZE_Z 16
-#define CHUNK_BLOCK_COUNT (CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z)
+#define CHUNK_SIZE 32
+#define BLOCK_COUNT (CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE)
 
-struct Chunk
-{
-        struct Mesh      mesh;
-        struct Renderer* renderer;
-        struct Block     blocks[CHUNK_BLOCK_COUNT];
-
-        struct Heightmap heightmap;
-
-        vec3 world_offset;
-        vec3 world_position;
-
-        bool border;
-        bool prepared;
+struct Chunk {
+        struct World* world;
+        struct Mesh   mesh;
+        uint*         blocks;
+        vec3          position;
+        vec3          offset;
+        bool          remesh;
 };
 
-extern struct Chunk* chunk_init(struct Renderer* renderer, vec3 world_position, fnl_state* noise_state);
-extern void          chunk_update(struct Chunk* chunk);
-extern void          chunk_destroy(struct Chunk* chunk);
-extern void          chunk_prepare_render(struct Chunk* chunk);
-extern void          chunk_render(struct Chunk* chunk);
+extern void chunk_init(struct Chunk* chunk, struct World* world, vec3 world_position);
+extern void chunk_update(struct Chunk* chunk);
+extern void chunk_destroy(struct Chunk* chunk);
+extern void chunk_generate_mesh(struct Chunk* chunk);
+extern void chunk_render(struct Chunk* chunk);
+extern uint chunk_get_block(struct Chunk* chunk, vec3 position);
+extern void chunk_set_block(struct Chunk* chunk, vec3 position, enum BlockType type);
+extern bool chunk_contains_block(struct Chunk* chunk, vec3 position);
+extern void chunk_create_map(struct Chunk* chunk, float heightmap[CHUNK_SIZE][CHUNK_SIZE]);
 
 #endif // CHUNK_H_
+
+/*
+ * NOTE(fonsi): Proceso de Creación, Uso y Destruccion de un CHUNK
+ *
+ * chunk_init()
+ * chunk_create_map()
+ * chunk_generate_mesh()
+ * chunk_render()
+ * chunk_destroy()
+ *
+ */

@@ -2,6 +2,8 @@
 #define WINDOW_H
 
 #include "gfx.h"
+#include "../utils/types.h"
+#include "../utils/utils.h"
 #include <cglm/cglm.h>
 #include <cglm/types.h>
 #include <stdbool.h>
@@ -19,8 +21,8 @@ struct Button
 struct Mouse
 {
         struct Button buttons[GLFW_MOUSE_BUTTON_LAST];
-        vec2 position;
-        vec2 delta;
+        vec2          position;
+        vec2          delta;
 };
 
 struct Keyboard
@@ -30,14 +32,15 @@ struct Keyboard
 
 struct Window
 {
-        GLFWwindow* handle;
-        struct Mouse mouse;
+        GLFWwindow*     handle;
+        struct Mouse    mouse;
         struct Keyboard keyboard;
 
         window_func init;
         window_func destroy;
         window_func update;
         window_func render;
+        window_func tick;
 
         float deltatime;
         float lastframe;
@@ -45,9 +48,14 @@ struct Window
 
         bool wireframe;
         bool speed_boost;
+
+        uint last_second;
+        uint frames;
+        uint fps, ticks, tps, tick_remainder;
 };
 
-extern void window_init(window_func init, window_func destroy, window_func update, window_func render);
+extern void
+window_init(window_func init, window_func destroy, window_func update, window_func render, window_func tick);
 extern void window_loop();
 
 extern struct Window window;

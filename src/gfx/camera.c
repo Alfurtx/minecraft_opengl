@@ -1,8 +1,8 @@
-#include "../utils/types.h"
 #include "camera.h"
+#include "../utils/types.h"
 #include "gfx.h"
 
-const float CAMERA_RENDER_DISTANCE = 8.0f;
+const float CAMERA_RENDER_DISTANCE = 20.0f;
 const float CAMERA_YAW             = -90.0f;
 const float CAMERA_PITCH           = 0.0f;
 const float CAMERA_SPEED           = 2.5f;
@@ -14,7 +14,7 @@ internal void camera_update_vectors(struct Camera* camera);
 void
 camera_init(struct Camera* camera)
 {
-        glm_vec3_copy((vec3){-1.0f, 9.0f, 1.0f}, camera->position);
+        glm_vec3_copy((vec3){0.0f, 40.0f, 0.0f}, camera->position);
         glm_vec3_copy((vec3){0.0f, 1.0f, 0.0f}, camera->world_up);
         glm_vec3_copy((vec3){-0.7f, -0.1f, 0.67f}, camera->front);
         camera->yaw         = CAMERA_YAW;
@@ -32,18 +32,15 @@ camera_get_view(struct Camera* camera, mat4 dest)
 {
         vec3 tmp;
         glm_vec3_add(camera->position, camera->front, tmp);
-        glm_lookat(camera->position, tmp, camera->up, dest);
+        // glm_lookat(camera->position, tmp, camera->up, dest);
+        glm_look(camera->position, camera->front, camera->up, dest);
 }
 
 void
 camera_get_projection(struct Camera* camera, mat4 dest)
 {
-        glm_perspective(glm_rad(CAMERA_FOV),
-                        WINDOW_SCREEN_WIDTH / WINDOW_SCREEN_HEIGHT,
-                        0.1f,
-                        CAMERA_RENDER_DISTANCE *
-                            16.0f, // render distance = number of chunks and 16 is the side of one chunk
-                        dest);
+        glm_perspective(glm_rad(CAMERA_FOV), WINDOW_SCREEN_WIDTH / WINDOW_SCREEN_HEIGHT, 0.01f,
+                        CAMERA_RENDER_DISTANCE * 32.0f, dest);
 }
 
 void
@@ -54,8 +51,7 @@ camera_proccess_keyboard(struct Camera* camera, enum CameraMovement direction, f
 
         speed *= 10;
 
-        switch (direction)
-        {
+        switch (direction) {
         case CAM_MOVE_FORWARD:
                 glm_vec3_muladds(camera->front, speed, camera->position);
                 break;
@@ -83,8 +79,7 @@ camera_proccess_keyboard(struct Camera* camera, enum CameraMovement direction, f
 void
 camera_proccess_mouse(struct Camera* camera, float xoff, float yoff)
 {
-        if (camera->firstmouse)
-        {
+        if (camera->firstmouse) {
                 camera->lastx      = xoff;
                 camera->lasty      = yoff;
                 camera->firstmouse = false;
@@ -112,13 +107,11 @@ camera_proccess_mouse(struct Camera* camera, float xoff, float yoff)
 internal void
 camera_update_vectors(struct Camera* camera)
 {
-        vec3  aux;
         float x = cos(glm_rad(camera->yaw)) * cos(glm_rad(camera->pitch));
         float y = sin(glm_rad(camera->pitch));
         float z = sin(glm_rad(camera->yaw)) * cos(glm_rad(camera->pitch));
 
-        glm_vec3_copy((vec3){x, y, z}, aux);
-        glm_normalize_to(aux, camera->front);
+        glm_normalize_to((vec3){x, y, z}, camera->front);
 
         glm_vec3_crossn(camera->front, camera->world_up, camera->right);
         glm_vec3_crossn(camera->right, camera->front, camera->up);

@@ -33,10 +33,17 @@ render()
         world_render(&state.world);
 }
 
+internal void
+tick()
+{
+        world_tick(&state.world);
+        world_set_center(&state.world, state.renderer.current_camera->position);
+}
+
 int
 main(void)
 {
-        window_init(init, destroy, update, render);
+        window_init(init, destroy, update, render, tick);
         window_loop();
         return (0);
 }
