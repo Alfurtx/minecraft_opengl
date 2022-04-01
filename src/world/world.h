@@ -5,6 +5,7 @@
 #include "../utils/types.h"
 #include "../utils/utils.h"
 #include "chunk.h"
+#include "../utils/worldgen.h"
 
 // IMPORTANT(fonsi):
 // POSITION -> WORLD POSITION
@@ -20,6 +21,7 @@ struct World {
         uint           chunks_count;
 
         struct Renderer* renderer;
+        struct Heightmap heightmap;
 
         vec3 chunks_origin, chunks_offset;
 

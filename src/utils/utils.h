@@ -5,6 +5,9 @@
 #include "direction.h"
 #include "stb_ds.h"
 #include "stb_image.h"
+#include "noise1234.h"
+#include <stdlib.h>
+#include <stdio.h>
 #include <assert.h>
 #include <cglm/call.h>
 #include <cglm/cglm.h>

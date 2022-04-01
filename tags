@@ -55,6 +55,7 @@ C_Cpp.default.configurationProvider	.vscode/settings.json	/^    "C_Cpp.default.c
 Camera	src/gfx/camera.h	/^struct Camera$/;"	s
 CameraMovement	src/gfx/camera.h	/^enum CameraMovement$/;"	g
 Chunk	src/world/chunk.h	/^struct Chunk {$/;"	s
+Combined	src/utils/worldgen.c	/^struct Combined {$/;"	s	file:
 DATA_BUFFER_SIZE	src/gfx/mesh.c	/^#define DATA_BUFFER_SIZE /;"	d	file:
 DESCRIPCIÓN	README.md	/^### DESCRIPCIÓN$/;"	S	chapter:MINECRAFT OPENGL
 DIRECTION_COUNT	src/utils/direction.h	/^        DIRECTION_COUNT$/;"	e	enum:Direction
@@ -64,8 +65,11 @@ DOWN	src/utils/direction.h	/^        DOWN,$/;"	e	enum:Direction
 Direction	src/utils/direction.h	/^enum Direction$/;"	g
 EAST	src/utils/direction.h	/^        EAST,$/;"	e	enum:Direction
 FACE_INDICES	src/gfx/mesh.c	/^const uint FACE_INDICES[] = {1, 0, 3, 1, 3, 2};$/;"	v	typeref:typename:const uint[]
+FADE	src/utils/noise1234.c	/^#define FADE(/;"	d	file:
+FASTFLOOR	src/utils/noise1234.c	/^#define FASTFLOOR(/;"	d	file:
 FASTNOISELITE_H	src/utils/FastNoiseLite.h	/^#define FASTNOISELITE_H$/;"	d
 FAST_BITS	src/utils/stb_image.h	/^#define FAST_BITS /;"	d
+FGet	src/utils/worldgen.c	/^typedef uint (*FGet)(struct Chunk*, int, int, int);$/;"	t	typeref:typename:uint (*)(struct Chunk *,int,int,int)	file:
 FNL_CELLULAR_DISTANCE_EUCLIDEAN	src/utils/FastNoiseLite.h	/^    FNL_CELLULAR_DISTANCE_EUCLIDEAN,$/;"	e	enum:__anonc0d3cccc0403
 FNL_CELLULAR_DISTANCE_EUCLIDEANSQ	src/utils/FastNoiseLite.h	/^    FNL_CELLULAR_DISTANCE_EUCLIDEANSQ,$/;"	e	enum:__anonc0d3cccc0403
 FNL_CELLULAR_DISTANCE_HYBRID	src/utils/FastNoiseLite.h	/^    FNL_CELLULAR_DISTANCE_HYBRID$/;"	e	enum:__anonc0d3cccc0403
@@ -97,6 +101,8 @@ FNL_ROTATION_IMPROVE_XY_PLANES	src/utils/FastNoiseLite.h	/^    FNL_ROTATION_IMPR
 FNL_ROTATION_IMPROVE_XZ_PLANES	src/utils/FastNoiseLite.h	/^    FNL_ROTATION_IMPROVE_XZ_PLANES$/;"	e	enum:__anonc0d3cccc0203
 FNL_ROTATION_NONE	src/utils/FastNoiseLite.h	/^    FNL_ROTATION_NONE,$/;"	e	enum:__anonc0d3cccc0203
 FNLfloat	src/utils/FastNoiseLite.h	/^typedef float FNLfloat;$/;"	t	typeref:typename:float
+FNoise	src/utils/worldgen.c	/^typedef float (*FNoise)(void* p, float s, float x, float z);$/;"	t	typeref:typename:float (*)(void * p,float s,float x,float z)	file:
+FSet	src/utils/worldgen.c	/^typedef void (*FSet)(struct Chunk*, int, int, int, uint);$/;"	t	typeref:typename:void (*)(struct Chunk *,int,int,int,uint)	file:
 GFX_H_	src/gfx/gfx.h	/^#define GFX_H_$/;"	d
 GLAD_GL_3DFX_multisample	libs/glad/include/glad/glad.h	/^GLAPI int GLAD_GL_3DFX_multisample;$/;"	v	typeref:typename:GLAPI int
 GLAD_GL_3DFX_multisample	libs/glad/src/glad.c	/^int GLAD_GL_3DFX_multisample = 0;$/;"	v	typeref:typename:int
@@ -7050,7 +7056,7 @@ HAVE_WINAPIFAMILY	libs/glad/src/glad.c	/^    #define HAVE_WINAPIFAMILY /;"	d	fil
 HAVE_WINAPIFAMILY	libs/glad/src/glad.c	/^  #define HAVE_WINAPIFAMILY /;"	d	file:
 HEIGHTMAP_X	src/utils/worldgen.h	/^#define HEIGHTMAP_X /;"	d
 HEIGHTMAP_Z	src/utils/worldgen.h	/^#define HEIGHTMAP_Z /;"	d
-Heightmap	src/utils/worldgen.h	/^struct Heightmap$/;"	s
+Heightmap	src/utils/worldgen.h	/^struct Heightmap {$/;"	s
 INCLUDE_STB_DS_H	src/utils/stb_ds.h	/^#define INCLUDE_STB_DS_H$/;"	d
 INDICES	src/gfx/mesh.c	/^const uint INDICES[] = {$/;"	v	typeref:typename:const uint[]
 INDICES_BUFFER_SIZE	src/gfx/mesh.c	/^#define INDICES_BUFFER_SIZE /;"	d	file:
@@ -7071,6 +7077,7 @@ KHRONOS_TRUE	libs/glad/include/KHR/khrplatform.h	/^    KHRONOS_TRUE  = 1,$/;"	e	
 KHRONOS_USE_INTPTR_T	libs/glad/include/KHR/khrplatform.h	/^#define KHRONOS_USE_INTPTR_T$/;"	d
 Keyboard	src/gfx/window.h	/^struct Keyboard$/;"	s
 LDFLAGS	makefile	/^LDFLAGS = -lm -lglfw libs\/glad\/src\/glad.o -lpthread$/;"	m
+LERP	src/utils/noise1234.c	/^#define LERP(/;"	d	file:
 MESH_H_	src/gfx/mesh.h	/^#define MESH_H_$/;"	d
 MIMode	.vscode/launch.json	/^            "MIMode": "gdb",$/;"	s	object:configurations.0
 MIMode	.vscode/settings.json	/^            "MIMode": "gdb",$/;"	s	object:makefile.launchConfigurations.0
@@ -7081,7 +7088,9 @@ NORTH	src/utils/direction.h	/^        NORTH = 0,$/;"	e	enum:Direction
 NOW	src/utils/utils.h	/^#define NOW(/;"	d
 NS_PER_MS	src/utils/utils.h	/^#define NS_PER_MS /;"	d
 NS_PER_SECOND	src/utils/utils.h	/^#define NS_PER_SECOND /;"	d
+Noise	src/utils/worldgen.c	/^struct Noise {$/;"	s	file:
 OBJ	makefile	/^OBJ = $(SRC:.c=.o)$/;"	m
+Octave	src/utils/worldgen.c	/^struct Octave {$/;"	s	file:
 PFNGLACCUMPROC	libs/glad/include/glad/glad.h	/^typedef void (APIENTRYP PFNGLACCUMPROC)(GLenum op, GLfloat value);$/;"	t	typeref:typename:void (APIENTRYP)(GLenum op,GLfloat value)
 PFNGLACCUMXOESPROC	libs/glad/include/glad/glad.h	/^typedef void (APIENTRYP PFNGLACCUMXOESPROC)(GLenum op, GLfixed value);$/;"	t	typeref:typename:void (APIENTRYP)(GLenum op,GLfixed value)
 PFNGLACQUIREKEYEDMUTEXWIN32EXTPROC	libs/glad/include/glad/glad.h	/^typedef GLboolean (APIENTRYP PFNGLACQUIREKEYEDMUTEXWIN32EXTPROC)(GLuint memory, GLuint64 key, GL/;"	t	typeref:typename:GLboolean (APIENTRYP)(GLuint memory,GLuint64 key,GLuint timeout)
@@ -10066,6 +10075,8 @@ PFNWGLGETPROCADDRESSPROC_PRIVATE	libs/glad/src/glad.c	/^typedef void* (APIENTRYP
 PRIME_X	src/utils/FastNoiseLite.h	/^static const int PRIME_X = 501125321;$/;"	v	typeref:typename:const int
 PRIME_Y	src/utils/FastNoiseLite.h	/^static const int PRIME_Y = 1136930381;$/;"	v	typeref:typename:const int
 PRIME_Z	src/utils/FastNoiseLite.h	/^static const int PRIME_Z = 1720413743;$/;"	v	typeref:typename:const int
+RAND	src/utils/worldgen.c	/^#define RAND(/;"	d	file:
+RANDCHANCE	src/utils/worldgen.c	/^#define RANDCHANCE(/;"	d	file:
 RAND_VECS_2D	src/utils/FastNoiseLite.h	/^static const float RAND_VECS_2D[] =$/;"	v	typeref:typename:const float[]
 RAND_VECS_3D	src/utils/FastNoiseLite.h	/^static const float RAND_VECS_3D[] =$/;"	v	typeref:typename:const float[]
 RENDERER_CHUNK	src/gfx/renderer.h	/^        RENDERER_CHUNK = 0,$/;"	e	enum:RendererType
@@ -10075,6 +10086,7 @@ Renderer	src/gfx/renderer.h	/^struct Renderer$/;"	s
 RendererType	src/gfx/renderer.h	/^enum RendererType$/;"	g
 SHADER_H_	src/gfx/shader.h	/^#define SHADER_H_$/;"	d
 SOUTH	src/utils/direction.h	/^        SOUTH,$/;"	e	enum:Direction
+SRAND	src/utils/worldgen.c	/^#define SRAND(/;"	d	file:
 SRC	makefile	/^SRC = $(wildcard src\/*.c) $(wildcard src\/**\/*.c) $(wildcard src\/**\/**\/*.c) $(wildcard src\//;"	m
 STATE_H_	src/state.h	/^#define STATE_H_$/;"	d
 STBDS_ADDRESSOF	src/utils/stb_ds.h	/^  #define STBDS_ADDRESSOF(/;"	d
@@ -10191,6 +10203,7 @@ VAO_H_	src/gfx/vao.h	/^#define VAO_H_$/;"	d
 VBO	src/gfx/vbo.h	/^struct VBO$/;"	s
 VBO_H_	src/gfx/vbo.h	/^#define VBO_H_$/;"	d
 VERTICES	src/gfx/mesh.c	/^const float VERTICES[] = {$/;"	v	typeref:typename:const float[]
+WATER_LEVEL	src/utils/worldgen.c	/^#define WATER_LEVEL /;"	d	file:
 WEST	src/utils/direction.h	/^        WEST,$/;"	e	enum:Direction
 WINDOW_H	src/gfx/window.h	/^#define WINDOW_H$/;"	d
 WINDOW_SCREEN_HEIGHT	src/gfx/window.h	/^#define WINDOW_SCREEN_HEIGHT /;"	d
@@ -10370,7 +10383,7 @@ cellular_return_type	src/utils/FastNoiseLite.h	/^    fnl_cellular_return_type ce
 channel	src/utils/stb_image.h	/^   stbi_uc size,type,channel;$/;"	m	struct:__anona731fb5d1108	typeref:typename:stbi_uc
 channel_order	src/utils/stb_image.h	/^   int channel_order;$/;"	m	struct:__anona731fb5d0508	typeref:typename:int
 chunk_contains_block	src/world/chunk.c	/^chunk_contains_block(struct Chunk* chunk, vec3 position)$/;"	f	typeref:typename:bool
-chunk_create_map	src/world/chunk.c	/^chunk_create_map(struct Chunk* chunk)$/;"	f	typeref:typename:void
+chunk_create_map	src/world/chunk.c	/^chunk_create_map(struct Chunk* chunk, float heightmap[CHUNK_SIZE][CHUNK_SIZE])$/;"	f	typeref:typename:void
 chunk_destroy	src/world/chunk.c	/^chunk_destroy(struct Chunk* chunk)$/;"	f	typeref:typename:void
 chunk_exists	src/world/world.c	/^chunk_exists(struct World* world, vec3 offset)$/;"	f	typeref:typename:internal bool
 chunk_generate_mesh	src/world/chunk.c	/^chunk_generate_mesh(struct Chunk* chunk)$/;"	f	typeref:typename:void
@@ -10399,6 +10412,9 @@ coeff	src/utils/stb_image.h	/^      short   *coeff;   \/\/ progressive only$/;"	
 coeff_h	src/utils/stb_image.h	/^      int      coeff_w, coeff_h; \/\/ number of 8x8 coefficient blocks$/;"	m	struct:__anona731fb5d0808::__anona731fb5d0908	typeref:typename:int
 coeff_w	src/utils/stb_image.h	/^      int      coeff_w, coeff_h; \/\/ number of 8x8 coefficient blocks$/;"	m	struct:__anona731fb5d0808::__anona731fb5d0908	typeref:typename:int
 color_table	src/utils/stb_image.h	/^   stbi_uc *color_table;$/;"	m	struct:__anona731fb5d1308	typeref:typename:stbi_uc *
+combined	src/utils/worldgen.c	/^combined(struct Noise* n, struct Noise* m)$/;"	f	typeref:struct:Noise
+combined_compute	src/utils/worldgen.c	/^combined_compute(struct Combined* p, float seed, float x, float z)$/;"	f	typeref:typename:float
+compute	src/utils/worldgen.c	/^        FNoise compute;$/;"	m	struct:Noise	typeref:typename:FNoise	file:
 configurations	.vscode/launch.json	/^    "configurations": [$/;"	a
 count	src/gfx/mesh.h	/^                uint count, capacity, index;$/;"	m	struct:Mesh::__anon5cfd9f530108	typeref:typename:uint
 count	src/world/world.h	/^                uint count, max;$/;"	m	struct:World::__anoncede8ab10108	typeref:typename:uint
@@ -10458,7 +10474,7 @@ domain_warp_type	src/utils/FastNoiseLite.h	/^    fnl_domain_warp_type domain_war
 down	src/gfx/window.h	/^        bool down, last, pressed;$/;"	m	struct:Button	typeref:typename:bool
 dynamic	src/gfx/vbo.h	/^        bool dynamic;$/;"	m	struct:VBO	typeref:typename:bool
 eflags	src/utils/stb_image.h	/^   int flags, bgindex, ratio, transparent, eflags;$/;"	m	struct:__anona731fb5d1308	typeref:typename:int
-elevation	src/utils/worldgen.h	/^        float elevation[HEIGHTMAP_Z][HEIGHTMAP_X];$/;"	m	struct:Heightmap	typeref:typename:float[][]
+elevation	src/utils/worldgen.h	/^        float     elevation[HEIGHTMAP_Z][HEIGHTMAP_X];$/;"	m	struct:Heightmap	typeref:typename:float[][]
 eob_run	src/utils/stb_image.h	/^   int            eob_run;$/;"	m	struct:__anona731fb5d0808	typeref:typename:int
 eof	src/utils/stb_image.h	/^   int      (*eof)   (void *user);                       \/\/ returns nonzero if we are at end o/;"	m	struct:__anona731fb5d0208	typeref:typename:int (*)(void * user)
 expanded	src/utils/stb_image.h	/^   stbi_uc *idata, *expanded, *out;$/;"	m	struct:__anona731fb5d0e08	typeref:typename:stbi_uc *
@@ -19449,6 +19465,10 @@ glad_glWindowRectanglesEXT	libs/glad/include/glad/glad.h	/^GLAPI PFNGLWINDOWRECT
 glad_glWindowRectanglesEXT	libs/glad/src/glad.c	/^PFNGLWINDOWRECTANGLESEXTPROC glad_glWindowRectanglesEXT = NULL;$/;"	v	typeref:typename:PFNGLWINDOWRECTANGLESEXTPROC
 glad_glWriteMaskEXT	libs/glad/include/glad/glad.h	/^GLAPI PFNGLWRITEMASKEXTPROC glad_glWriteMaskEXT;$/;"	v	typeref:typename:GLAPI PFNGLWRITEMASKEXTPROC
 glad_glWriteMaskEXT	libs/glad/src/glad.c	/^PFNGLWRITEMASKEXTPROC glad_glWriteMaskEXT = NULL;$/;"	v	typeref:typename:PFNGLWRITEMASKEXTPROC
+grad1	src/utils/noise1234.c	/^float grad1( int hash, float x ) {$/;"	f	typeref:typename:float
+grad2	src/utils/noise1234.c	/^float grad2( int hash, float x, float y ) {$/;"	f	typeref:typename:float
+grad3	src/utils/noise1234.c	/^float grad3( int hash, float x, float y , float z ) {$/;"	f	typeref:typename:float
+grad4	src/utils/noise1234.c	/^float grad4( int hash, float x, float y, float z, float t ) {$/;"	f	typeref:typename:float
 grass_get_texture_location	src/world/block.c	/^grass_get_texture_location(enum Direction direction, vec2 dest)$/;"	f	typeref:typename:internal void
 grass_init	src/world/block.c	/^grass_init()$/;"	f	typeref:typename:internal void
 gravel_get_texture_location	src/world/block.c	/^gravel_get_texture_location(enum Direction direction, vec2 dest)$/;"	f	typeref:typename:internal void
@@ -19466,7 +19486,7 @@ has_ext	libs/glad/src/glad.c	/^static int has_ext(const char *ext) {$/;"	f	typer
 hash	src/utils/stb_ds.h	/^   size_t    hash [STBDS_BUCKET_LENGTH];$/;"	m	struct:__anoneeba07b10308	typeref:typename:size_t[]
 hash_table	src/utils/stb_ds.h	/^  void      * hash_table;$/;"	m	struct:__anoneeba07b10108	typeref:typename:void *
 hd	src/utils/stb_image.h	/^      int hd,ha;$/;"	m	struct:__anona731fb5d0808::__anona731fb5d0908	typeref:typename:int
-heightmap_generate	src/utils/worldgen.c	/^heightmap_generate(struct Heightmap* heightmap)$/;"	f	typeref:typename:void
+heightmap	src/world/world.h	/^        struct Heightmap heightmap;$/;"	m	struct:World	typeref:struct:Heightmap
 history	src/utils/stb_image.h	/^   stbi_uc *history;$/;"	m	struct:__anona731fb5d1308	typeref:typename:stbi_uc *
 hmdefault	src/utils/stb_ds.h	/^#define hmdefault /;"	d
 hmdefaults	src/utils/stb_ds.h	/^#define hmdefaults /;"	d
@@ -19520,6 +19540,7 @@ init	src/main.c	/^init()$/;"	f	typeref:typename:internal void
 internal	src/utils/types.h	/^#define internal /;"	d
 io	src/utils/stb_image.h	/^   stbi_io_callbacks io;$/;"	m	struct:__anona731fb5d0308	typeref:typename:stbi_io_callbacks
 io_user_data	src/utils/stb_image.h	/^   void *io_user_data;$/;"	m	struct:__anona731fb5d0308	typeref:typename:void *
+ivec3shash	src/utils/worldgen.c	/^ivec3shash(vec3 v)$/;"	f	typeref:typename:int64_t
 jfif	src/utils/stb_image.h	/^   int            jfif;$/;"	m	struct:__anona731fb5d0808	typeref:typename:int
 key	src/utils/stb_ds.h	/^typedef struct { int key,b,c,d; } stbds_struct;$/;"	m	struct:__anoneeba07b10508	typeref:typename:int
 key	src/utils/stb_ds.h	/^typedef struct { int key[2],b,c,d; } stbds_struct2;$/;"	m	struct:__anoneeba07b10608	typeref:typename:int[2]
@@ -19898,6 +19919,7 @@ load_empty_chunks	src/world/world.c	/^load_empty_chunks(struct World* world)$/;"
 load_jpeg_image	src/utils/stb_image.h	/^static stbi_uc *load_jpeg_image(stbi__jpeg *z, int *out_x, int *out_y, int *comp, int req_comp)$/;"	f	typeref:typename:stbi_uc *
 load_queue	src/world/world.h	/^        } mesh_queue, load_queue;$/;"	m	struct:World	typeref:struct:World::__anoncede8ab10108
 lpal	src/utils/stb_image.h	/^   stbi_uc lpal[256][4];$/;"	m	struct:__anona731fb5d1308	typeref:typename:stbi_uc[256][4]
+m	src/utils/worldgen.c	/^        struct Noise *n, *m;$/;"	m	struct:Combined	typeref:struct:Noise *	file:
 ma	src/utils/stb_image.h	/^   unsigned int mr,mg,mb,ma, all_a;$/;"	m	struct:__anona731fb5d1008	typeref:typename:unsigned int
 main	src/main.c	/^main(void)$/;"	f	typeref:typename:int
 major	libs/glad/include/glad/glad.h	/^    int major;$/;"	m	struct:gladGLversionStruct	typeref:typename:int
@@ -19928,15 +19950,23 @@ minor	libs/glad/include/glad/glad.h	/^    int minor;$/;"	m	struct:gladGLversionS
 mode	src/utils/stb_ds.h	/^  unsigned char mode;  \/\/ this isn't used by the string arena itself$/;"	m	struct:stbds_string_arena	typeref:typename:unsigned char
 mouse	src/gfx/window.h	/^        struct Mouse    mouse;$/;"	m	struct:Window	typeref:struct:Mouse
 mr	src/utils/stb_image.h	/^   unsigned int mr,mg,mb,ma, all_a;$/;"	m	struct:__anona731fb5d1008	typeref:typename:unsigned int
+n	src/utils/worldgen.c	/^        int n, o;$/;"	m	struct:Octave	typeref:typename:int	file:
+n	src/utils/worldgen.c	/^        struct Noise *n, *m;$/;"	m	struct:Combined	typeref:struct:Noise *	file:
 name	.vscode/launch.json	/^            "name": "(gdb) Iniciar",$/;"	s	object:configurations.0
 next	src/utils/stb_ds.h	/^  struct stbds_string_block *next;$/;"	m	struct:stbds_string_block	typeref:struct:stbds_string_block *
-noise	src/utils/worldgen.c	/^noise(fnl_state* state, float x, float y)$/;"	f	typeref:typename:internal float
+noise1	src/utils/noise1234.c	/^float noise1( float x )$/;"	f	typeref:typename:float
+noise2	src/utils/noise1234.c	/^float noise2( float x, float y )$/;"	f	typeref:typename:float
+noise3	src/utils/noise1234.c	/^float noise3( float x, float y, float z )$/;"	f	typeref:typename:float
+noise4	src/utils/noise1234.c	/^float noise4( float x, float y, float z, float w )$/;"	f	typeref:typename:float
 noise_state	src/utils/worldgen.h	/^        fnl_state noise_state;$/;"	m	struct:Heightmap	typeref:typename:fnl_state
 noise_type	src/utils/FastNoiseLite.h	/^    fnl_noise_type noise_type;$/;"	m	struct:fnl_state	typeref:typename:fnl_noise_type
 nomore	src/utils/stb_image.h	/^   int            nomore;      \/\/ flag if we saw a marker so must stop$/;"	m	struct:__anona731fb5d0808	typeref:typename:int
 num_bits	src/utils/stb_image.h	/^   int num_bits;$/;"	m	struct:__anona731fb5d0c08	typeref:typename:int
 num_channels	src/utils/stb_image.h	/^   int num_channels;$/;"	m	struct:__anona731fb5d0508	typeref:typename:int
 num_exts_i	libs/glad/src/glad.c	/^static int num_exts_i = 0;$/;"	v	typeref:typename:int	file:
+o	src/utils/worldgen.c	/^        int n, o;$/;"	m	struct:Octave	typeref:typename:int	file:
+octave	src/utils/worldgen.c	/^octave(int n, int o)$/;"	f	typeref:struct:Noise
+octave_compute	src/utils/worldgen.c	/^octave_compute(struct Octave* p, float seed, float x, float z)$/;"	f	typeref:typename:float
 octaves	src/utils/FastNoiseLite.h	/^    int octaves;$/;"	m	struct:fnl_state	typeref:typename:int
 offset	src/utils/stb_image.h	/^   int bpp, offset, hsz;$/;"	m	struct:__anona731fb5d1008	typeref:typename:int
 offset	src/world/chunk.c	/^#define offset(/;"	d	file:
@@ -19947,9 +19977,15 @@ order	src/utils/stb_image.h	/^   int scan_n, order[4];$/;"	m	struct:__anona731fb
 out	src/utils/stb_image.h	/^   stbi_uc *idata, *expanded, *out;$/;"	m	struct:__anona731fb5d0e08	typeref:typename:stbi_uc *
 out	src/utils/stb_image.h	/^   stbi_uc *out;                 \/\/ output buffer (always 4 components)$/;"	m	struct:__anona731fb5d1308	typeref:typename:stbi_uc *
 pal	src/utils/stb_image.h	/^   stbi_uc  pal[256][4];$/;"	m	struct:__anona731fb5d1308	typeref:typename:stbi_uc[256][4]
+params	src/utils/worldgen.c	/^        uint8  params[512];$/;"	m	struct:Noise	typeref:typename:uint8[512]	file:
 parse	src/utils/stb_image.h	/^   int parse, step;$/;"	m	struct:__anona731fb5d1308	typeref:typename:int
+perm	src/utils/noise1234.c	/^unsigned char perm[] = {151,160,137,91,90,15,$/;"	v	typeref:typename:unsigned char[]
 ping_pong_strength	src/utils/FastNoiseLite.h	/^    float ping_pong_strength;$/;"	m	struct:fnl_state	typeref:typename:float
 pitch	src/gfx/camera.h	/^        float pitch;$/;"	m	struct:Camera	typeref:typename:float
+pnoise1	src/utils/noise1234.c	/^float pnoise1( float x, int px )$/;"	f	typeref:typename:float
+pnoise2	src/utils/noise1234.c	/^float pnoise2( float x, float y, int px, int py )$/;"	f	typeref:typename:float
+pnoise3	src/utils/noise1234.c	/^float pnoise3( float x, float y, float z, int px, int py, int pz )$/;"	f	typeref:typename:float
+pnoise4	src/utils/noise1234.c	/^float pnoise4( float x, float y, float z, float w,$/;"	f	typeref:typename:float
 position	src/gfx/camera.h	/^        vec3 position;$/;"	m	struct:Camera	typeref:typename:vec3
 position	src/gfx/window.h	/^        vec2          position;$/;"	m	struct:Mouse	typeref:typename:vec2
 position	src/world/chunk.h	/^        vec3          position;$/;"	m	struct:Chunk	typeref:typename:vec3
@@ -20524,6 +20560,7 @@ world_set_center	src/world/world.c	/^world_set_center(struct World* world, vec3 
 world_tick	src/world/world.c	/^world_tick(struct World* world)$/;"	f	typeref:typename:void
 world_up	src/gfx/camera.h	/^        vec3 world_up;$/;"	m	struct:Camera	typeref:typename:vec3
 world_update	src/world/world.c	/^world_update(struct World* world)$/;"	f	typeref:typename:void
+worldgen_generate	src/utils/worldgen.c	/^worldgen_generate(struct Chunk* chunk)$/;"	f	typeref:typename:void
 x	src/utils/stb_image.h	/^      int x,y,w2,h2;$/;"	m	struct:__anona731fb5d0808::__anona731fb5d0908	typeref:typename:int
 y	src/utils/stb_image.h	/^      int x,y,w2,h2;$/;"	m	struct:__anona731fb5d0808::__anona731fb5d0908	typeref:typename:int
 yaw	src/gfx/camera.h	/^        float yaw;$/;"	m	struct:Camera	typeref:typename:float

@@ -13,26 +13,6 @@ internal inline bool chunk_exists(struct World* world, vec3 offset);
 internal inline void load_chunk(struct World* world, vec3 offset);
 internal void        load_empty_chunks(struct World* world);
 
-// world position -> block coordinates in some chunk
-
-// world position -> chunk position
-
-// chunk array index -> chunk offset
-
-// TODO(fonsi): Hacer funciones mas claras para poder hacer las siguientes operaciones:
-// 1. chunk offset -> world chunks array index
-// 2. chunk position -> world chunks array index
-// 3. global position -> block position
-// 4. global position -> chunk offset
-// 5. global position -> chunk position
-// 6. world chunks array index -> chunk position
-//
-// TENIENDO EN CUENTA QUE
-// chunk offset = (eg. (-32, 0, 64))
-// chunk position = (eg. (-1, 0, 2))
-// global position = (eg. (167, 42, 29))
-// block position = (eg, ({0...31}, {0...31}, {0...31}))
-
 internal inline uint offset_to_index(struct World* world, vec3 offset);
 internal inline uint position_to_index(struct World* world, vec3 position);
 internal inline void position_to_block(vec3 pos, vec3 dest);
@@ -45,18 +25,18 @@ world_init(struct World* world, struct Renderer* renderer)
 {
         memset(world, 0, sizeof(struct World));
 
-        world->chunks_size  = 10;
+        world->chunks_size  = 20;
         world->chunks_count = world->chunks_size * world->chunks_size;
         world->chunks       = calloc(world->chunks_count, sizeof(struct Chunk*));
         glm_vec3_zero(world->chunks_offset);
         glm_vec3_sub(world->chunks_offset,
-                     (vec3){(float) world->chunks_size / 2 - 1, 0, (float) world->chunks_size / 2 - 1},
+                     (vec3){(float) world->chunks_size / 2, 0, (float) world->chunks_size / 2},
                      world->chunks_origin);
 
         world->renderer = renderer;
 
-        world->mesh_queue.max   = 2;
-        world->load_queue.max   = 2;
+        world->mesh_queue.max = 2;
+        world->load_queue.max = 2;
 
         world_set_center(world, GLM_VEC3_ZERO);
 }
@@ -107,8 +87,7 @@ world_set_center(struct World* world, vec3 center)
         if (glm_vec3_eqv(world->chunks_offset, new_offset))
                 return;
 
-        glm_vec3_sub(new_offset,
-                     (vec3){world->chunks_size / 2 , 0, world->chunks_size / 2 },
+        glm_vec3_sub(new_offset, (vec3){world->chunks_size / 2, 0, world->chunks_size / 2},
                      world->chunks_origin);
 
         struct Chunk* old[world->chunks_count];
@@ -186,7 +165,7 @@ load_chunk(struct World* world, vec3 offset)
 {
         struct Chunk* chunk = malloc(sizeof(struct Chunk));
         chunk_init(chunk, world, offset);
-        chunk_create_map(chunk);
+        worldgen_generate(chunk);
         world->chunks[chunk_index(world, offset)] = chunk;
 }
 

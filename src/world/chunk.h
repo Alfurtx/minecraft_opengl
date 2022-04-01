@@ -4,7 +4,6 @@
 #include "../gfx/mesh.h"
 #include "../utils/types.h"
 #include "../utils/utils.h"
-#include "../utils/worldgen.h"
 #include "block.h"
 
 #define CHUNK_SIZE 32
@@ -27,7 +26,7 @@ extern void chunk_render(struct Chunk* chunk);
 extern uint chunk_get_block(struct Chunk* chunk, vec3 position);
 extern void chunk_set_block(struct Chunk* chunk, vec3 position, enum BlockType type);
 extern bool chunk_contains_block(struct Chunk* chunk, vec3 position);
-extern void chunk_create_map(struct Chunk* chunk);
+extern void chunk_create_map(struct Chunk* chunk, float heightmap[CHUNK_SIZE][CHUNK_SIZE]);
 
 #endif // CHUNK_H_
 

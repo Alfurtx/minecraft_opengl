@@ -108,14 +108,21 @@ chunk_render(struct Chunk* chunk)
 }
 
 void
-chunk_create_map(struct Chunk* chunk)
+chunk_create_map(struct Chunk* chunk, float heightmap[CHUNK_SIZE][CHUNK_SIZE])
 {
-        foreach_block(i, j, k)
-        {
-                chunk_set_block(chunk, (vec3){i, j, k}, BLOCK_GRASS);
-        }
+        // foreach_block(i, j, k)
+        // {
+        //         chunk_set_block(chunk, (vec3){i, j, k}, BLOCK_GRASS);
+        // }
 
-        // chunk_set_block(chunk, GLM_VEC3_ZERO, BLOCK_GRASS);
+        for (uint i = 0; i < CHUNK_SIZE; i++)
+                for (uint j = 0; j < CHUNK_SIZE; j++) {
+                        uint h = (uint) (heightmap[j][i] * 31);
+                        chunk_set_block(chunk, (vec3){i, h, j}, BLOCK_GRASS);
+                        while (h > 0) {
+                                chunk_set_block(chunk, (vec3){i, --h, j}, BLOCK_GRASS);
+                        }
+                }
 }
 
 uint

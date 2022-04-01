@@ -31,7 +31,7 @@ const uint TEXTURES[] = {
     0, 1, // 0
     1, 1, // 1
     1, 0, // 2
-    0, 0  // 3
+    0, 0,  // 3
 };
 // clang-format on
 
@@ -75,8 +75,8 @@ mesh_add_face(struct Mesh* mesh, vec3 position, vec2 texture_position, enum Dire
                 data[mesh->data.index++] = position[0] + vertices[0];
                 data[mesh->data.index++] = position[1] + vertices[1];
                 data[mesh->data.index++] = position[2] + vertices[2];
-                data[mesh->data.index++] = (texture_position[0] + TEXTURES[i]) * scale;
-                data[mesh->data.index++] = (texture_position[1] + TEXTURES[i + 1]) * scale;
+                data[mesh->data.index++] = (texture_position[0] + TEXTURES[i * 2]) * scale;
+                data[mesh->data.index++] = (texture_position[1] + TEXTURES[i * 2 + 1]) * scale;
         }
 
         for (uint i = 0; i < 6; i++)
