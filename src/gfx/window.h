@@ -8,8 +8,14 @@
 #include <cglm/types.h>
 #include <stdbool.h>
 
+
+#ifdef __APPLE__
+#define WINDOW_SCREEN_WIDTH 3070
+#define WINDOW_SCREEN_HEIGHT 1920
+#else
 #define WINDOW_SCREEN_WIDTH 1920
 #define WINDOW_SCREEN_HEIGHT 1080
+#endif
 
 typedef void (*window_func)();
 
