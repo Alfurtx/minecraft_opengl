@@ -30,7 +30,7 @@ BIN = bin
 
 .PHONY: all clean
 
-all: update_ctags dirs libs app
+all: dirs libs app
 
 run:
 	$(BIN)/app
