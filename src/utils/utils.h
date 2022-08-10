@@ -7,11 +7,12 @@
 #include "stb_image.h"
 #include "noise1234.h"
 #include <stdlib.h>
+#include <malloc.h>
 #include <stdio.h>
 #include <assert.h>
 #include <cglm/call.h>
 #include <cglm/cglm.h>
-#include <pthread.h>
+// #include <pthread.h>
 #include <time.h>
 
 #define max(a, b)                       \

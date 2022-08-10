@@ -15,6 +15,12 @@ renderer_init(struct Renderer* renderer)
                             "/Users/alfonso/Desktop/Proyectos Personales/minecraft_opengl/res/shaders/chunk.frag");
                         renderer->textures[i] = texture_create(
                             "/Users/alfonso/Desktop/Proyectos Personales/minecraft_opengl/res/textures/blockatlas.png");
+#elif defined(_WIN32) || defined(_WIN64)
+                        renderer->shaders[i] = shader_create(
+                            "W:\\minecraft_opengl\\res\\shaders\\chunk.vert",
+                            "W:\\minecraft_opengl\\res\\shaders\\chunk.frag");
+                        renderer->textures[i] = texture_create(
+                            "W:\\minecraft_opengl\\res\\textures\\blockatlas.png");
 #else
                         renderer->shaders[i] =
                             shader_create("/home/fonsi/proyectos/minecraft_opengl/res/shaders/chunk.vert",

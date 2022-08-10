@@ -3,6 +3,8 @@
 // IMPORTANT(fonsi): Recordar que las coordenadas con las que trabaja world son siempre globales, es
 // decir, tienen valores negativos en sus coordenadas
 
+#define DEFAULT_WORLD_CHUNK_SIZE 20
+
 #define foreach_chunk(_w) for (uint i = 0; i < (_w)->chunks_count; i++)
 #define block_index(pos) ((uint) (pos[0] + pos[1] * CHUNK_SIZE + pos[2] * CHUNK_SIZE * CHUNK_SIZE))
 #define chunk_index(w, pos)                                            \
@@ -90,7 +92,8 @@ world_set_center(struct World* world, vec3 center)
         glm_vec3_sub(new_offset, (vec3){world->chunks_size / 2, 0, world->chunks_size / 2},
                      world->chunks_origin);
 
-        struct Chunk* old[world->chunks_count];
+        // IMPORTANT(fonsi): changed to DEFAULT_WORLD_CHUNK_SIZE instead of world->chunks_count because CL was complaining on Windows
+        struct Chunk** old = _malloca(sizeof(struct Chunk*) * world->chunks_count);
         memcpy(old, world->chunks, sizeof(struct Chunk*) * world->chunks_count);
         memset(world->chunks, 0, sizeof(struct Chunk*) * world->chunks_count);
 
@@ -108,6 +111,7 @@ world_set_center(struct World* world, vec3 center)
                 }
         }
 
+        _freea(old);
         load_empty_chunks(world);
 }
 

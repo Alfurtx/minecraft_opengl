@@ -135,7 +135,6 @@ window_loop()
 
                 _render();
 
-
                 glfwSwapBuffers(window.handle);
                 glfwPollEvents();
         }
