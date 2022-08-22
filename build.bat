@@ -4,7 +4,7 @@ setlocal
 
 set CC=cl
 
-set C_FLAGS=/W2 /Zi /nologo /DCGLM_ALL_UNALIGNED /MD
+set C_FLAGS=/W2 /Zi /nologo /DCGLM_ALL_UNALIGNED /MD /MP4
 set C_FLAGS=%C_FLAGS% /wd5045 /wd5105 /wd4668 /wd4191 /wd4464 /wd4244 /wd4005
 set C_LD_FLAGS=/Iw:\minecraft_opengl\libs\glad\include /Iw:\minecraft_opengl\libs\cglm\include /Iw:\minecraft_opengl\libs\glfw\include
 set C_LINK_FLAGS=/link cglm.lib gdi32.lib user32.lib kernel32.lib shell32.lib glfw3.lib /LIBPATH:w:\minecraft_opengl\libs\cglm\win\x64\Release /LIBPATH:w:\minecraft_opengl\libs\glfw\lib-vc2022
